@@ -90,6 +90,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,6 +107,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,6 +126,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +147,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +159,46 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BufferVK.cpp" />
+    <ClCompile Include="CommandBufferVK.cpp" />
+    <ClCompile Include="DescriptorSetLayoutVK.cpp" />
+    <ClCompile Include="DescriptorSetVK.cpp" />
+    <ClCompile Include="DeviceVK.cpp" />
+    <ClCompile Include="IndexBufferVK.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MaterialVK.cpp" />
+    <ClCompile Include="MeshVK.cpp" />
+    <ClCompile Include="PipelineVK.cpp" />
+    <ClCompile Include="RendererVK.cpp" />
+    <ClCompile Include="RenderPassVK.cpp" />
+    <ClCompile Include="SamplerVK.cpp" />
+    <ClCompile Include="ShaderVK.cpp" />
+    <ClCompile Include="SwapChainVK.cpp" />
+    <ClCompile Include="TextureVK.cpp" />
+    <ClCompile Include="UniformBufferVK.cpp" />
+    <ClCompile Include="VertexBufferVK.cpp" />
+    <ClCompile Include="WindowVK.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BufferVK.h" />
+    <ClInclude Include="CommandBufferVK.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="DescriptorSetLayoutVK.h" />
+    <ClInclude Include="DescriptorSetVK.h" />
+    <ClInclude Include="DeviceVK.h" />
+    <ClInclude Include="IndexBufferVK.h" />
+    <ClInclude Include="MaterialVK.h" />
+    <ClInclude Include="MeshVK.h" />
+    <ClInclude Include="PipelineVK.h" />
+    <ClInclude Include="RendererVK.h" />
+    <ClInclude Include="RenderPassVK.h" />
+    <ClInclude Include="SamplerVK.h" />
+    <ClInclude Include="ShaderVK.h" />
+    <ClInclude Include="SwapChainVK.h" />
+    <ClInclude Include="TextureVK.h" />
+    <ClInclude Include="UniformBufferVK.h" />
+    <ClInclude Include="VertexBufferVK.h" />
+    <ClInclude Include="WindowVK.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
