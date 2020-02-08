@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+/libraries
+/x64
+/x32
+/Vulkan/x64
+/Vulkan/x32
