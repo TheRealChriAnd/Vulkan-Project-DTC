@@ -29,8 +29,18 @@ SwapChainVK::SwapChainVK(WindowVK* window, DeviceVK* device) :
 
 SwapChainVK::~SwapChainVK()
 {
-	if (m_SwapChain)
-		std::cout << "SwapChainVK not released!";
+	VkDevice device = m_Device->getDevice();
+
+	for (int i = 0; i < m_Images.size(); i++)
+	{
+		vkDestroyImageView(device, m_ImageViews[i], nullptr);
+		vkDestroyFramebuffer(device, m_Framebuffers[i], nullptr);
+	}
+
+	vkDestroyImage(device, m_DepthImage, nullptr);
+	vkFreeMemory(device, m_DepthImageMemory, nullptr);
+	vkDestroyImageView(device, m_DepthImageView, nullptr);
+	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
 }
 
 VkSwapchainKHR SwapChainVK::getSwapChain() const
@@ -164,26 +174,6 @@ void SwapChainVK::createFramebuffers(DeviceVK* device, RenderPassVK* renderPass)
 VkResult SwapChainVK::acquireNextImage(VkSemaphore semaphore, int currentFrame)
 {
 	return vkAcquireNextImageKHR(m_Device->getDevice(), m_SwapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_ImageIndex);
-}
-
-void SwapChainVK::release()
-{
-	VkDevice device = m_Device->getDevice();
-
-	for (int i = 0; i < m_Images.size(); i++)
-	{
-		vkDestroyImageView(device, m_ImageViews[i], nullptr);
-		vkDestroyFramebuffer(device, m_Framebuffers[i], nullptr);
-	}
-
-	vkDestroyImage(device, m_DepthImage, nullptr);
-	vkFreeMemory(device, m_DepthImageMemory, nullptr);
-	vkDestroyImageView(device, m_DepthImageView, nullptr);
-	vkDestroySwapchainKHR(device, m_SwapChain, nullptr);
-
-	m_SwapChain = nullptr;
-
-	delete this;
 }
 
 VkFormat SwapChainVK::findDepthFormat(DeviceVK* device)

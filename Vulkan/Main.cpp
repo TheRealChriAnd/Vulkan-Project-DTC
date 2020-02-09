@@ -17,7 +17,7 @@
 #include "PipelineVK.h"
 #include "DescriptorSetVK.h"
 #include "ShaderVK.h"
-#include "VertexBufferVK.h"
+#include "StorageBufferVK.h"
 #include "UniformBufferVK.h"
 #include "TextureVK.h"
 #include "SamplerVK.h"
@@ -33,28 +33,40 @@ size_t currentFrame = 0;
 #define BINDING_UNI 3
 #define BINDING_TEXTURE 4
 
-std::vector<glm::vec3> pos = {
-	{-0.5f, -0.5f, 0.0f},
-	{0.5f, -0.5f, 0.0f},
-	{0.5f, 0.5f, 0.0f},
-	{-0.5f, 0.5f, 0.0f},
+std::vector<glm::vec4> pos = {
+	{-0.5f, -0.5f, 0.0f, 1.0f},
+	{0.5f, -0.5f, 0.0f, 1.0f},
+	{0.5f, 0.5f, 0.0f, 1.0f},
+	{-0.5f, 0.5f, 0.0f, 1.0f},
 
-	{-0.5f, -0.5f, -0.5f},
-	{0.5f, -0.5f, -0.5f},
-	{0.5f, 0.5f, -0.5f},
-	{-0.5f, 0.5f, -0.5f}
+	{-0.5f, -0.5f, -0.5f, 1.0f},
+	{0.5f, -0.5f, -0.5f, 1.0f},
+	{0.5f, 0.5f, -0.5f, 1.0f},
+	{-0.5f, 0.5f, -0.5f, 1.0f}
 };
 
-std::vector<glm::vec3> nor = {
-	{1.0f, 0.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 0.0f, 1.0f},
-	{1.0f, 1.0f, 1.0f},
+//std::vector<glm::vec4> pos = {
+//	{0.0f, 1.0f, 2.0f, 0.0f},
+//	{3.0f, 4.0f, 5.0f, 0.0f},
+//	{6.0f, 7.0f, 8.0f, 0.0f},
+//	{9.0f, 10.0f, 11.0f, 0.0f},
+//
+//	{12.0f, 13.0f, 14.0f, 0.0f},
+//	{16.0f, 17.5f, 18.5f, 0.0f},
+//	{19.5f, 20.5f, 21.5f, 0.0f},
+//	{22.5f, 23.5f, 24.5f, 0.0f}
+//};
 
-	{1.0f, 0.0f, 0.0f},
-	{0.0f, 1.0f, 0.0f},
-	{0.0f, 0.0f, 1.0f},
-	{1.0f, 1.0f, 1.0f}
+std::vector<glm::vec4> color = {
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f},
+
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f}
 };
 
 std::vector<glm::vec2> uv = {
@@ -95,9 +107,9 @@ PipelineVK* m_Pipeline;
 DescriptorSetVK* m_DescriptorSet;
 ShaderVK* m_VertexShader;
 ShaderVK* m_FragmentShader;
-VertexBufferVK* m_StorageBufferPos;
-VertexBufferVK* m_StorageBufferNor;
-VertexBufferVK* m_StorageBufferUV;
+StorageBufferVK* m_StorageBufferPos;
+StorageBufferVK* m_StorageBufferNor;
+StorageBufferVK* m_StorageBufferUV;
 UniformBufferVK* m_UniformBuffer;
 TextureVK* m_Texture;
 SamplerVK* m_Sampler;
@@ -112,9 +124,12 @@ void drawFrame();
 void createCommandBuffers();
 void createSyncObjects();
 void updateUniformBuffer(uint32_t currentImage);
+void shutdown();
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	m_Window = new WindowVK("Vulkan Project", 800, 600);
 	m_Device = new DeviceVK(m_Window, enableValidationLayers);
 	m_SwapChain = new SwapChainVK(m_Window, m_Device);
@@ -123,10 +138,10 @@ int main()
 	m_SwapChain->createFramebuffers(m_Device, m_RenderPass);
 
 	m_VertexShader = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
-	m_FragmentShader = new ShaderVK(m_Device, "shaders/FragmentShader.glsl", VK_SHADER_STAGE_FRAGMENT_BIT);
 	m_VertexShader->compile();
-	m_FragmentShader->compile();
 
+	m_FragmentShader = new ShaderVK(m_Device, "shaders/FragmentShader.glsl", VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_FragmentShader->compile();
 
 	m_DescriptorSetLayout = new DescriptorSetLayoutVK(m_Device);
 	m_DescriptorSetLayout->addStorageBuffer(BINDING_POS, VK_SHADER_STAGE_VERTEX_BIT);
@@ -144,22 +159,27 @@ int main()
 
 	m_Texture = new TextureVK(m_Device);
 	m_Texture->loadFromFile("textures/fatboy.png");
+
 	m_Sampler = new SamplerVK(m_Device);
-	m_StorageBufferPos = new VertexBufferVK(m_Device);
-	m_StorageBufferNor = new VertexBufferVK(m_Device);
-	m_StorageBufferUV = new VertexBufferVK(m_Device);
-	m_StorageBufferPos->setData(pos.data(), sizeof(glm::vec3) * pos.size(), 0);
-	m_StorageBufferNor->setData(nor.data(), sizeof(glm::vec3) * nor.size(), 0);
+
+	m_StorageBufferPos = new StorageBufferVK(m_Device);
+	m_StorageBufferPos->setData(pos.data(), sizeof(glm::vec4) * pos.size(), 0);
+
+	m_StorageBufferNor = new StorageBufferVK(m_Device);
+	m_StorageBufferNor->setData(color.data(), sizeof(glm::vec4) * color.size(), 0);
+
+	m_StorageBufferUV = new StorageBufferVK(m_Device);
 	m_StorageBufferUV->setData(uv.data(), sizeof(glm::vec2) * uv.size(), 0);
 
 	m_IndexBuffer = new IndexBufferVK(m_Device, indices);
+
 	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain);
 	m_UniformBuffer->setBufferSize(sizeof(UniformBufferObject));
 
 	m_DescriptorSet = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout);
-	m_DescriptorSet->addStorageBuffer(BINDING_POS, m_StorageBufferPos, m_StorageBufferPos->getSize() / 2, 48);
-	m_DescriptorSet->addStorageBuffer(BINDING_COLOR, m_StorageBufferNor, m_StorageBufferNor->getSize() / 2, 48);
-	m_DescriptorSet->addStorageBuffer(BINDING_UV, m_StorageBufferUV, m_StorageBufferUV->getSize() / 2, 32);
+	m_DescriptorSet->addStorageBuffer(BINDING_POS, m_StorageBufferPos, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet->addStorageBuffer(BINDING_COLOR, m_StorageBufferNor, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet->addStorageBuffer(BINDING_UV, m_StorageBufferUV, VK_WHOLE_SIZE, 0);
 	m_DescriptorSet->addUniformBuffer(BINDING_UNI, m_UniformBuffer);
 	m_DescriptorSet->addTexture(BINDING_TEXTURE, m_Texture, m_Sampler);
 	m_DescriptorSet->submit();
@@ -173,7 +193,40 @@ int main()
 		drawFrame();
 	}
 
+	shutdown();
+
 	return 0;
+}
+
+void shutdown()
+{
+	vkDeviceWaitIdle(m_Device->getDevice());
+
+	delete m_CommandBuffer;
+	delete m_RenderPass;
+	delete m_VertexShader;
+	delete m_FragmentShader;
+	delete m_StorageBufferPos;
+	delete m_StorageBufferNor;
+	delete m_StorageBufferUV;
+	delete m_UniformBuffer;
+	delete m_Texture;
+	delete m_Sampler;
+	delete m_IndexBuffer;
+	delete m_DescriptorSet;
+	delete m_DescriptorSetLayout;
+	delete m_Pipeline;
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		vkDestroySemaphore(m_Device->getDevice(), m_RenderFinishedSemaphores[i], nullptr);
+		vkDestroySemaphore(m_Device->getDevice(), m_ImageAvailableSemaphores[i], nullptr);
+		vkDestroyFence(m_Device->getDevice(), m_InFlightFences[i], nullptr);
+	}
+
+	delete m_SwapChain;
+	delete m_Device;
+	delete m_Window;
 }
 
 void createCommandBuffers()

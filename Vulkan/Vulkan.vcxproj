@@ -176,7 +176,7 @@
     <ClCompile Include="SwapChainVK.cpp" />
     <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
-    <ClCompile Include="VertexBufferVK.cpp" />
+    <ClCompile Include="StorageBufferVK.cpp" />
     <ClCompile Include="WindowVK.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -197,8 +197,15 @@
     <ClInclude Include="SwapChainVK.h" />
     <ClInclude Include="TextureVK.h" />
     <ClInclude Include="UniformBufferVK.h" />
-    <ClInclude Include="VertexBufferVK.h" />
+    <ClInclude Include="StorageBufferVK.h" />
     <ClInclude Include="WindowVK.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\FragmentShader.glsl" />
+    <None Include="shaders\VertexShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\fatboy.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

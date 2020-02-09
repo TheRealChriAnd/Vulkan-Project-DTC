@@ -59,7 +59,6 @@ public:
 	VkPipeline getPipeline() const;
 	VkPipelineLayout getLayout() const;
 
-	void release();
 	void addShader(ShaderVK* shader);
 	void addDescriptorLayout(DescriptorSetLayoutVK* descriptorSetLayout);
 

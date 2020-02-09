@@ -25,8 +25,6 @@ public:
 
 	VkResult acquireNextImage(VkSemaphore semaphore, int currentFrame);
 
-	void release();
-
 private:
 	void createSwapChain(WindowVK* window, DeviceVK* device);
 	void createImageViews(DeviceVK* device);

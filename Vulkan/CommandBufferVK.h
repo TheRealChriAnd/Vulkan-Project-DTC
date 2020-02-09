@@ -7,7 +7,7 @@ class DeviceVK;
 class SwapChainVK;
 class RenderPassVK;
 class PipelineVK;
-class VertexBufferVK;
+class StorageBufferVK;
 class IndexBufferVK;
 class DescriptorSetVK;
 
@@ -21,7 +21,6 @@ public:
 	void begin(int index = 0, VkCommandBufferUsageFlagBits bufferUsage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT) const;
 	void end(int index = 0) const;
 	void submit() const;
-	void release();
 
 	VkCommandBuffer getCommandBuffer(int index = 0) const;
 	const std::vector<VkCommandBuffer>& getCommandBuffers() const;
@@ -29,7 +28,7 @@ public:
 public:
 	void beginRenderPass(int index, RenderPassVK* renderPass, SwapChainVK* swapChain, const glm::vec4& clearColor, float clearDepth, uint32_t clearStencil) const;
 	void bindPipeline(int index, PipelineVK* pipeline);
-	void bindVertexBuffers(int index, const std::vector<VertexBufferVK*>& vertexBuffers);
+	void bindVertexBuffers(int index, const std::vector<StorageBufferVK*>& vertexBuffers);
 	void bindIndexBuffer(int index, IndexBufferVK* indexBuffer);
 	void bindDescriptorSets(int index, PipelineVK* pipeline, const std::vector<DescriptorSetVK*>& descriptorSets);
 	void drawIndexed(int index, IndexBufferVK* indexBuffer, int instances = 1);

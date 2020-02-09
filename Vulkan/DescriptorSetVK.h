@@ -8,7 +8,7 @@ class DescriptorSetLayoutVK;
 class UniformBufferVK;
 class TextureVK;
 class SamplerVK;
-class VertexBufferVK;
+class StorageBufferVK;
 
 class DescriptorSetVK
 {
@@ -20,11 +20,9 @@ public:
 
 	void addUniformBuffer(uint32_t binding, UniformBufferVK* uniformBuffer);
 	void addTexture(uint32_t binding, TextureVK* texture, SamplerVK* sampler);
-	void addStorageBuffer(uint32_t binding, VertexBufferVK* vertexbuffer, size_t range, size_t offset);
+	void addStorageBuffer(uint32_t binding, StorageBufferVK* vertexbuffer, size_t range, size_t offset);
 
 	void submit();
-
-	void release();
 
 private:
 	std::vector<VkDescriptorSet> m_DescriptorSets;

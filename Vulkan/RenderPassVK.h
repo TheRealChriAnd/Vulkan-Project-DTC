@@ -13,8 +13,6 @@ public:
 
 	VkRenderPass getRenderPass() const;
 
-	void release();
-
 private:
 	void createRenderPass(DeviceVK* device, SwapChainVK* swapChain);
 

@@ -12,8 +12,8 @@ IndexBufferVK::IndexBufferVK(DeviceVK* device, const std::vector<uint16_t>& indi
 
 IndexBufferVK::~IndexBufferVK()
 {
-	if (m_pBuffer)
-		std::cout << "IndexBufferVK not released!";
+	delete m_pBuffer;
+	vkFreeMemory(m_Device->getDevice(), m_BufferMemory, nullptr);
 }
 
 VkIndexType IndexBufferVK::getIndexType() const
@@ -36,23 +36,13 @@ int IndexBufferVK::getCount() const
 	return m_Count;
 }
 
-void IndexBufferVK::release()
-{
-	m_pBuffer->release();
-	vkFreeMemory(m_Device->getDevice(), m_BufferMemory, nullptr);
-
-	m_pBuffer = nullptr;
-
-	delete this;
-}
-
 void IndexBufferVK::createIndexBuffer(DeviceVK* device, const std::vector<uint16_t>& indices)
 {
 	m_Count = indices.size();
 	VkDeviceSize bufferSize = sizeof(indices[0]) * m_Count;
 
 	VkDeviceMemory stagingBufferMemory = nullptr;
-	BufferVK* stagingBuffer = new BufferVK(device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBufferMemory);
+	BufferVK stagingBuffer(device, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBufferMemory);
 
 	void* data = nullptr;
 	vkMapMemory(device->getDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
@@ -61,8 +51,7 @@ void IndexBufferVK::createIndexBuffer(DeviceVK* device, const std::vector<uint16
 
 	m_pBuffer = new BufferVK(device, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_BufferMemory);
 
-	stagingBuffer->copyToBuffer(device, m_pBuffer, bufferSize);
+	stagingBuffer.copyToBuffer(device, m_pBuffer, bufferSize);
 
-	stagingBuffer->release();
 	vkFreeMemory(device->getDevice(), stagingBufferMemory, nullptr);
 }

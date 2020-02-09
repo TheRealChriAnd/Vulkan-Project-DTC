@@ -16,8 +16,12 @@ UniformBufferVK::UniformBufferVK(DeviceVK* device, SwapChainVK* swapChain) : m_S
 
 UniformBufferVK::~UniformBufferVK()
 {
-	if(!m_Buffers.empty())
-		std::cout << "UniformBufferVK not released!";
+	VkDevice device = m_Device->getDevice();
+	for (size_t i = 0; i < m_Buffers.size(); i++)
+	{
+		vkDestroyBuffer(device, m_Buffers[i], nullptr);
+		vkFreeMemory(device, m_BufferMemories[i], nullptr);
+	}
 }
 
 int UniformBufferVK::getSize() const
@@ -65,28 +69,10 @@ VkBuffer UniformBufferVK::getBuffer(int index) const
 	return m_Buffers[index];
 }
 
-void UniformBufferVK::setData(const void* data, size_t size, MaterialVK* m, unsigned int location)
+void UniformBufferVK::setData(const void* data, size_t size)
 {
 	setBufferSize(size);
 	setData(data);
-}
-
-void UniformBufferVK::bind(MaterialVK* m)
-{
-}
-
-void UniformBufferVK::release()
-{
-	VkDevice device = m_Device->getDevice();
-	for (size_t i = 0; i < m_Buffers.size(); i++)
-	{
-		vkDestroyBuffer(device, m_Buffers[i], nullptr);
-		vkFreeMemory(device, m_BufferMemories[i], nullptr);
-	}
-	m_Buffers.clear();
-	m_BufferMemories.clear();
-
-	delete this;
 }
 
 void UniformBufferVK::writeToBuffer(const void* data, int index)

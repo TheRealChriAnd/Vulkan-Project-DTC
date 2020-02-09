@@ -5,7 +5,7 @@
 #include "TextureVK.h"
 #include "UniformBufferVK.h"
 #include "SamplerVK.h"
-#include "VertexBufferVK.h"
+#include "StorageBufferVK.h"
 #include <array>
 
 DescriptorSetVK::DescriptorSetVK(DeviceVK* device, SwapChainVK* swapChain, DescriptorSetLayoutVK* layout)
@@ -81,12 +81,12 @@ void DescriptorSetVK::addTexture(uint32_t binding, TextureVK* texture, SamplerVK
 	}
 }
 
-void DescriptorSetVK::addStorageBuffer(uint32_t binding, VertexBufferVK* vertexbuffer, size_t range, size_t offset)
+void DescriptorSetVK::addStorageBuffer(uint32_t binding, StorageBufferVK* storagebuffer, size_t range, size_t offset)
 {
 	for(size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		VkDescriptorBufferInfo* bufferInfo = new VkDescriptorBufferInfo();
-		bufferInfo->buffer	= vertexbuffer->getVKBuffer();
+		bufferInfo->buffer	= storagebuffer->getVKBuffer();
 		bufferInfo->offset	= offset;
 		bufferInfo->range	= range;
 
@@ -117,9 +117,4 @@ void DescriptorSetVK::submit()
 	}
 
 	m_PendingWrites.clear();
-}
-
-void DescriptorSetVK::release()
-{
-	delete this;
 }

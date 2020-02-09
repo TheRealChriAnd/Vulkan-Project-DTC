@@ -13,21 +13,12 @@ RenderPassVK::RenderPassVK(DeviceVK* device, SwapChainVK* swapChain) : m_RenderP
 
 RenderPassVK::~RenderPassVK()
 {
-	if (m_RenderPass)
-		std::cout << "RenderPassVK not released!";
+	vkDestroyRenderPass(m_Device->getDevice(), m_RenderPass, nullptr);
 }
 
 VkRenderPass RenderPassVK::getRenderPass() const
 {
 	return m_RenderPass;
-}
-
-void RenderPassVK::release()
-{
-	vkDestroyRenderPass(m_Device->getDevice(), m_RenderPass, nullptr);
-	m_RenderPass = nullptr;
-
-	delete this;
 }
 
 void RenderPassVK::createRenderPass(DeviceVK* device, SwapChainVK* swapChain)

@@ -17,7 +17,6 @@ public:
 	BufferVK* getBuffer() const;
 	VkBuffer getVKBuffer() const;
 	int getCount() const;
-	void release();
 
 private:
 	void createIndexBuffer(DeviceVK* device, const std::vector<uint16_t>& indices);

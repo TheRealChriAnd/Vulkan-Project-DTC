@@ -42,8 +42,14 @@ DeviceVK::DeviceVK(WindowVK* window, bool enableValidationLayers) :
 
 DeviceVK::~DeviceVK()
 {
-	if(m_Instance)
-		std::cout << "DeviceVK not released!";
+	if (m_UseValidationLayers)
+		destroyDebugUtilsMessengerEXT();
+
+	vkDestroyDescriptorPool(m_Device, m_DescriptorPool, nullptr);
+	vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+	vkDestroyDevice(m_Device, nullptr);
+	vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
+	vkDestroyInstance(m_Instance, nullptr);
 }
 
 VkDevice DeviceVK::getDevice() const
@@ -413,22 +419,6 @@ uint32_t DeviceVK::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags pro
 VkInstance DeviceVK::getInstance() const
 {
 	return m_Instance;
-}
-
-void DeviceVK::release()
-{
-	if (m_UseValidationLayers)
-		destroyDebugUtilsMessengerEXT();
-
-	vkDestroyDescriptorPool(m_Device, m_DescriptorPool, nullptr);
-	vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
-	vkDestroyDevice(m_Device, nullptr);
-	vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
-	vkDestroyInstance(m_Instance, nullptr);
-
-	m_Instance = nullptr;
-
-	delete this;
 }
 
 void DeviceVK::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)

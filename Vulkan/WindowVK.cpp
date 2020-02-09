@@ -61,8 +61,3 @@ HWND WindowVK::GetWin32Handle() const
 	return info.info.win.window;*/
 	return 0;
 }
-
-void WindowVK::release()
-{
-	delete this;
-}

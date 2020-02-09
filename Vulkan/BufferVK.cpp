@@ -12,21 +12,12 @@ BufferVK::BufferVK(DeviceVK* device, VkDeviceSize size, VkBufferUsageFlags usage
 
 BufferVK::~BufferVK()
 {
-	if (m_Buffer)
-		std::cout << "BufferVK not released!";
+	vkDestroyBuffer(m_Device->getDevice(), m_Buffer, nullptr);
 }
 
 VkBuffer BufferVK::getBuffer() const
 {
 	return m_Buffer;
-}
-
-void BufferVK::release()
-{
-	vkDestroyBuffer(m_Device->getDevice(), m_Buffer, nullptr);
-	m_Buffer = nullptr;
-
-	delete this;
 }
 
 void BufferVK::createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDeviceMemory& bufferMemory)
@@ -56,14 +47,13 @@ void BufferVK::createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize s
 
 void BufferVK::copyToBuffer(DeviceVK* device, BufferVK* dstBuffer, VkDeviceSize size)
 {
-	CommandBufferVK* commandBuffer = new CommandBufferVK(device);
-	commandBuffer->begin();
+	CommandBufferVK commandBuffer(device);
+	commandBuffer.begin();
 
 	VkBufferCopy copyRegion = {};
 	copyRegion.size = size;
-	vkCmdCopyBuffer(commandBuffer->getCommandBuffer(), m_Buffer, dstBuffer->getBuffer(), 1, &copyRegion);
+	vkCmdCopyBuffer(commandBuffer.getCommandBuffer(), m_Buffer, dstBuffer->getBuffer(), 1, &copyRegion);
 
-	commandBuffer->end();
-	commandBuffer->submit();
-	commandBuffer->release();
+	commandBuffer.end();
+	commandBuffer.submit();
 }

@@ -14,10 +14,10 @@ MaterialVK::MaterialVK(DeviceVK* device, SwapChainVK* swapChain, const std::stri
 MaterialVK::~MaterialVK()
 {
 	vkDeviceWaitIdle(m_Device->getDevice());
-	m_UniformBuffer->release();
+	delete m_UniformBuffer;
 	for (ShaderVK* shader : m_Shaders)
 	{
-		shader->release();
+		delete shader;
 	}
 }
 

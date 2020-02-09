@@ -13,7 +13,6 @@ public:
 
 	void copyToBuffer(DeviceVK* device, BufferVK* dstBuffer, VkDeviceSize size);
 	VkBuffer getBuffer() const;
-	void release();
 
 private:
 	static void createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDeviceMemory& bufferMemory);

@@ -14,7 +14,7 @@ class PipelineVK;
 class TextureVK;
 class SamplerVK;
 class IndexBufferVK;
-class VertexBufferVK;
+class StorageBufferVK;
 class UniformBufferVK;
 class DescriptorSetVK;
 class CommandBufferVK;
@@ -29,7 +29,7 @@ public:
 	~RendererVK();
 
 	virtual MeshVK* makeMesh();
-	virtual VertexBufferVK* makeVertexBuffer(size_t size);
+	virtual StorageBufferVK* makeVertexBuffer(size_t size);
 	virtual TextureVK* makeTexture2D();
 	virtual SamplerVK* makeSampler2D();
 	virtual std::string getShaderPath();

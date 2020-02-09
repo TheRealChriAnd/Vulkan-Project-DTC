@@ -15,6 +15,7 @@ ShaderVK::ShaderVK(DeviceVK* device, const std::string& filename, VkShaderStageF
 
 ShaderVK::~ShaderVK()
 {
+	vkDestroyShaderModule(m_pDevice->getDevice(), m_ShaderInfo.module, nullptr);
 }
 
 void ShaderVK::insert(const std::string& text)
@@ -87,13 +88,6 @@ VkShaderModule ShaderVK::createShaderModule(DeviceVK* device, const std::vector<
 		throw std::runtime_error("Error: Failed to create shader module!");
 
 	return shaderModule;
-}
-
-void ShaderVK::release()
-{
-	vkDestroyShaderModule(m_pDevice->getDevice(), m_ShaderInfo.module, nullptr);
-
-	delete this;
 }
 
 VkPipelineShaderStageCreateInfo ShaderVK::getShaderInfo() const

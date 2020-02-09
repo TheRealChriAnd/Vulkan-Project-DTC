@@ -16,7 +16,6 @@ public:
 	void append(const std::string& text);
 	void compile();
 
-	void release();
 	VkPipelineShaderStageCreateInfo getShaderInfo() const;
 
 private:

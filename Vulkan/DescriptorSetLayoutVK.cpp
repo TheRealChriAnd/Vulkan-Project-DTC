@@ -11,8 +11,7 @@ DescriptorSetLayoutVK::DescriptorSetLayoutVK(DeviceVK* device) : m_DescriptorSet
 
 DescriptorSetLayoutVK::~DescriptorSetLayoutVK()
 {
-	if (m_DescriptorSetLayout)
-		std::cout << "DescriptorSetLayoutVK not released!";
+	vkDestroyDescriptorSetLayout(m_Device->getDevice(), m_DescriptorSetLayout, nullptr);
 }
 
 VkDescriptorSetLayout DescriptorSetLayoutVK::getDescriptorSetLayout() const
@@ -67,12 +66,4 @@ void DescriptorSetLayoutVK::submit()
 		throw std::runtime_error("Error: Failed to create descriptor set layout!");
 
 	m_LayoutBindings.clear();
-}
-
-void DescriptorSetLayoutVK::release()
-{
-	vkDestroyDescriptorSetLayout(m_Device->getDevice(), m_DescriptorSetLayout, nullptr);
-	m_DescriptorSetLayout = nullptr;
-
-	delete this;
 }

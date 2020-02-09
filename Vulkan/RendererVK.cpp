@@ -7,7 +7,7 @@
 #include "PipelineVK.h"
 #include "TextureVK.h"
 #include "SamplerVK.h"
-#include "VertexBufferVK.h"
+#include "StorageBufferVK.h"
 #include "IndexBufferVK.h"
 #include "UniformBufferVK.h"
 #include "DescriptorSetVK.h"
@@ -42,9 +42,9 @@ MeshVK* RendererVK::makeMesh()
 	return new MeshVK();
 }
 
-VertexBufferVK* RendererVK::makeVertexBuffer(size_t size)
+StorageBufferVK* RendererVK::makeVertexBuffer(size_t size)
 {
-	return new VertexBufferVK(m_Device);
+	return new StorageBufferVK(m_Device);
 }
 
 TextureVK* RendererVK::makeTexture2D()
@@ -120,23 +120,23 @@ int RendererVK::shutdown()
 
 	for (auto& buffer : m_UniformBuffers)
 	{
-		buffer->release();
+		delete buffer;
 	}
 
 	for (auto& descriptorSet : m_DescriptorSets)
 	{
-		descriptorSet->release();
+		delete descriptorSet;
 	}
 
-	m_CommandBuffer->release();
+	delete m_CommandBuffer;
 
 	for (auto& pipeline : m_Pipelines)
 	{
-		pipeline->release();
+		delete pipeline;
 	}
 
-	m_RenderPass->release();
-	m_SwapChain->release();
+	delete m_RenderPass;
+	delete m_SwapChain;
 
 	//for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	//{
@@ -147,11 +147,11 @@ int RendererVK::shutdown()
 
 	for (DescriptorSetLayoutVK* layout : m_DescriptorSetLayouts)
 	{
-		layout->release();
+		delete layout;
 	}
 
-	m_Device->release();
-	m_Window->release();
+	delete m_Device;
+	delete m_Window;
 
 	delete this;
 

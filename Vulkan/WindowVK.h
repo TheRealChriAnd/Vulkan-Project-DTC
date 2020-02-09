@@ -19,8 +19,6 @@ public:
 	void pollEvents() const;
 	HWND GetWin32Handle() const;
 
-	void release();
-
 private:
 	void createSurface(DeviceVK* device);
 

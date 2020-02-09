@@ -54,8 +54,6 @@ public:
 
 	VkInstance getInstance() const;
 
-	void release();
-
 private:
 	void createInstance(const std::vector<const char*>& validationLayers, const std::vector<const char*>& extentions);
 	void setupValidationLayer();

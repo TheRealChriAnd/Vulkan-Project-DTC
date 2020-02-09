@@ -18,11 +18,7 @@ public:
 	VkDeviceMemory getBufferMemory(int index) const;
 	const std::vector<VkBuffer>& getBuffers() const;
 	VkBuffer getBuffer(int index) const;
-
-	virtual void setData(const void* data, size_t size, MaterialVK* m, unsigned int location);
-	virtual void bind(MaterialVK* m);
-
-	void release();
+	void setData(const void* data, size_t size);
 
 private:
 	void writeToBuffer(const void* data, int index);

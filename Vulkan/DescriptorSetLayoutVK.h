@@ -16,7 +16,6 @@ public:
 	void addTexture(uint16_t binding, VkShaderStageFlagBits shaderStages);
 	void addStorageBuffer(uint16_t binding, VkShaderStageFlags shaderStages);
 	void submit();
-	void release();
 
 private:
 	VkDescriptorSetLayout m_DescriptorSetLayout;

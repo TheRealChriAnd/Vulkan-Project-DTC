@@ -3,7 +3,7 @@
 #include "SwapChainVK.h"
 #include "RenderPassVK.h"
 #include "PipelineVK.h"
-#include "VertexBufferVK.h"
+#include "StorageBufferVK.h"
 #include "BufferVK.h"
 #include "IndexBufferVK.h"
 #include "DescriptorSetVK.h"
@@ -39,8 +39,7 @@ CommandBufferVK::CommandBufferVK(DeviceVK* device, int buffers)
 
 CommandBufferVK::~CommandBufferVK()
 {
-	if (!m_CommandBuffers.empty())
-		std::cout << "CommandBufferVK not released!";
+	vkFreeCommandBuffers(m_Device->getDevice(), m_Device->getCommandPool(), m_CommandBuffers.size(), m_CommandBuffers.data());
 }
 
 void CommandBufferVK::begin(int index, VkCommandBufferUsageFlagBits bufferUsage) const
@@ -68,14 +67,6 @@ void CommandBufferVK::submit() const
 
 	vkQueueSubmit(m_Device->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(m_Device->getGraphicsQueue());
-}
-
-void CommandBufferVK::release()
-{
-	vkFreeCommandBuffers(m_Device->getDevice(), m_Device->getCommandPool(), m_CommandBuffers.size(), m_CommandBuffers.data());
-	m_CommandBuffers.clear();
-
-	delete this;
 }
 
 VkCommandBuffer CommandBufferVK::getCommandBuffer(int index) const
@@ -111,7 +102,7 @@ void CommandBufferVK::bindPipeline(int index, PipelineVK* pipeline)
 	vkCmdBindPipeline(m_CommandBuffers[index], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getPipeline());
 }
 
-void CommandBufferVK::bindVertexBuffers(int index, const std::vector<VertexBufferVK*>& vertexBuffers)
+void CommandBufferVK::bindVertexBuffers(int index, const std::vector<StorageBufferVK*>& vertexBuffers)
 {
 	std::vector<VkBuffer> buffers(vertexBuffers.size());
 	std::vector<VkDeviceSize> offsets(vertexBuffers.size());

@@ -14,8 +14,9 @@ PipelineVK::PipelineVK(DeviceVK* device)
 
 PipelineVK::~PipelineVK()
 {
-	if (m_Pipeline)
-		std::cout << "PipelineVK not released!";
+	VkDevice device = m_Device->getDevice();
+	vkDestroyPipeline(device, m_Pipeline, nullptr);
+	vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
 }
 
 VkPipeline PipelineVK::getPipeline() const
@@ -26,17 +27,6 @@ VkPipeline PipelineVK::getPipeline() const
 VkPipelineLayout PipelineVK::getLayout() const
 {
 	return m_PipelineLayout;
-}
-
-void PipelineVK::release()
-{
-	VkDevice device = m_Device->getDevice();
-	vkDestroyPipeline(device, m_Pipeline, nullptr);
-	vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
-
-	m_Pipeline = nullptr;
-
-	delete this;
 }
 
 void PipelineVK::addShader(ShaderVK* shader)
