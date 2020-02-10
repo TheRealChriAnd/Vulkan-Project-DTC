@@ -1,6 +1,7 @@
 #include "CameraVK.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "InputVK.h"
+#include <iostream>
 
 CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 {
@@ -13,7 +14,7 @@ CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 	m_CameraSpeed = speed;
 
 	InputVK::addKeyListener(this);
-	//Input::addMouseListener(this);
+	InputVK::addMouseListener(this);
 }
 
 CameraVK::CameraVK()
@@ -23,17 +24,17 @@ CameraVK::CameraVK()
 	m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
 	m_ViewMatrix = glm::lookAt(m_Position, m_Front, m_Up);
 
-	m_Sensitivity = 0.05f;
+	m_Sensitivity = 1.00f;
 	m_CameraSpeed = 0.05f;
 
 	InputVK::addKeyListener(this);
-	//Input::addMouseListener(this);
+	InputVK::addMouseListener(this);
 }
 
 CameraVK::~CameraVK()
 {
 	InputVK::removeKeyListener(this);
-	//Input::removeMouseListener(this);
+	InputVK::removeMouseListener(this);
 }
 
 const glm::mat4& CameraVK::getView() const
@@ -51,13 +52,10 @@ void CameraVK::onMouseButtonRelease(int button)
 	//TO DO
 }
 
-void CameraVK::onMouseMove(glm::vec2 pos, glm::vec2 offset)
+void CameraVK::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 {
-	offset.x *= m_Sensitivity;
-	offset.y *= m_Sensitivity;
-
-	m_Yaw += offset.x;
-	m_Pitch += offset.y;
+	m_Yaw += offset.x * m_Sensitivity;
+	m_Pitch += offset.y * m_Sensitivity;
 
 	if (m_Pitch > 89.0f)
 		m_Pitch = 89.0f;
@@ -69,7 +67,8 @@ void CameraVK::onMouseMove(glm::vec2 pos, glm::vec2 offset)
 	m_Direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
 
 	m_Front = glm::normalize(m_Direction);
-
+	std::cout << "Pitch: " << m_Pitch << std::endl;
+	std::cout << "Yaw: " << m_Yaw << std::endl;
 	updateCamera();
 }
 

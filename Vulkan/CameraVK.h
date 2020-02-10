@@ -25,7 +25,7 @@ public:
 
 	virtual void onMouseButtonPressed(int button) override;
 	virtual void onMouseButtonRelease(int button) override;
-	virtual void onMouseMove(glm::vec2 pos, glm::vec2 offset) override;
+	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
 
 	virtual void onKeyPressed(int key) override;
 	virtual void onKeyReleased(int key) override;
