@@ -159,7 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="BufferVK.cpp" />
+    <ClCompile Include="CameraVK.cpp" />
     <ClCompile Include="CommandBufferVK.cpp" />
     <ClCompile Include="DescriptorSetLayoutVK.cpp" />
     <ClCompile Include="DescriptorSetVK.cpp" />
@@ -178,10 +180,13 @@
     <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
     <ClCompile Include="StorageBufferVK.cpp" />
+    <ClCompile Include="VulkanDemo.cpp" />
     <ClCompile Include="WindowVK.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
     <ClInclude Include="BufferVK.h" />
+    <ClInclude Include="CameraVK.h" />
     <ClInclude Include="CommandBufferVK.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DescriptorSetLayoutVK.h" />
@@ -202,6 +207,7 @@
     <ClInclude Include="TextureVK.h" />
     <ClInclude Include="UniformBufferVK.h" />
     <ClInclude Include="StorageBufferVK.h" />
+    <ClInclude Include="VulkanDemo.h" />
     <ClInclude Include="WindowVK.h" />
   </ItemGroup>
   <ItemGroup>

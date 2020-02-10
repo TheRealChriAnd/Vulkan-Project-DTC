@@ -171,9 +171,19 @@ void SwapChainVK::createFramebuffers(DeviceVK* device, RenderPassVK* renderPass)
 	}
 }
 
-VkResult SwapChainVK::acquireNextImage(VkSemaphore semaphore, int currentFrame)
+int SwapChainVK::acquireNextImage(VkSemaphore semaphore, int currentFrame)
 {
-	return vkAcquireNextImageKHR(m_Device->getDevice(), m_SwapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_ImageIndex);
+	VkResult result = vkAcquireNextImageKHR(m_Device->getDevice(), m_SwapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_ImageIndex);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		//recreateSwapChain();
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		throw std::runtime_error("failed to acquire swap chain image!");
+	}
+	return m_ImageIndex;
 }
 
 VkFormat SwapChainVK::findDepthFormat(DeviceVK* device)
