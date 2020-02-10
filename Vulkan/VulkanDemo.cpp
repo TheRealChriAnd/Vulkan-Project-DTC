@@ -144,6 +144,7 @@ void VulkanDemo::init()
 
 void VulkanDemo::update(float deltaSeconds)
 {
+	m_Camera->update(deltaSeconds);
 	m_Rotation += deltaSeconds;
 	UniformBufferObject ubo = {};
 	ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation * 50), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -165,6 +166,7 @@ void VulkanDemo::shutdown()
 	for (CommandBufferVK* buffer : m_CommandBuffers)
 		delete buffer;
 
+	delete m_Camera;
 	delete m_VertexShader;
 	delete m_FragmentShader;
 	delete m_StorageBufferPos;

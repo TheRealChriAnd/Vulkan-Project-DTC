@@ -30,6 +30,8 @@ public:
 	virtual void onKeyPressed(int key) override;
 	virtual void onKeyReleased(int key) override;
 
+	void update(float delta);
+
 private:
 	glm::vec3 m_Position;
 	glm::vec3 m_target;
@@ -47,6 +49,5 @@ private:
 private:
 
 	void createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 direction); // maybe not yes?'
-	void update(float delta);
 	void updateCamera();
 };

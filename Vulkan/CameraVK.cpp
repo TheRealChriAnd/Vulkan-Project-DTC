@@ -89,21 +89,21 @@ void CameraVK::createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 dire
 
 void CameraVK::update(float delta)
 {
-	if (Input::isKeyDown(KEY_UP)|| Input::isKeyDown(KEY_W))
+	if (InputVK::isKeyDown(KEY_UP)|| InputVK::isKeyDown(KEY_W))
 	{
-		m_Position += m_CameraSpeed * m_Front;
+		m_Position += delta * m_Front;
 	}
-	else if (Input::isKeyDown(KEY_DOWN) || Input::isKeyDown(KEY_S))
+	else if (InputVK::isKeyDown(KEY_DOWN) || InputVK::isKeyDown(KEY_S))
 	{
-		m_Position -= m_CameraSpeed * m_Front;
+		m_Position -= delta * m_Front;
 	}
-	else if (Input::isKeyDown(KEY_RIGHT) || Input::isKeyDown(KEY_D))
+	else if (InputVK::isKeyDown(KEY_RIGHT) || InputVK::isKeyDown(KEY_D))
 	{
-		m_Position += glm::normalize(glm::cross(m_Front, m_Up)) * m_CameraSpeed;
+		m_Position += glm::normalize(glm::cross(m_Front, m_Up)) * delta;
 	}
-	else if (Input::isKeyDown(KEY_LEFT) || Input::isKeyDown(KEY_A))
+	else if (InputVK::isKeyDown(KEY_LEFT) || InputVK::isKeyDown(KEY_A))
 	{
-		m_Position -= glm::normalize(glm::cross(m_Front, m_Up)) * m_CameraSpeed;
+		m_Position -= glm::normalize(glm::cross(m_Front, m_Up)) * delta;
 	}
 
 	updateCamera();
