@@ -23,6 +23,8 @@
 #include "SamplerVK.h"
 #include "CommandBufferVK.h"
 #include "IndexBufferVK.h"
+#include "Input.h"
+#include "CameraVK.h"
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 size_t currentFrame = 0;
@@ -115,6 +117,8 @@ TextureVK* m_Texture;
 SamplerVK* m_Sampler;
 CommandBufferVK* m_CommandBuffer;
 IndexBufferVK* m_IndexBuffer;
+CameraVK* m_Camera;
+Input* m_Input;
 std::vector<VkSemaphore> m_ImageAvailableSemaphores;
 std::vector<VkSemaphore> m_RenderFinishedSemaphores;
 std::vector<VkFence> m_InFlightFences;
@@ -131,6 +135,8 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	m_Window = new WindowVK("Vulkan Project", 800, 600);
+	m_Input = new Input();
+	m_Camera = new CameraVK(m_Input);
 	m_Device = new DeviceVK(m_Window, enableValidationLayers);
 	m_SwapChain = new SwapChainVK(m_Window, m_Device);
 	m_RenderPass = new RenderPassVK(m_Device, m_SwapChain);
@@ -349,7 +355,8 @@ void updateUniformBuffer(uint32_t currentImage)
 
 	UniformBufferObject ubo = {};
 	ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.view = m_Camera->getView();
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
