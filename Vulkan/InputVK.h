@@ -20,13 +20,15 @@ public:
 		int scancode, 
 		int action, 
 		int mods);
-	//void cameraInput();
+	static void mouseInput(GLFWwindow*, double, double);
 	//void onMouseMove();
 
 	static void addKeyListener(IKeyListener* listener);
 	static void removeKeyListener(IKeyListener* listener);
+	static void addMouseListener(IMouseListener* listener);
+	static void removeMouseListener(IMouseListener* listener);
 	static bool isKeyDown(unsigned int key);
-	static glm::vec3 getMousePosition();
+	static const glm::vec2& getMousePosition();
 
 private:
 	InputVK();
@@ -34,4 +36,9 @@ private:
 private:
 	static bool m_Keys[];
 	static std::set<IKeyListener*> m_KeyListeners;
+	static std::set<IMouseListener*> m_MouseListeners;
+
+	static WindowVK* m_Window;
+
+	static glm::vec2 m_LastPos;
 };

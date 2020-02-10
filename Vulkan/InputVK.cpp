@@ -6,18 +6,25 @@
 
 bool InputVK::m_Keys[1024];
 std::set<IKeyListener*> InputVK::m_KeyListeners;
+std::set<IMouseListener*> InputVK::m_MouseListeners;
+WindowVK* InputVK::m_Window = nullptr;
+glm::vec2 InputVK::m_LastPos;
 
 InputVK::InputVK()
 {
+
 }
 
 InputVK ::~InputVK()
 {
 }
 
-void InputVK::init(WindowVK* window) {
-	glfwSetKeyCallback(window->getHandle(), keyInput);
-	//glfwSetCursorPosCallback(window, mouseInput);
+void InputVK::init(WindowVK* window) 
+{
+	m_Window = window;
+	glfwSetKeyCallback(m_Window->getHandle(), keyInput);
+	glfwSetCursorPosCallback(m_Window->getHandle(), mouseInput);
+	m_LastPos = getMousePosition();
 }
 
 void InputVK::keyInput(
@@ -28,16 +35,27 @@ void InputVK::keyInput(
 	int mods)
 {
 
-	if (action == GLFW_PRESS) {
+	if (action == GLFW_PRESS) 
+	{
 		m_Keys[key] = true;	
 		for (IKeyListener* listener : m_KeyListeners)
 			listener->onKeyPressed(key);
 	}
-	else if (action == GLFW_RELEASE) {
+	else if (action == GLFW_RELEASE) 
+	{
 		m_Keys[key] = false;
 		for (IKeyListener* listener : m_KeyListeners)
 			listener->onKeyReleased(key);
 	}
+}
+
+void InputVK::mouseInput(GLFWwindow* window, double xpos, double ypos) 
+{
+	glm::vec2 pos(xpos, ypos);
+	glm::vec2 offset = pos - m_LastPos;
+	for (IMouseListener* listener : m_MouseListeners)
+		listener->onMouseMove(pos, offset);
+	m_LastPos = pos;
 }
 
 void InputVK::addKeyListener(IKeyListener* listener)
@@ -50,12 +68,25 @@ void InputVK::removeKeyListener(IKeyListener* listener)
 	m_KeyListeners.erase(listener);
 }
 
+void InputVK::addMouseListener(IMouseListener* listener) 
+{
+	m_MouseListeners.insert(listener);
+}
+
+void InputVK::removeMouseListener(IMouseListener* listener) 
+{
+	m_MouseListeners.erase(listener);
+}
+
 bool InputVK::isKeyDown(unsigned int key)
 {
 	return m_Keys[key];
 }
 
-glm::vec3 InputVK::getMousePosition()
+const glm::vec2& InputVK::getMousePosition()
 {
-	return glm::vec3();
+	double x;
+	double y;
+	glfwGetCursorPos(m_Window->getHandle(), &x, &y);
+	return glm::vec2(x, y);
 }
