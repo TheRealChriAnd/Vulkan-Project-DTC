@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="BufferVK.cpp" />
     <ClCompile Include="CameraVK.cpp" />
     <ClCompile Include="CommandBufferVK.cpp" />
@@ -166,7 +167,7 @@
     <ClCompile Include="DescriptorSetVK.cpp" />
     <ClCompile Include="DeviceVK.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
-    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="InputVK.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MaterialVK.cpp" />
     <ClCompile Include="MeshVK.cpp" />
@@ -179,9 +180,11 @@
     <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
     <ClCompile Include="StorageBufferVK.cpp" />
+    <ClCompile Include="VulkanDemo.cpp" />
     <ClCompile Include="WindowVK.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
     <ClInclude Include="BufferVK.h" />
     <ClInclude Include="CameraVK.h" />
     <ClInclude Include="CommandBufferVK.h" />
@@ -192,7 +195,7 @@
     <ClInclude Include="IKeyListener.h" />
     <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />
-    <ClInclude Include="Input.h" />
+    <ClInclude Include="InputVK.h" />
     <ClInclude Include="MaterialVK.h" />
     <ClInclude Include="MeshVK.h" />
     <ClInclude Include="PipelineVK.h" />
@@ -204,6 +207,7 @@
     <ClInclude Include="TextureVK.h" />
     <ClInclude Include="UniformBufferVK.h" />
     <ClInclude Include="StorageBufferVK.h" />
+    <ClInclude Include="VulkanDemo.h" />
     <ClInclude Include="WindowVK.h" />
   </ItemGroup>
   <ItemGroup>

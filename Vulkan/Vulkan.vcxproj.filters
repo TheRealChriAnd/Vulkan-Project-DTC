@@ -1,172 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Resource Files\shaders">
-      <UniqueIdentifier>{7a02da22-d2e1-4216-860a-36fc5b2b1e41}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\textures">
-      <UniqueIdentifier>{b6b8b73e-359a-4f29-a805-f7e44c2e3a64}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="BufferVK.cpp" />
+    <ClCompile Include="CameraVK.cpp" />
+    <ClCompile Include="CommandBufferVK.cpp" />
+    <ClCompile Include="DescriptorSetLayoutVK.cpp" />
+    <ClCompile Include="DescriptorSetVK.cpp" />
+    <ClCompile Include="DeviceVK.cpp" />
+    <ClCompile Include="IndexBufferVK.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MaterialVK.cpp" />
+    <ClCompile Include="MeshVK.cpp" />
+    <ClCompile Include="PipelineVK.cpp" />
+    <ClCompile Include="RendererVK.cpp" />
+    <ClCompile Include="RenderPassVK.cpp" />
+    <ClCompile Include="SamplerVK.cpp" />
+    <ClCompile Include="ShaderVK.cpp" />
+    <ClCompile Include="SwapChainVK.cpp" />
+    <ClCompile Include="TextureVK.cpp" />
+    <ClCompile Include="UniformBufferVK.cpp" />
+    <ClCompile Include="StorageBufferVK.cpp" />
+    <ClCompile Include="VulkanDemo.cpp" />
+    <ClCompile Include="WindowVK.cpp" />
+    <ClCompile Include="InputVK.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SwapChainVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UniformBufferVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BufferVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandBufferVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorSetLayoutVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorSetVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DeviceVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexBufferVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PipelineVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RendererVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPassVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SamplerVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StorageBufferVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraVK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="BufferVK.h" />
+    <ClInclude Include="CameraVK.h" />
+    <ClInclude Include="CommandBufferVK.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="DescriptorSetLayoutVK.h" />
+    <ClInclude Include="DescriptorSetVK.h" />
+    <ClInclude Include="DeviceVK.h" />
+    <ClInclude Include="IKeyListener.h" />
+    <ClInclude Include="IMouseListener.h" />
+    <ClInclude Include="IndexBufferVK.h" />
+    <ClInclude Include="MaterialVK.h" />
+    <ClInclude Include="MeshVK.h" />
+    <ClInclude Include="PipelineVK.h" />
+    <ClInclude Include="RendererVK.h" />
+    <ClInclude Include="RenderPassVK.h" />
+    <ClInclude Include="SamplerVK.h" />
+    <ClInclude Include="ShaderVK.h" />
+    <ClInclude Include="SwapChainVK.h" />
+    <ClInclude Include="TextureVK.h" />
+    <ClInclude Include="UniformBufferVK.h" />
+    <ClInclude Include="StorageBufferVK.h" />
+    <ClInclude Include="VulkanDemo.h" />
+    <ClInclude Include="WindowVK.h" />
+    <ClInclude Include="InputVK.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BufferVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandBufferVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorSetLayoutVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorSetVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DeviceVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexBufferVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PipelineVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RendererVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPassVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SamplerVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SwapChainVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UniformBufferVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StorageBufferVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CameraVK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IKeyListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IMouseListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Image Include="textures\fatboy.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\FragmentShader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="shaders\VertexShader.glsl">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="textures\fatboy.png">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
+    <None Include="shaders\FragmentShader.glsl" />
+    <None Include="shaders\VertexShader.glsl" />
   </ItemGroup>
 </Project>

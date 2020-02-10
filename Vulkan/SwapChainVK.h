@@ -23,7 +23,7 @@ public:
 
 	void createFramebuffers(DeviceVK* device, RenderPassVK* renderPass);
 
-	VkResult acquireNextImage(VkSemaphore semaphore, int currentFrame);
+	int acquireNextImage(VkSemaphore semaphore, int currentFrame);
 
 private:
 	void createSwapChain(WindowVK* window, DeviceVK* device);

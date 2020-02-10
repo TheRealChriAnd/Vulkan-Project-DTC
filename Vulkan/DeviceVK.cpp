@@ -92,6 +92,11 @@ VkPhysicalDeviceProperties DeviceVK::getProperties() const
 	return m_Properties;
 }
 
+void DeviceVK::waitForFence(const VkFence* fence) const
+{
+	vkWaitForFences(m_Device, 1, fence, VK_TRUE, UINT64_MAX);
+}
+
 SwapChainSupportDetails DeviceVK::querySwapChainSupport()
 {
 	return querySwapChainSupport(m_PhysicalDevice);
