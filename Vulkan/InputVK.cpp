@@ -1,19 +1,26 @@
-#include "Input.h"
+#include "InputVK.h"
+#include "WindowVK.h"
+#include "IKeyListener.h"
+#include "IMouseListener.h"
+#include "GLFW/glfw3.h"
 
-Input::Input()
+bool InputVK::m_Keys[1024];
+std::set<IKeyListener*> InputVK::m_KeyListeners;
+
+InputVK::InputVK()
 {
 }
 
-Input::~Input()
+InputVK ::~InputVK()
 {
 }
 
-void Input::init(GLFWwindow* window) {
-	glfwSetKeyCallback(window, keyInput);
+void InputVK::init(WindowVK* window) {
+	glfwSetKeyCallback(window->getHandle(), keyInput);
 	//glfwSetCursorPosCallback(window, mouseInput);
 }
 
-void Input::keyInput(
+void InputVK::keyInput(
 	GLFWwindow* window,
 	int key,
 	int scancode,
@@ -33,22 +40,22 @@ void Input::keyInput(
 	}
 }
 
-void Input::addKeyListener(IKeyListener* listener)
+void InputVK::addKeyListener(IKeyListener* listener)
 {
 	m_KeyListeners.insert(listener);
 }
 
-void Input::removeKeyListener(IKeyListener* listener) 
+void InputVK::removeKeyListener(IKeyListener* listener)
 {
 	m_KeyListeners.erase(listener);
 }
 
-bool Input::isKeyDown(unsigned int key)
+bool InputVK::isKeyDown(unsigned int key)
 {
 	return m_Keys[key];
 }
 
-glm::vec3 Input::getMousePosition()
+glm::vec3 InputVK::getMousePosition()
 {
 	return glm::vec3();
 }

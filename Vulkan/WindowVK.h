@@ -17,7 +17,7 @@ public:
 	void setTitle(const char* title) const;
 	bool shouldClose() const;
 	void pollEvents() const;
-	HWND GetWin32Handle() const;
+	GLFWwindow* getHandle() const;
 
 private:
 	void createSurface(DeviceVK* device);

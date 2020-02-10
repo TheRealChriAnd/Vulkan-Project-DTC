@@ -47,17 +47,13 @@ void WindowVK::pollEvents() const
 	glfwPollEvents();
 }
 
+GLFWwindow* WindowVK::getHandle() const
+{
+	return m_Window;
+}
+
 void WindowVK::createSurface(DeviceVK* device) 
 {
 	if (glfwCreateWindowSurface(device->getInstance(), m_Window, nullptr, &device->m_Surface) != VK_SUCCESS) 
 		throw std::runtime_error("Error: Failed to create window surface!");
-}
-
-HWND WindowVK::GetWin32Handle() const
-{
-	/*SDL_SysWMinfo info;
-	SDL_VERSION(&info.version);
-	SDL_GetWindowWMInfo(m_Window, &info);
-	return info.info.win.window;*/
-	return 0;
 }

@@ -9,6 +9,7 @@
 #include "SwapChainVK.h"
 #include "RenderPassVK.h"
 #include "CommandBufferVK.h"
+#include "InputVK.h"
 
 #include <chrono>
 
@@ -28,6 +29,7 @@ void Application::run()
 
 	createSyncObjects();
 
+	InputVK::init(m_Window);
 	this->init();
 
 	auto lastTime = std::chrono::high_resolution_clock::now();

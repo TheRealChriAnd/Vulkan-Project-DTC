@@ -1,16 +1,18 @@
 #pragma once
-#include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
-#include "IKeyListener.h"
-#include "IMouseListener.h"
 #include <set>
 
+class WindowVK;
+class IKeyListener;
+class IMouseListener;
+class GLFWwindow;
 
-class Input 
+class InputVK 
 {
+	friend class Application;
 public:
-	~Input();
+	~InputVK();
 	
 	static void keyInput(
 		GLFWwindow* window, 
@@ -27,9 +29,9 @@ public:
 	static glm::vec3 getMousePosition();
 
 private:
-	Input();
-	static void init(GLFWwindow* window);
+	InputVK();
+	static void init(WindowVK* window);
 private:
-	static bool m_Keys[1024];
+	static bool m_Keys[];
 	static std::set<IKeyListener*> m_KeyListeners;
 };
