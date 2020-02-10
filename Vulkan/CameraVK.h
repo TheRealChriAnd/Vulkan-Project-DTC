@@ -14,19 +14,14 @@
 #define KEY_RIGHT 262
 #define KEY_LEFT 263
 
-class Input;
-
 class CameraVK : public IMouseListener, IKeyListener
 {
 public:
-
-public:
-
-	CameraVK(Input* input, glm::vec3 pos, float sensitivity, float speed);
-	CameraVK(Input* input);
+	CameraVK(glm::vec3 pos, float sensitivity, float speed);
+	CameraVK();
 	~CameraVK();
 
-	glm::mat4 getView() const;
+	const glm::mat4& getView() const;
 
 	virtual void onMouseButtonPressed(int button) override;
 	virtual void onMouseButtonRelease(int button) override;
@@ -36,9 +31,6 @@ public:
 	virtual void onKeyReleased(int key) override;
 
 private:
-
-	Input* m_Input;
-
 	glm::vec3 m_Position;
 	glm::vec3 m_target;
 	glm::vec3 m_Direction;
@@ -52,10 +44,7 @@ private:
 	float m_Yaw;
 	float m_Pitch;
 
-
 private:
-
 	void createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 direction); // maybe not yes?
 	void updateCamera();
-
 };

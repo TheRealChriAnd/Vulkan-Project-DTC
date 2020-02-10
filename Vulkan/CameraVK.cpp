@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Input.h"
 
-CameraVK::CameraVK(Input* input, glm::vec3 pos, float sensitivity, float speed)
+CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 {
 	m_Position	= pos;
 	m_Front		= glm::vec3(0.0f, 0.0f, -1.0f);
@@ -12,12 +12,11 @@ CameraVK::CameraVK(Input* input, glm::vec3 pos, float sensitivity, float speed)
 	m_Sensitivity = sensitivity;
 	m_CameraSpeed = speed;
 
-	m_Input = input;
 	//m_Input->addKeyListener();
 	//m_Input->addMouseListener();
 }
 
-CameraVK::CameraVK(Input* input)
+CameraVK::CameraVK()
 {
 	m_Position = glm::vec3(0.0f, 0.0f, 2.0f);
 	m_Front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -27,7 +26,6 @@ CameraVK::CameraVK(Input* input)
 	m_Sensitivity = 0.05f;
 	m_CameraSpeed = 0.05f;
 
-	m_Input = input;
 	//m_Input->addKeyListener();
 	//m_Input->addMouseListener();
 }
@@ -37,7 +35,7 @@ CameraVK::~CameraVK()
 	//m_Input->release();
 }
 
-glm::mat4 CameraVK::getView() const
+const glm::mat4& CameraVK::getView() const
 {
 	return m_ViewMatrix;
 }

@@ -20,7 +20,7 @@
 #include "SamplerVK.h"
 #include "CommandBufferVK.h"
 #include "IndexBufferVK.h"
-
+#include "CameraVK.h"
 
 #define BINDING_POS 0
 #define BINDING_COLOR 1
@@ -138,15 +138,17 @@ void VulkanDemo::init()
 	}
 
 	m_CommandBuffers.push_back(m_CommandBuffer);
+
+	m_Camera = new CameraVK();
 }
 
 void VulkanDemo::update(float deltaSeconds)
 {
 	m_Rotation += deltaSeconds;
-
 	UniformBufferObject ubo = {};
 	ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation * 50), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.view = m_Camera->getView();
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
 
