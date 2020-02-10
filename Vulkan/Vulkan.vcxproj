@@ -161,11 +161,13 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BufferVK.cpp" />
+    <ClCompile Include="CameraVK.cpp" />
     <ClCompile Include="CommandBufferVK.cpp" />
     <ClCompile Include="DescriptorSetLayoutVK.cpp" />
     <ClCompile Include="DescriptorSetVK.cpp" />
     <ClCompile Include="DeviceVK.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MaterialVK.cpp" />
     <ClCompile Include="MeshVK.cpp" />
@@ -184,12 +186,16 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BufferVK.h" />
+    <ClInclude Include="CameraVK.h" />
     <ClInclude Include="CommandBufferVK.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DescriptorSetLayoutVK.h" />
     <ClInclude Include="DescriptorSetVK.h" />
     <ClInclude Include="DeviceVK.h" />
+    <ClInclude Include="IKeyListener.h" />
+    <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="MaterialVK.h" />
     <ClInclude Include="MeshVK.h" />
     <ClInclude Include="PipelineVK.h" />

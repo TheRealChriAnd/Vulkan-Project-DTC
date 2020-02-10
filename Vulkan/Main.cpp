@@ -11,4 +11,4 @@ int main()
 	application->run();
 	delete application;
 	return 0;
-}
+};

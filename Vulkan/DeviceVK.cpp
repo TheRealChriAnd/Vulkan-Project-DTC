@@ -16,7 +16,7 @@ DeviceVK::DeviceVK(WindowVK* window, bool enableValidationLayers) :
 	const std::vector<const char*> validationLayers =
 	{
 		"VK_LAYER_KHRONOS_validation",
-		"VK_LAYER_RENDERDOC_Capture"
+		"VK_LAYER_RENDERDOC_Capture" 
 	};
 
 	const std::vector<const char*> instanceExtentions =
