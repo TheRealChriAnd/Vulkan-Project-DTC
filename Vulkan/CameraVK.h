@@ -55,7 +55,8 @@ private:
 
 private:
 
-	void createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 direction); // maybe not yes?
+	void createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 direction); // maybe not yes?'
+	void update(float delta);
 	void updateCamera();
 
 };
