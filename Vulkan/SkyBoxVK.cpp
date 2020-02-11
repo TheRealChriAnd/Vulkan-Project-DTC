@@ -50,14 +50,10 @@ void SkyBoxVK::createTextureImage(DeviceVK* device, const std::string& file, uin
 	if (!pixels)
 		throw std::runtime_error("Error: Failed to load texture image!");
 
-	VkDeviceMemory stagingBufferMemory = nullptr;
+	BufferVK buffer(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-	BufferVK buffer(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBufferMemory);
 
-	void* data = nullptr;
-	vkMapMemory(device->getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
-	memcpy(data, pixels, static_cast<size_t>(imageSize));
-	vkUnmapMemory(device->getDevice(), stagingBufferMemory);
+	buffer.writeData(pixels, static_cast<size_t>(imageSize));
 
 	stbi_image_free(pixels);
 
@@ -72,8 +68,6 @@ void SkyBoxVK::createTextureImage(DeviceVK* device, const std::string& file, uin
 			transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
 		}
 	}
-
-	vkFreeMemory(device->getDevice(), stagingBufferMemory, nullptr);
 }
 
 void SkyBoxVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int index)

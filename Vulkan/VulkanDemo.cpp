@@ -229,7 +229,7 @@ void VulkanDemo::init()
 	m_Pipeline->addShader(m_FragmentShader);
 	m_Pipeline->submit(m_Device, m_RenderPass, m_SwapChain, VK_POLYGON_MODE_FILL);
 
-	m_Texture = new TextureVK(m_Device);
+	m_Texture = new TextureVK(m_Device, 1);
 	m_Texture->loadFromFile("textures/fatboy.png");
 
 	m_Sampler = new SamplerVK(m_Device);
@@ -297,8 +297,8 @@ void VulkanDemo::init()
 
 	m_IndexBuffer1 = new IndexBufferVK(m_Device, cubeIndices);
 
-	m_UniformBuffer1 = new UniformBufferVK(m_Device, m_SwapChain);
-	m_UniformBuffer1->setBufferSize(sizeof(UniformBufferObject));
+	m_UniformBuffer1 = new UniformBufferVK(m_Device, m_SwapChain, sizeof(UniformBufferObject));
+
 
 	m_DescriptorSet1 = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout1);
 	m_DescriptorSet1->addStorageBuffer(BINDING_POS, m_StorageBufferPos, VK_WHOLE_SIZE, 0);

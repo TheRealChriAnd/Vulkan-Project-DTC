@@ -22,6 +22,7 @@
     <ClCompile Include="VulkanDemo.cpp" />
     <ClCompile Include="WindowVK.cpp" />
     <ClCompile Include="InputVK.cpp" />
+    <ClCompile Include="SkyBoxVK.cpp" />
     <ClCompile Include="GameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +49,7 @@
     <ClInclude Include="VulkanDemo.h" />
     <ClInclude Include="WindowVK.h" />
     <ClInclude Include="InputVK.h" />
+    <ClInclude Include="SkyBoxVK.h" />
     <ClInclude Include="GameObject.h" />
   </ItemGroup>
   <ItemGroup>

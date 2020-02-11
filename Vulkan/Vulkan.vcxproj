@@ -175,6 +175,7 @@
     <ClCompile Include="RenderPassVK.cpp" />
     <ClCompile Include="SamplerVK.cpp" />
     <ClCompile Include="ShaderVK.cpp" />
+    <ClCompile Include="SkyBoxVK.cpp" />
     <ClCompile Include="SwapChainVK.cpp" />
     <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="RenderPassVK.h" />
     <ClInclude Include="SamplerVK.h" />
     <ClInclude Include="ShaderVK.h" />
+    <ClInclude Include="SkyBoxVK.h" />
     <ClInclude Include="SwapChainVK.h" />
     <ClInclude Include="TextureVK.h" />
     <ClInclude Include="UniformBufferVK.h" />

@@ -5,10 +5,11 @@
 #include "stb_image.h"
 #include <iostream>
 
-TextureVK::TextureVK(DeviceVK* device):
+TextureVK::TextureVK(DeviceVK* device, uint32_t layers):
 	m_Image(nullptr)
 {
 	m_Device = device;
+	m_Layers = layers;
 }
 
 TextureVK::~TextureVK()
@@ -22,8 +23,8 @@ TextureVK::~TextureVK()
 
 int TextureVK::loadFromFile(std::string filename)
 {
-	createTextureImage(m_Device, filename, 1);
-	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, 1);
+	createTextureImage(m_Device, filename);
+	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, m_Layers);
 	return 0;
 }
 
@@ -32,7 +33,12 @@ VkImageView TextureVK::getImageView() const
 	return m_ImageView;
 }
 
-void TextureVK::createTextureImage(DeviceVK* device, const std::string& file, uint32_t layers)
+uint32_t TextureVK::getImageLayers() const
+{
+	return m_Layers;
+}
+
+void TextureVK::createTextureImage(DeviceVK* device, const std::string& file)
 {
 	int texWidth;
 	int texHeight;
@@ -48,7 +54,7 @@ void TextureVK::createTextureImage(DeviceVK* device, const std::string& file, ui
 
 	stbi_image_free(pixels);
 
-	device->createImage(texWidth, texHeight, layers, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
+	device->createImage(texWidth, texHeight, m_Layers, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 
 	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copyBufferToImage(device, buffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));

@@ -43,9 +43,14 @@ private:
 	StorageBufferVK* m_StorageBufferNor;
 	StorageBufferVK* m_StorageBufferUV;
 	UniformBufferVK* m_UniformBuffer;
+	StorageBufferVK* m_StorageBufferPos1;
+	StorageBufferVK* m_StorageBufferNor1;
+	StorageBufferVK* m_StorageBufferUV1;
+	UniformBufferVK* m_UniformBuffer1;
 	TextureVK* m_Texture;
 	SamplerVK* m_Sampler;
 	IndexBufferVK* m_IndexBuffer;
+	IndexBufferVK* m_IndexBuffer1;
 	CameraVK* m_Camera;
 	SkyBoxVK* m_Skybox;
 	SamplerVK* m_SkySampler;
