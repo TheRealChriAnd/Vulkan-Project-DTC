@@ -20,7 +20,7 @@ public:
 
 	void addUniformBuffer(uint32_t binding, UniformBufferVK* uniformBuffer);
 	void addTexture(uint32_t binding, TextureVK* texture, SamplerVK* sampler);
-	void addStorageBuffer(uint32_t binding, StorageBufferVK* vertexbuffer, size_t range, size_t offset);
+	void addStorageBuffer(uint32_t binding, StorageBufferVK* storagebuffer, size_t range, size_t offset);
 
 	void submit();
 

@@ -111,8 +111,7 @@ void VulkanDemo::init()
 
 	m_IndexBuffer = new IndexBufferVK(m_Device, indices);
 
-	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain);
-	m_UniformBuffer->setBufferSize(sizeof(UniformBufferObject));
+	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(UniformBufferObject));
 
 	m_DescriptorSet = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout);
 	m_DescriptorSet->addStorageBuffer(BINDING_POS, m_StorageBufferPos, VK_WHOLE_SIZE, 0);
