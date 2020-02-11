@@ -1,42 +1,45 @@
+#include "SkyBoxVK.h"
 #include "TextureVK.h"
 #include "DeviceVK.h"
 #include "BufferVK.h"
 #include "CommandBufferVK.h"
 #include "stb_image.h"
 #include <iostream>
+#define IMAGE_COUNT 6
 
-TextureVK::TextureVK(DeviceVK* device):
+
+SkyBoxVK::SkyBoxVK(DeviceVK * device):
 	m_Image(nullptr)
 {
 	m_Device = device;
 }
 
-TextureVK::~TextureVK()
+SkyBoxVK::~SkyBoxVK()
 {
 	VkDevice device = m_Device->getDevice();
-
 	vkDestroyImage(device, m_Image, nullptr);
 	vkDestroyImageView(device, m_ImageView, nullptr);
 	vkFreeMemory(device, m_ImageMemory, nullptr);
 }
 
-int TextureVK::loadFromFile(std::string filename)
+int SkyBoxVK::loadFromFile(std::string filename, int index)
 {
-	createTextureImage(m_Device, filename, 1);
-	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, 1);
+	createTextureImage(m_Device, filename, IMAGE_COUNT, index);
+	
+	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, IMAGE_COUNT);
 	return 0;
 }
 
-void TextureVK::bind(unsigned int slot)
+void SkyBoxVK::bind(unsigned int slot)
 {
 }
 
-VkImageView TextureVK::getImageView() const
+VkImageView SkyBoxVK::getImageView() const
 {
 	return m_ImageView;
 }
 
-void TextureVK::createTextureImage(DeviceVK* device, const std::string& file, uint32_t layers)
+void SkyBoxVK::createTextureImage(DeviceVK* device, const std::string& file, uint32_t layers, int index)
 {
 	int texWidth;
 	int texHeight;
@@ -47,10 +50,10 @@ void TextureVK::createTextureImage(DeviceVK* device, const std::string& file, ui
 	if (!pixels)
 		throw std::runtime_error("Error: Failed to load texture image!");
 
-	VkDeviceMemory stagingBufferMemory  = nullptr;
+	VkDeviceMemory stagingBufferMemory = nullptr;
 
 	BufferVK buffer(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBufferMemory);
-	
+
 	void* data = nullptr;
 	vkMapMemory(device->getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, pixels, static_cast<size_t>(imageSize));
@@ -60,14 +63,20 @@ void TextureVK::createTextureImage(DeviceVK* device, const std::string& file, ui
 
 	device->createImage(texWidth, texHeight, layers, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 
-	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	copyBufferToImage(device, buffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	if (index == IMAGE_COUNT)
+	{
+		for (int i = 0; i < IMAGE_COUNT; i++)
+		{
+			transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, i);
+			copyBufferToImage(device, buffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), i);
+			transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, i);
+		}
+	}
 
 	vkFreeMemory(device->getDevice(), stagingBufferMemory, nullptr);
 }
 
-void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+void SkyBoxVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int index)
 {
 	CommandBufferVK commandBuffer(device);
 	commandBuffer.begin();
@@ -82,8 +91,8 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	barrier.subresourceRange.baseMipLevel = 0;
 	barrier.subresourceRange.levelCount = 1;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = 1;
+	barrier.subresourceRange.baseArrayLayer = index;
+	barrier.subresourceRange.layerCount = 6;
 
 	VkPipelineStageFlags sourceStage;
 	VkPipelineStageFlags destinationStage;
@@ -122,7 +131,7 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	commandBuffer.submit();
 }
 
-void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height)
+void SkyBoxVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height, int index)
 {
 	CommandBufferVK commandBuffer(device);
 	commandBuffer.begin();
@@ -133,8 +142,8 @@ void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint
 	region.bufferImageHeight = 0;
 	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	region.imageSubresource.mipLevel = 0;
-	region.imageSubresource.baseArrayLayer = 0;
-	region.imageSubresource.layerCount = 1;
+	region.imageSubresource.baseArrayLayer = index;
+	region.imageSubresource.layerCount = 6;
 	region.imageOffset = { 0, 0, 0 };
 	region.imageExtent = {
 		width,

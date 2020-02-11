@@ -135,14 +135,14 @@ void SwapChainVK::createImageViews(DeviceVK* device)
 	m_ImageViews.resize(m_Images.size());
 
 	for (size_t i = 0; i < m_Images.size(); i++)
-		m_ImageViews[i] = device->createImageView(m_Images[i], m_ImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+		m_ImageViews[i] = device->createImageView(m_Images[i], m_ImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D);
 }
 
 void SwapChainVK::createDepthResources(DeviceVK* device)
 {
 	m_DepthFormat = findDepthFormat(device);
-	device->createImage(m_Extent.width, m_Extent.height, m_DepthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_DepthImage, m_DepthImageMemory);
-	m_DepthImageView = device->createImageView(m_DepthImage, m_DepthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+	device->createImage(m_Extent.width, m_Extent.height, 1, m_DepthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_DepthImage, m_DepthImageMemory);
+	m_DepthImageView = device->createImageView(m_DepthImage, m_DepthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D);
 }
 
 void SwapChainVK::createFramebuffers(DeviceVK* device, RenderPassVK* renderPass)

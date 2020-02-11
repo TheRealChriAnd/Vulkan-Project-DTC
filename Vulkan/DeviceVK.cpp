@@ -107,18 +107,18 @@ QueueFamilyIndices DeviceVK::findQueueFamilies()
 	return findQueueFamilies(m_PhysicalDevice);
 }
 
-VkImageView DeviceVK::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags) 
+VkImageView DeviceVK::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layers)
 {
 	VkImageViewCreateInfo viewInfo = {};
 	viewInfo.sType							= VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewInfo.image							= image;
-	viewInfo.viewType						= VK_IMAGE_VIEW_TYPE_2D;
+	viewInfo.viewType						= viewType;
 	viewInfo.format							= format;
 	viewInfo.subresourceRange.aspectMask	= aspectFlags;
 	viewInfo.subresourceRange.baseMipLevel	= 0;
 	viewInfo.subresourceRange.levelCount	= 1;
 	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount	= 1;
+	viewInfo.subresourceRange.layerCount	= layers;
 
 	VkImageView imageView;
 	if (vkCreateImageView(m_Device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
@@ -130,6 +130,8 @@ VkImageView DeviceVK::createImageView(VkImage image, VkFormat format, VkImageAsp
 void DeviceVK::createImage(
 	uint32_t width,
 	uint32_t height,
+	uint32_t layers,
+	VkImageCreateFlags flags,
 	VkFormat format,
 	VkImageTiling tiling,
 	VkImageUsageFlags usage,
@@ -140,11 +142,12 @@ void DeviceVK::createImage(
 	VkImageCreateInfo imageInfo = {};
 	imageInfo.sType				= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType			= VK_IMAGE_TYPE_2D;
+	imageInfo.flags				= flags;
 	imageInfo.extent.width		= width;
 	imageInfo.extent.height		= height;
 	imageInfo.extent.depth		= 1;
 	imageInfo.mipLevels			= 1;
-	imageInfo.arrayLayers		= 1;
+	imageInfo.arrayLayers		= layers;
 	imageInfo.format			= format;
 	imageInfo.tiling			= tiling;
 	imageInfo.initialLayout		= VK_IMAGE_LAYOUT_UNDEFINED;

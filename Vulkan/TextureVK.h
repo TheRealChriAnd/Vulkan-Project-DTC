@@ -17,7 +17,7 @@ public:
 	VkImageView getImageView() const;
 
 private:
-	void createTextureImage(DeviceVK* device, const std::string& file);
+	void createTextureImage(DeviceVK* device, const std::string& file, uint32_t layers);
 	void transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	void copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height);
 

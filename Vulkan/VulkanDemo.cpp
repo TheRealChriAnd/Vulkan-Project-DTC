@@ -15,6 +15,7 @@
 #include "StorageBufferVK.h"
 #include "UniformBufferVK.h"
 #include "TextureVK.h"
+#include "SkyBoxVK.h"
 #include "SamplerVK.h"
 #include "CommandBufferVK.h"
 #include "IndexBufferVK.h"
@@ -25,6 +26,7 @@
 #define BINDING_UV 2
 #define BINDING_UNI 3
 #define BINDING_TEXTURE 4
+#define BINDING_SKYBOX 5
 
 std::vector<glm::vec4> pos = {
 	{-0.5f, -0.5f, 0.0f, 1.0f},
@@ -36,6 +38,137 @@ std::vector<glm::vec4> pos = {
 	{0.5f, -0.5f, -0.5f, 1.0f},
 	{0.5f, 0.5f, -0.5f, 1.0f},
 	{-0.5f, 0.5f, -0.5f, 1.0f}
+};
+
+std::vector<glm::vec4>  cubePos = {
+	
+	{-1.0f,-1.0f,-1.0f, 1.0f},  // -X side
+	{-1.0f,-1.0f, 1.0f, 1.0f},
+	{-1.0f, 1.0f, 1.0f, 1.0f},
+	{-1.0f, 1.0f, 1.0f, 1.0f},
+	{-1.0f, 1.0f,-1.0f, 1.0f},
+	{-1.0f,-1.0f,-1.0f, 1.0f},
+					   	   	 
+	{-1.0f,-1.0f,-1.0f, 1.0f},  // -Z side
+	{ 1.0f, 1.0f,-1.0f, 1.0f},
+	{ 1.0f,-1.0f,-1.0f, 1.0f},
+	{-1.0f,-1.0f,-1.0f, 1.0f},
+	{-1.0f, 1.0f,-1.0f, 1.0f},
+	{ 1.0f, 1.0f,-1.0f, 1.0f},
+					   	   	 
+	{-1.0f,-1.0f,-1.0f, 1.0f},  // -Y side
+	{ 1.0f,-1.0f,-1.0f, 1.0f},
+	{ 1.0f,-1.0f, 1.0f, 1.0f},
+	{-1.0f,-1.0f,-1.0f, 1.0f},
+	{ 1.0f,-1.0f, 1.0f, 1.0f},
+	{-1.0f,-1.0f, 1.0f, 1.0f},
+					   	   	 
+	{-1.0f, 1.0f,-1.0f, 1.0f},  // +Y side
+	{-1.0f, 1.0f, 1.0f, 1.0f},
+	{ 1.0f, 1.0f, 1.0f, 1.0f},
+	{-1.0f, 1.0f,-1.0f, 1.0f},
+	{ 1.0f, 1.0f, 1.0f, 1.0f},
+	{ 1.0f, 1.0f,-1.0f, 1.0f},
+					   	   	 
+	{ 1.0f, 1.0f,-1.0f, 1.0f},  // +X side
+	{ 1.0f, 1.0f, 1.0f, 1.0f},
+	{ 1.0f,-1.0f, 1.0f, 1.0f},
+	{ 1.0f,-1.0f, 1.0f, 1.0f},
+	{ 1.0f,-1.0f,-1.0f, 1.0f},
+	{ 1.0f, 1.0f,-1.0f, 1.0f},
+					   	   	 
+	{-1.0f, 1.0f, 1.0f, 1.0f},  // +Z side
+	{-1.0f,-1.0f, 1.0f, 1.0f},
+	{ 1.0f, 1.0f, 1.0f, 1.0f},
+	{-1.0f,-1.0f, 1.0f, 1.0f},
+	{ 1.0f,-1.0f, 1.0f, 1.0f},
+	{ 1.0f, 1.0f, 1.0f, 1.0f}
+};
+
+std::vector<glm::vec4> cubeColor = {
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f},
+
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f},
+
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f},
+
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f},
+
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f},
+
+	{1.0f, 0.0f, 0.0f, 1.0f},
+	{0.0f, 1.0f, 0.0f, 1.0f},
+	{0.0f, 0.0f, 1.0f, 1.0f},
+	{1.0f, 1.0f, 1.0f, 1.0f}
+};
+
+const std::vector<uint16_t> cubeIndices= {
+		0, 1, 2, 0, 2, 3,    // front
+		4, 5, 6, 4, 6, 7,    // back
+		8, 9, 10, 8, 10, 11,   // top
+		12, 13, 14, 12, 14, 15,   // bottom
+		16, 17, 18, 16, 18, 19,   // right
+		20, 21, 22, 20, 22, 23   // left
+};
+
+std::vector<glm::vec2> cubeUv = {
+	
+	{0.0f, 1.0f},  // -X side
+	{1.0f, 1.0f},
+	{1.0f, 0.0f},
+	{1.0f, 0.0f},
+	{0.0f, 0.0f},
+	{0.0f, 1.0f},
+			   
+	{1.0f, 1.0f},  // -Z side
+	{0.0f, 0.0f},
+	{0.0f, 1.0f},
+	{1.0f, 1.0f},
+	{1.0f, 0.0f},
+	{0.0f, 0.0f},
+			   
+	{1.0f, 0.0f},  // -Y side
+	{1.0f, 1.0f},
+	{0.0f, 1.0f},
+	{1.0f, 0.0f},
+	{0.0f, 1.0f},
+	{0.0f, 0.0f},
+		   
+	{1.0f, 0.0f},  // +Y side
+	{0.0f, 0.0f},
+	{0.0f, 1.0f},
+	{1.0f, 0.0f},
+	{0.0f, 1.0f},
+	{1.0f, 1.0f},
+			   
+	{1.0f, 0.0f},  // +X side
+	{0.0f, 0.0f},
+	{0.0f, 1.0f},
+	{0.0f, 1.0f},
+	{1.0f, 1.0f},
+	{1.0f, 0.0f},
+			   
+	{0.0f, 0.0f},  // +Z side
+	{0.0f, 1.0f},
+	{1.0f, 0.0f},
+	{0.0f, 1.0f},
+	{1.0f, 1.0f},
+	{1.0f, 0.0f}
 };
 
 std::vector<glm::vec4> color = {
@@ -75,6 +208,7 @@ struct UniformBufferObject {
 
 void VulkanDemo::init()
 {
+	//Rectangles
 	m_VertexShader = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
 	m_VertexShader->compile();
 
@@ -122,6 +256,60 @@ void VulkanDemo::init()
 	m_DescriptorSet->addTexture(BINDING_TEXTURE, m_Texture, m_Sampler);
 	m_DescriptorSet->submit();
 
+	//SkyBox
+	m_VertexShader1 = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
+	m_VertexShader1->compile();
+
+	m_FragmentShader1 = new ShaderVK(m_Device, "shaders/FragmentShader.glsl", VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_FragmentShader1->compile();
+
+	m_DescriptorSetLayout1 = new DescriptorSetLayoutVK(m_Device);
+	m_DescriptorSetLayout1->addStorageBuffer(BINDING_POS, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout1->addStorageBuffer(BINDING_COLOR, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout1->addStorageBuffer(BINDING_UV, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout1->addUniformBuffer(BINDING_UNI, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout1->addTexture(BINDING_SKYBOX, VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_DescriptorSetLayout1->submit();
+
+	m_Pipeline1 = new PipelineVK(m_Device);
+	m_Pipeline1->addDescriptorLayout(m_DescriptorSetLayout1);
+	m_Pipeline1->addShader(m_VertexShader1);
+	m_Pipeline1->addShader(m_FragmentShader1);
+	m_Pipeline1->submit(m_Device, m_RenderPass, m_SwapChain, VK_POLYGON_MODE_FILL);
+
+	m_Skybox = new SkyBoxVK(m_Device);
+	m_Skybox->loadFromFile("textures/clouds/west.bmp", 0);
+	m_Skybox->loadFromFile("textures/clouds/east.bmp", 1);
+	m_Skybox->loadFromFile("textures/clouds/down.bmp", 2);
+	m_Skybox->loadFromFile("textures/clouds/up.bmp", 3);
+	m_Skybox->loadFromFile("textures/clouds/south.bmp", 4);
+	m_Skybox->loadFromFile("textures/clouds/north.bmp", 5);
+
+	m_SkySampler = new SamplerVK(m_Device);
+
+	m_StorageBufferPos1 = new StorageBufferVK(m_Device);
+	m_StorageBufferPos1->setData(cubePos.data(), sizeof(glm::vec4) * cubePos.size(), 0);
+					  
+	m_StorageBufferNor1 = new StorageBufferVK(m_Device);
+	m_StorageBufferNor1->setData(cubeColor.data(), sizeof(glm::vec4) * cubeColor.size(), 0);
+
+	m_StorageBufferUV1 = new StorageBufferVK(m_Device);
+	m_StorageBufferUV1->setData(cubeUv.data(), sizeof(glm::vec2) * cubeUv.size(), 0);
+
+	m_IndexBuffer1 = new IndexBufferVK(m_Device, cubeIndices);
+
+	m_UniformBuffer1 = new UniformBufferVK(m_Device, m_SwapChain);
+	m_UniformBuffer1->setBufferSize(sizeof(UniformBufferObject));
+
+	m_DescriptorSet1 = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout1);
+	m_DescriptorSet1->addStorageBuffer(BINDING_POS, m_StorageBufferPos, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet1->addStorageBuffer(BINDING_COLOR, m_StorageBufferNor, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet1->addStorageBuffer(BINDING_UV, m_StorageBufferUV, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet1->addUniformBuffer(BINDING_UNI, m_UniformBuffer);
+	m_DescriptorSet1->addSkyBoxTexture(BINDING_SKYBOX, m_Skybox, m_SkySampler);
+	m_DescriptorSet1->submit();
+
+
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
@@ -135,7 +323,22 @@ void VulkanDemo::init()
 		m_CommandBuffer->end(i);
 	}
 
+	//recording SkyBox
+	CommandBufferVK* m_CommandBuffer1 = new CommandBufferVK(m_Device, m_SwapChain);
+	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
+	{
+		m_CommandBuffer->begin(i, (VkCommandBufferUsageFlagBits)0);
+		m_CommandBuffer->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
+		m_CommandBuffer->bindPipeline(i, m_Pipeline1);
+		m_CommandBuffer->bindIndexBuffer(i, m_IndexBuffer1);
+		m_CommandBuffer->bindDescriptorSets(i, m_Pipeline1, { m_DescriptorSet1 });
+		m_CommandBuffer->drawIndexed(i, m_IndexBuffer1);
+		m_CommandBuffer->endRenderPass(i);
+		m_CommandBuffer->end(i);
+	}
+
 	m_CommandBuffers.push_back(m_CommandBuffer);
+	m_CommandBuffers.push_back(m_CommandBuffer1);
 
 	m_Camera = new CameraVK();
 }
