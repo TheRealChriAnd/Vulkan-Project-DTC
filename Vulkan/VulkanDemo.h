@@ -15,6 +15,8 @@ class SamplerVK;
 class CommandBufferVK;
 class IndexBufferVK;
 class CameraVK;
+class MeshVK;
+class GameObject;
 
 class VulkanDemo : public Application
 {
@@ -29,20 +31,18 @@ public:
 
 private:
 	DescriptorSetLayoutVK* m_DescriptorSetLayout;
+	DescriptorSetLayoutVK* m_DescriptorSetLayout2;
 	PipelineVK* m_Pipeline;
-	DescriptorSetVK* m_DescriptorSet;
 	ShaderVK* m_VertexShader;
 	ShaderVK* m_FragmentShader;
-	StorageBufferVK* m_StorageBufferPos;
-	StorageBufferVK* m_StorageBufferNor;
-	StorageBufferVK* m_StorageBufferUV;
 	UniformBufferVK* m_UniformBuffer;
 	TextureVK* m_Texture;
-	SamplerVK* m_Sampler;
 	IndexBufferVK* m_IndexBuffer;
+	DescriptorSetVK* m_DescriptorSet2;
 	CameraVK* m_Camera;
 
-	std::vector<CommandBufferVK*> m_CommandBuffers;
+	MeshVK* m_Mesh;
+	GameObject* m_GameObject;
 
-	float m_Rotation;
+	std::vector<CommandBufferVK*> m_CommandBuffers;
 };

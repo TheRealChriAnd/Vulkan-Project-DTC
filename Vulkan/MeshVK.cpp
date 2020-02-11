@@ -14,5 +14,27 @@ MeshVK::MeshVK(DeviceVK* device, const std::vector<glm::vec4>& positions, const 
 
 MeshVK::~MeshVK()
 {
-	
+	delete m_StorageBufferPos;
+	delete m_StorageBufferUV;
+}
+
+MeshVK* MeshVK::createPlane(DeviceVK* device)
+{
+	std::vector<glm::vec4> pos =
+	{
+		{-0.5f, -0.5f, 0.0f, 1.0f},
+		{0.5f, -0.5f, 0.0f, 1.0f},
+		{0.5f, 0.5f, 0.0f, 1.0f},
+		{-0.5f, 0.5f, 0.0f, 1.0f}
+	};
+
+	std::vector<glm::vec2> uv =
+	{
+		{0.0f, 0.0f},
+		{1.0f, 0.0f},
+		{1.0f, 1.0f},
+		{0.0f, 1.0f}
+	};
+
+	return new MeshVK(device, pos, uv);
 }

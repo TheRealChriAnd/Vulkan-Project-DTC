@@ -19,6 +19,8 @@
 #include "CommandBufferVK.h"
 #include "IndexBufferVK.h"
 #include "CameraVK.h"
+#include "GameObject.h"
+#include "MeshVK.h"
 
 #define BINDING_POS 0
 #define BINDING_COLOR 1
@@ -26,49 +28,12 @@
 #define BINDING_UNI 3
 #define BINDING_TEXTURE 4
 
-std::vector<glm::vec4> pos = {
-	{-0.5f, -0.5f, 0.0f, 1.0f},
-	{0.5f, -0.5f, 0.0f, 1.0f},
-	{0.5f, 0.5f, 0.0f, 1.0f},
-	{-0.5f, 0.5f, 0.0f, 1.0f},
-
-	{-0.5f, -0.5f, -0.5f, 1.0f},
-	{0.5f, -0.5f, -0.5f, 1.0f},
-	{0.5f, 0.5f, -0.5f, 1.0f},
-	{-0.5f, 0.5f, -0.5f, 1.0f}
-};
-
-std::vector<glm::vec4> color = {
-	{1.0f, 0.0f, 0.0f, 1.0f},
-	{0.0f, 1.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f, 1.0f},
-	{1.0f, 1.0f, 1.0f, 1.0f},
-
-	{1.0f, 0.0f, 0.0f, 1.0f},
-	{0.0f, 1.0f, 0.0f, 1.0f},
-	{0.0f, 0.0f, 1.0f, 1.0f},
-	{1.0f, 1.0f, 1.0f, 1.0f}
-};
-
-std::vector<glm::vec2> uv = {
-	{0.0f, 0.0f},
-	{1.0f, 0.0f},
-	{1.0f, 1.0f},
-	{0.0f, 1.0f},
-
-	{0.0f, 0.0f},
-	{1.0f, 0.0f},
-	{1.0f, 1.0f},
-	{0.0f, 1.0f}
-};
-
 const std::vector<uint16_t> indices = {
 	0, 1, 2, 2, 3, 0,
 	4, 5, 6, 6, 7, 4
 };
 
 struct UniformBufferObject {
-	alignas(16) glm::mat4 model;
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
 };
@@ -82,14 +47,18 @@ void VulkanDemo::init()
 	m_FragmentShader->compile();
 
 	m_DescriptorSetLayout = new DescriptorSetLayoutVK(m_Device);
-	m_DescriptorSetLayout->addStorageBuffer(BINDING_POS, VK_SHADER_STAGE_VERTEX_BIT);
-	m_DescriptorSetLayout->addStorageBuffer(BINDING_COLOR, VK_SHADER_STAGE_VERTEX_BIT);
-	m_DescriptorSetLayout->addStorageBuffer(BINDING_UV, VK_SHADER_STAGE_VERTEX_BIT);
-	m_DescriptorSetLayout->addUniformBuffer(BINDING_UNI, VK_SHADER_STAGE_VERTEX_BIT);
-	m_DescriptorSetLayout->addTexture(BINDING_TEXTURE, VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_DescriptorSetLayout->addStorageBuffer(0, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout->addStorageBuffer(1, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout->addUniformBuffer(2, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout->addTexture(3, VK_SHADER_STAGE_FRAGMENT_BIT);
 	m_DescriptorSetLayout->submit();
 
+	m_DescriptorSetLayout2 = new DescriptorSetLayoutVK(m_Device);
+	m_DescriptorSetLayout2->addUniformBuffer(0, VK_SHADER_STAGE_VERTEX_BIT);
+	m_DescriptorSetLayout2->submit();
+
 	m_Pipeline = new PipelineVK(m_Device);
+	m_Pipeline->addDescriptorLayout(m_DescriptorSetLayout2);
 	m_Pipeline->addDescriptorLayout(m_DescriptorSetLayout);
 	m_Pipeline->addShader(m_VertexShader);
 	m_Pipeline->addShader(m_FragmentShader);
@@ -98,28 +67,16 @@ void VulkanDemo::init()
 	m_Texture = new TextureVK(m_Device);
 	m_Texture->loadFromFile("textures/fatboy.png");
 
-	m_Sampler = new SamplerVK(m_Device);
-
-	m_StorageBufferPos = new StorageBufferVK(m_Device);
-	m_StorageBufferPos->setData(pos.data(), sizeof(glm::vec4) * pos.size(), 0);
-
-	m_StorageBufferNor = new StorageBufferVK(m_Device);
-	m_StorageBufferNor->setData(color.data(), sizeof(glm::vec4) * color.size(), 0);
-
-	m_StorageBufferUV = new StorageBufferVK(m_Device);
-	m_StorageBufferUV->setData(uv.data(), sizeof(glm::vec2) * uv.size(), 0);
-
 	m_IndexBuffer = new IndexBufferVK(m_Device, indices);
 
 	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(UniformBufferObject));
 
-	m_DescriptorSet = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout);
-	m_DescriptorSet->addStorageBuffer(BINDING_POS, m_StorageBufferPos, VK_WHOLE_SIZE, 0);
-	m_DescriptorSet->addStorageBuffer(BINDING_COLOR, m_StorageBufferNor, VK_WHOLE_SIZE, 0);
-	m_DescriptorSet->addStorageBuffer(BINDING_UV, m_StorageBufferUV, VK_WHOLE_SIZE, 0);
-	m_DescriptorSet->addUniformBuffer(BINDING_UNI, m_UniformBuffer);
-	m_DescriptorSet->addTexture(BINDING_TEXTURE, m_Texture, m_Sampler);
-	m_DescriptorSet->submit();
+	m_DescriptorSet2 = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout2);
+	m_DescriptorSet2->addUniformBuffer(0, m_UniformBuffer);
+	m_DescriptorSet2->submit();
+
+	m_Mesh = MeshVK::createPlane(m_Device);
+	m_GameObject = new GameObject(m_DescriptorSetLayout, m_Mesh, m_Texture);
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
@@ -128,7 +85,7 @@ void VulkanDemo::init()
 		m_CommandBuffer->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
 		m_CommandBuffer->bindPipeline(i, m_Pipeline);
 		m_CommandBuffer->bindIndexBuffer(i, m_IndexBuffer);
-		m_CommandBuffer->bindDescriptorSets(i, m_Pipeline, { m_DescriptorSet });
+		m_CommandBuffer->bindDescriptorSets(i, m_Pipeline, { m_DescriptorSet2, m_GameObject->m_DescriptorSet });
 		m_CommandBuffer->drawIndexed(i, m_IndexBuffer);
 		m_CommandBuffer->endRenderPass(i);
 		m_CommandBuffer->end(i);
@@ -142,10 +99,11 @@ void VulkanDemo::init()
 void VulkanDemo::update(float deltaSeconds)
 {
 	m_Camera->update(deltaSeconds);
-	m_Rotation += deltaSeconds;
+
 	UniformBufferObject ubo = {};
-	ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(m_Rotation * 50), glm::vec3(0.0f, 0.0f, 1.0f));
-	//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_GameObject->rotate(deltaSeconds, glm::vec3(0, 0, 1.0F));
+	m_GameObject->applyTransform();
+
 	ubo.view = m_Camera->getView();
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
@@ -166,14 +124,13 @@ void VulkanDemo::shutdown()
 	delete m_Camera;
 	delete m_VertexShader;
 	delete m_FragmentShader;
-	delete m_StorageBufferPos;
-	delete m_StorageBufferNor;
-	delete m_StorageBufferUV;
 	delete m_UniformBuffer;
 	delete m_Texture;
-	delete m_Sampler;
 	delete m_IndexBuffer;
-	delete m_DescriptorSet;
 	delete m_DescriptorSetLayout;
+	delete m_DescriptorSetLayout2;
+	delete m_DescriptorSet2;
 	delete m_Pipeline;
+	delete m_Mesh;
+	delete m_GameObject;
 }
