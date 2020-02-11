@@ -41,7 +41,7 @@ void DescriptorSetVK::addUniformBuffer(uint32_t binding, UniformBufferVK* unifor
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		VkDescriptorBufferInfo* bufferInfo = new VkDescriptorBufferInfo();
-		bufferInfo->buffer	= uniformBuffer->getBuffer(i);
+		bufferInfo->buffer	= uniformBuffer->getVKBuffer();
 		bufferInfo->offset	= 0;
 		bufferInfo->range	= uniformBuffer->getSize();
 

@@ -11,8 +11,7 @@ public:
 	TextureVK(DeviceVK* device);
 	~TextureVK();
 
-	virtual int loadFromFile(std::string filename);
-	virtual void bind(unsigned int slot);
+	int loadFromFile(std::string filename);
 
 	VkImageView getImageView() const;
 

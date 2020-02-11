@@ -74,8 +74,6 @@ void CameraVK::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 	m_Direction.z = glm::sin(m_Yaw) * glm::cos(m_Pitch);
 
 	m_Front = glm::normalize(m_Direction);
-	std::cout << "Pitch: " << m_Pitch << std::endl;
-	std::cout << "Yaw: " << m_Yaw << std::endl;
 
 	updateCamera();
 }
