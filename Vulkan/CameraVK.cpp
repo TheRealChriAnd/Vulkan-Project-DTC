@@ -9,9 +9,12 @@ CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 	m_Front		= glm::vec3(0.0f, 0.0f, -1.0f);
 	m_Up		= glm::vec3(0.0f, 1.0f, 0.0f);
 	m_ViewMatrix = glm::lookAt(m_Position, m_Front, m_Up);
+	m_Yaw = glm::pi<float>()/2.0f;
+	m_Pitch = glm::pi<float>();
 
 	m_Sensitivity = sensitivity;
 	m_CameraSpeed = speed;
+
 
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
@@ -23,9 +26,15 @@ CameraVK::CameraVK()
 	m_Front = glm::vec3(0.0f, 0.0f, -1.0f);
 	m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
 	m_ViewMatrix = glm::lookAt(m_Position, m_Front, m_Up);
+	m_Yaw = -glm::pi<float>() / 2.0f;
+	m_Pitch = 0;
 
-	m_Sensitivity = 1.00f;
-	m_CameraSpeed = 0.05f;
+
+	m_Sensitivity = 0.005f;
+	m_CameraSpeed = 0.005f;
+
+	onMouseMove(glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
+
 
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
@@ -55,20 +64,24 @@ void CameraVK::onMouseButtonRelease(int button)
 void CameraVK::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 {
 	m_Yaw += offset.x * m_Sensitivity;
-	m_Pitch += offset.y * m_Sensitivity;
+	m_Pitch -= offset.y * m_Sensitivity;
 
-	if (m_Pitch > 89.0f)
-		m_Pitch = 89.0f;
-	if (m_Pitch < -89.0f)
-		m_Pitch = -89.0f;
+	m_Pitch = glm::clamp(m_Pitch, -glm::pi<float>() / 2.0f + 0.0001f, glm::pi<float>() / 2.0f - 0.0001f);
 
-	m_Direction.x = glm::cos(glm::radians(m_Yaw)) * glm::cos(glm::radians(m_Pitch));
-	m_Direction.y = sin(glm::radians(m_Pitch));
-	m_Direction.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
+
+	m_Direction.x = glm::cos(m_Yaw) * glm::cos(m_Pitch);
+	m_Direction.y = glm::sin(m_Pitch);
+	m_Direction.z = glm::sin(m_Yaw) * glm::cos(m_Pitch);
 
 	m_Front = glm::normalize(m_Direction);
 	std::cout << "Pitch: " << m_Pitch << std::endl;
 	std::cout << "Yaw: " << m_Yaw << std::endl;
+
+	//direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	//direction.y = sin(glm::radians(pitch));
+	//direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	//cameraFront = glm::normalize(direction);
+
 	updateCamera();
 }
 

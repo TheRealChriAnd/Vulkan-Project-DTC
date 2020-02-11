@@ -24,6 +24,7 @@ void InputVK::init(WindowVK* window)
 	m_Window = window;
 	glfwSetKeyCallback(m_Window->getHandle(), keyInput);
 	glfwSetCursorPosCallback(m_Window->getHandle(), mouseInput);
+	glfwSetInputMode(m_Window->getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	m_LastPos = getMousePosition();
 }
 
@@ -49,10 +50,19 @@ void InputVK::keyInput(
 	}
 }
 
+
+bool first = true;
+
+
 void InputVK::mouseInput(GLFWwindow* window, double xpos, double ypos) 
 {
 	glm::vec2 pos(xpos, ypos);
 	glm::vec2 offset = pos - m_LastPos;
+	if (first)
+	{
+		offset = glm::vec2(0.0f, 0.0f);
+		first = false;
+	}
 	for (IMouseListener* listener : m_MouseListeners)
 		listener->onMouseMove(pos, offset);
 	m_LastPos = pos;
@@ -87,6 +97,9 @@ const glm::vec2& InputVK::getMousePosition()
 {
 	double x;
 	double y;
+	int wx;
+	int wy;
+	glfwGetWindowPos(m_Window->getHandle(), &wx, &wy);
 	glfwGetCursorPos(m_Window->getHandle(), &x, &y);
-	return glm::vec2(x, y);
+	return glm::vec2(x + wx, y + wy);
 }

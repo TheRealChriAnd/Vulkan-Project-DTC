@@ -20,7 +20,7 @@ Application::Application()
 
 void Application::run()
 {
-	m_Window = new WindowVK("Vulkan Project", 800, 600);
+	m_Window = new WindowVK("Vulkan Project", 1080, 720);
 	m_Device = new DeviceVK(m_Window, enableValidationLayers);
 	m_SwapChain = new SwapChainVK(m_Window, m_Device);
 	m_RenderPass = new RenderPassVK(m_Device, m_SwapChain);
