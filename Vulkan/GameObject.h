@@ -28,12 +28,15 @@ private:
 	static void init(DeviceVK* device, SwapChainVK* swapChain);
 	static void shutdown();
 
+public:
+	DescriptorSetVK* m_DescriptorSet;
+
 private:
 	MeshVK* m_Mesh;
 	TextureVK* m_Texture;
 	SamplerVK* m_Sampler;
 	UniformBufferVK* m_UniformBuffer;
-	DescriptorSetVK* m_DescriptorSet;
+
 	glm::mat4 m_Transform;
 
 	static SamplerVK* m_SamplerDefault;
