@@ -203,7 +203,6 @@
     <ClInclude Include="IndexBufferVK.h" />
     <ClInclude Include="InputVK.h" />
     <ClInclude Include="LightVK.h" />
-    <ClInclude Include="MaterialVK.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PipelineVK.h" />

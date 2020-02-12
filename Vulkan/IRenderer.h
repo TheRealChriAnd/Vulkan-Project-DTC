@@ -1,5 +1,6 @@
 #pragma once
 #include <set>
+#include <vector>
 
 class DeviceVK;
 class SwapChainVK;
