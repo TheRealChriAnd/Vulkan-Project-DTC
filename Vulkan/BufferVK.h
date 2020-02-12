@@ -5,13 +5,13 @@ class DeviceVK;
 
 class BufferVK
 {
-	friend class UniformBufferVK;
-
 public:
-	BufferVK(DeviceVK* device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDeviceMemory& bufferMemory);
+	BufferVK(DeviceVK* device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 	~BufferVK();
 
-	void copyToBuffer(DeviceVK* device, BufferVK* dstBuffer, VkDeviceSize size);
+	void writeData(const void* data, uint32_t length);
+
+	void copyToBuffer(BufferVK* dstBuffer, VkDeviceSize size);
 	VkBuffer getBuffer() const;
 
 private:
@@ -19,6 +19,7 @@ private:
 	
 private:
 	VkBuffer m_Buffer;
+	VkDeviceMemory m_Memory;
 
 	DeviceVK* m_Device;
 };

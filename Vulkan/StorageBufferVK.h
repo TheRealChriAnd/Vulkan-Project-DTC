@@ -21,7 +21,6 @@ public:
 
 private:
 	BufferVK* m_pBuffer;
-	VkDeviceMemory m_BufferMemory;
 	VkDeviceSize m_Size;
 
 	DeviceVK* m_Device;

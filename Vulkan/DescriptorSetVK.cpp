@@ -3,6 +3,7 @@
 #include "SwapChainVK.h"
 #include "DescriptorSetLayoutVK.h"
 #include "TextureVK.h"
+#include "SkyBoxVK.h"
 #include "UniformBufferVK.h"
 #include "SamplerVK.h"
 #include "StorageBufferVK.h"
@@ -40,7 +41,7 @@ void DescriptorSetVK::addUniformBuffer(uint32_t binding, UniformBufferVK* unifor
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		VkDescriptorBufferInfo* bufferInfo = new VkDescriptorBufferInfo();
-		bufferInfo->buffer	= uniformBuffer->getBuffer(i);
+		bufferInfo->buffer	= uniformBuffer->getVKBuffer();
 		bufferInfo->offset	= 0;
 		bufferInfo->range	= uniformBuffer->getSize();
 
@@ -76,6 +77,29 @@ void DescriptorSetVK::addTexture(uint32_t binding, TextureVK* texture, SamplerVK
 		descriptorWriter.descriptorCount	= 1;
 		descriptorWriter.pImageInfo			= imageInfo;
 		descriptorWriter.pBufferInfo		= nullptr;
+
+		m_PendingWrites.push_back(descriptorWriter);
+	}
+}
+
+void DescriptorSetVK::addSkyBoxTexture(uint32_t binding, SkyBoxVK* texture, SamplerVK* sampler)
+{
+	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
+	{
+		VkDescriptorImageInfo* imageInfo = new VkDescriptorImageInfo();
+		imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo->imageView = texture->getImageView();
+		imageInfo->sampler = sampler->getSampler();
+
+		VkWriteDescriptorSet descriptorWriter = {};
+		descriptorWriter.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWriter.dstSet = m_DescriptorSets[i];
+		descriptorWriter.dstBinding = binding;
+		descriptorWriter.dstArrayElement = 0;
+		descriptorWriter.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWriter.descriptorCount = 1;
+		descriptorWriter.pImageInfo = imageInfo;
+		descriptorWriter.pBufferInfo = nullptr;
 
 		m_PendingWrites.push_back(descriptorWriter);
 	}

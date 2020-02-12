@@ -6,7 +6,6 @@
 class DeviceVK;
 class BufferVK;
 
-
 class IndexBufferVK
 {
 public:
@@ -23,7 +22,6 @@ private:
 
 private:
 	BufferVK* m_pBuffer;
-	VkDeviceMemory m_BufferMemory;
 	int m_Count;
 
 	DeviceVK* m_Device;

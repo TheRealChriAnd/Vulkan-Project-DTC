@@ -10,6 +10,7 @@
 #include "RenderPassVK.h"
 #include "CommandBufferVK.h"
 #include "InputVK.h"
+#include "UniformBufferVK.h"
 
 #include <chrono>
 
@@ -20,7 +21,7 @@ Application::Application()
 
 void Application::run()
 {
-	m_Window = new WindowVK("Vulkan Project", 800, 600);
+	m_Window = new WindowVK("Vulkan Project", 1080, 720);
 	m_Device = new DeviceVK(m_Window, enableValidationLayers);
 	m_SwapChain = new SwapChainVK(m_Window, m_Device);
 	m_RenderPass = new RenderPassVK(m_Device, m_SwapChain);
@@ -45,7 +46,7 @@ void Application::run()
 		uint32_t imageIndex = m_SwapChain->acquireNextImage(m_ImageAvailableSemaphores[currentFrame], currentFrame);
 
 		this->update(delta);
-
+		UniformBufferVK::transfer();
 		drawFrame(imageIndex);
 	}
 

@@ -8,13 +8,13 @@ class BufferVK;
 class TextureVK
 {
 public:
-	TextureVK(DeviceVK* device);
+	TextureVK(DeviceVK* device, uint32_t layers);
 	~TextureVK();
 
-	virtual int loadFromFile(std::string filename);
-	virtual void bind(unsigned int slot);
+	int loadFromFile(std::string filename);
 
 	VkImageView getImageView() const;
+	uint32_t getImageLayers() const;
 
 private:
 	void createTextureImage(DeviceVK* device, const std::string& file);
@@ -26,5 +26,6 @@ private:
 	VkImageView m_ImageView;
 	VkDeviceMemory m_ImageMemory;
 
+	uint32_t m_Layers;
 	DeviceVK* m_Device;
 };

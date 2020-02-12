@@ -49,8 +49,8 @@ public:
 	void waitForFence(const VkFence* fence) const;
 	SwapChainSupportDetails querySwapChainSupport();
 	QueueFamilyIndices findQueueFamilies();
-	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage & image, VkDeviceMemory & imageMemory);
+	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layers);
+	void createImage(uint32_t width, uint32_t height, uint32_t layers, VkImageCreateFlags flags, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage & image, VkDeviceMemory & imageMemory);
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 	VkInstance getInstance() const;
