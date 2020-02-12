@@ -16,8 +16,9 @@ class CommandBufferVK;
 class IndexBufferVK;
 class CameraVK;
 class SkyBoxVK;
-class MeshVK;
-class GameObject;
+class Mesh;
+class GameObjectSimple;
+class RendererSimple;
 
 class VulkanDemo : public Application
 {
@@ -55,8 +56,9 @@ private:
 	SkyBoxVK* m_Skybox;
 	SamplerVK* m_SkySampler;
 
-	MeshVK* m_Mesh;
-	GameObject* m_GameObject;
+	Mesh* m_Mesh;
+	GameObjectSimple* m_GameObject;
+	RendererSimple* m_RendererSimple;
 
 	std::vector<CommandBufferVK*> m_CommandBuffers;
 };

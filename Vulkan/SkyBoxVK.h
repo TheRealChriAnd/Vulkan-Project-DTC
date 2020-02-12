@@ -11,7 +11,7 @@ class DescriptorSetVK;
 class DescriptorSetLayoutVK;
 class PipelineVK;
 class SamplerVK;
-class MeshVK;
+class Mesh;
 class GameObject;
 class CommandBufferVK;
 
@@ -26,7 +26,7 @@ public:
 
 	VkImageView getImageView() const;
 	GameObject* getGameObject() const;
-	MeshVK* getMesh() const;
+	Mesh* getMesh() const;
 	DescriptorSetVK* getDescriptorSet() const;
 	PipelineVK* getPipeline() const;
 	CommandBufferVK* getCommandBuffer() const;
@@ -54,7 +54,7 @@ private:
 	ShaderVK* m_FragmentShader;
 
 	PipelineVK* m_Pipeline;
-	MeshVK* m_Mesh;
+	Mesh* m_Mesh;
 	GameObject* m_GameObject;
 	SamplerVK* m_Sampler;
 	CommandBufferVK* m_CommandBuffer;

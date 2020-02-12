@@ -10,7 +10,6 @@
 #include "RenderPassVK.h"
 #include "CommandBufferVK.h"
 #include "InputVK.h"
-#include "GameObject.h"
 #include "UniformBufferVK.h"
 
 #include <chrono>
@@ -31,7 +30,6 @@ void Application::run()
 
 	createSyncObjects();
 
-	GameObject::init(m_Device, m_SwapChain);
 	InputVK::init(m_Window);
 	this->init();
 
@@ -58,8 +56,6 @@ void Application::run()
 void Application::shutdownInternal()
 {
 	vkDeviceWaitIdle(m_Device->getDevice());
-
-	GameObject::shutdown();
 
 	this->shutdown();
 

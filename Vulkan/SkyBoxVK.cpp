@@ -9,7 +9,7 @@
 #include "ShaderVK.h"
 #include "SwapChainVK.h"
 #include "RenderPassVK.h"
-#include "MeshVK.h"
+#include "Mesh.h"
 #include "SamplerVK.h"
 #include "GameObject.h"
 #include "stb_image.h"
@@ -28,8 +28,8 @@ SkyBoxVK::SkyBoxVK(DeviceVK* device, SwapChainVK* swapChain, RenderPassVK* rende
 
 	//m_Sampler = new SamplerVK(m_Device);
 
-	m_Mesh = MeshVK::createCube(m_Device);
-	m_GameObject = new GameObject(m_DescriptorSetLayout, m_Mesh, this);
+	m_Mesh = Mesh::createCube(m_Device);
+	//m_GameObject = new GameObject(m_DescriptorSetLayout, m_Mesh, this);
 
 	//görs i Gameobject/Mesh
 	//m_DescriptorSet = new DescriptorSetVK(m_Device, swapChain, m_DescriptorSetLayout1);
@@ -71,7 +71,7 @@ GameObject* SkyBoxVK::getGameObject() const
 	return m_GameObject;
 }
 
-MeshVK* SkyBoxVK::getMesh() const
+Mesh* SkyBoxVK::getMesh() const
 {
 	return m_Mesh;
 }
@@ -228,7 +228,7 @@ void SkyBoxVK::initPipeline(SwapChainVK* swapChain, RenderPassVK* renderPass)
 
 void SkyBoxVK::recordCommandBuffer(SwapChainVK* swapChain, RenderPassVK* renderPass)
 {
-	CommandBufferVK* m_CommandBuffer1 = new CommandBufferVK(m_Device, swapChain);
+	/*CommandBufferVK* m_CommandBuffer1 = new CommandBufferVK(m_Device, swapChain);
 	for (size_t i = 0; i < swapChain->getCount(); i++)
 	{
 		m_CommandBuffer1->begin(i, (VkCommandBufferUsageFlagBits)0);
@@ -239,5 +239,5 @@ void SkyBoxVK::recordCommandBuffer(SwapChainVK* swapChain, RenderPassVK* renderP
 		m_CommandBuffer1->drawIndexed(i, m_Mesh->m_IndexBuffer);
 		m_CommandBuffer1->endRenderPass(i);
 		m_CommandBuffer1->end(i);
-	}
+	}*/
 }
