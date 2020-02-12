@@ -6,6 +6,7 @@
 #define BINDING_UVS 2
 #define BINDING_UBO 3
 #define BINDING_TEX 4
+#define BINDING_UCL 0
 
 layout(set=1, binding = BINDING_POS) buffer pos 
 {
@@ -20,19 +21,24 @@ layout(set=1, binding = BINDING_NOR) buffer nor
 layout(set=1, binding = BINDING_UVS) buffer inTexCoord { vec2 uv_in[]; };
 layout(location = BINDING_UVS) out vec2 fragTexCoord;
 
-layout(set=1, binding = BINDING_UBO) uniform UniformBufferObject
+layout(set=1, binding = BINDING_UBO) uniform UniformObject
 {
 	mat4 model;
-} ubo;
+} uo;
 
-layout(set=0, binding=0) uniform UniformBufferObject2
+layout(set=0, binding = BINDING_UCL) uniform UniformCameraLight
 {
 	mat4 view;
 	mat4 proj;
-} ubo2;
+	vec4 dir;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	vec4 camPos;
+} ucl;
 
 void main() {
-	gl_Position = ubo2.proj * ubo2.view * ubo.model * position_in[gl_VertexIndex];
+	gl_Position = ucl.proj * ucl.view * uo.model * position_in[gl_VertexIndex];
     fragTexCoord = uv_in[gl_VertexIndex];
 	vec4 jaFim = normals_in[gl_VertexIndex];
 	float f = jaFim.x + 8;

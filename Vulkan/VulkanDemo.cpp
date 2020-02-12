@@ -71,7 +71,7 @@ void VulkanDemo::update(float deltaSeconds)
 	m_GameObject->rotate(deltaSeconds, glm::vec3(0, 0, 1.0F));
 	m_GameObject->applyTransform();
 
-	m_RendererSimple->test(m_Camera);
+	m_RendererSimple->update(deltaSeconds, m_Camera);
 }
 
 const std::vector<CommandBufferVK*>& VulkanDemo::frame()

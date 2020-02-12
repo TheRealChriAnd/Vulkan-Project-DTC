@@ -21,6 +21,7 @@ public:
 	CameraVK();
 	~CameraVK();
 
+	const glm::vec3& getPosition() const;
 	const glm::mat4& getView() const;
 
 	virtual void onMouseButtonPressed(int button) override;

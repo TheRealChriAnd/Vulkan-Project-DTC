@@ -3,6 +3,7 @@
 
 #define BINDING_UVS 2
 #define BINDING_TEX 4
+#define BINDING_UCL 0
 
 struct Light {
     vec4 direction;
@@ -18,12 +19,19 @@ layout(location = 0) out vec4 outColor;
 
 layout(set=1, binding = BINDING_TEX) uniform sampler2D texSampler;
 
-//layout(binding=BINDING_LIGHT) uniform UBO
-//{
-//    Light light;
-//} ubo;
+layout(set=0, binding = BINDING_UCL) uniform UniformCameraLight
+{
+	mat4 view;
+	mat4 proj;
+	vec4 dir;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+    vec4 camPos;
+} ucl;
 
-void main() {
+void main()
+ {
 
     //ambient
     //vec3 ambient = ubo.light.ambient * texture(||material.diffuse, fragTexCoord).rgb;

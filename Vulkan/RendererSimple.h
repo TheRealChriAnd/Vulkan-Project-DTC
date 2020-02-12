@@ -23,7 +23,7 @@ public:
 
 	GameObjectSimple* createGameObject(Mesh* mesh, TextureVK* texture, SamplerVK* smapler);
 
-	void test(CameraVK* camera);
+	virtual void update(float deltaSeconds, CameraVK* camera) override;
 
 protected:
 	PipelineVK* m_Pipeline;

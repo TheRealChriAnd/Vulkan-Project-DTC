@@ -46,6 +46,11 @@ CameraVK::~CameraVK()
 	InputVK::removeMouseListener(this);
 }
 
+const glm::vec3& CameraVK::getPosition() const
+{
+	return m_Position;
+}
+
 const glm::mat4& CameraVK::getView() const
 {
 	return m_ViewMatrix;

@@ -8,6 +8,7 @@ class RenderPassVK;
 class CommandBufferVK;
 class GameObject;
 class LightVK;
+class CameraVK;
 
 class IRenderer
 {
@@ -16,8 +17,9 @@ public:
 	virtual ~IRenderer();
 
 	virtual void init() = 0;
-
 	virtual void render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects) = 0;
+	virtual void update(float deltaSeconds, CameraVK* camera) = 0;
+
 	void addLight(LightVK* light);
 protected:
 	DeviceVK* m_Device;

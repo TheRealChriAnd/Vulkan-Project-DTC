@@ -1,3 +1,4 @@
+#include <glm/gtc/matrix_transform.hpp>
 #include "RendererSimple.h"
 #include "PipelineVK.h"
 #include "ShaderVK.h"
@@ -10,6 +11,7 @@
 #include "Mesh.h"
 #include "GameObjectSimple.h"
 #include "CameraVK.h"
+#include "LightVK.h"
 
 #define BINDING_POS 0
 #define BINDING_NOR 1
@@ -17,10 +19,19 @@
 #define BINDING_UBO 3
 #define BINDING_TEX 4
 
+#define BINDING_UCL 0
+
 struct UniformBufferObject
 {
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;
+
+	glm::vec4 dir;
+	glm::vec4 ambient;
+	glm::vec4 diffuse;
+	glm::vec4 specular;
+
+	glm::vec4 camPos;
 };
 
 RendererSimple::RendererSimple(DeviceVK* device, SwapChainVK* swapChain, RenderPassVK* renderPass) : IRenderer(device, swapChain, renderPass)
@@ -42,7 +53,7 @@ RendererSimple::~RendererSimple()
 void RendererSimple::init()
 {
 	m_LayoutCamera = new DescriptorSetLayoutVK(m_Device);
-	m_LayoutCamera->addUniformBuffer(0, VK_SHADER_STAGE_VERTEX_BIT);
+	m_LayoutCamera->addUniformBuffer(BINDING_UCL, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	m_LayoutCamera->submit();
 
 	m_LayoutObject = new DescriptorSetLayoutVK(m_Device);
@@ -56,7 +67,7 @@ void RendererSimple::init()
 	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(UniformBufferObject));
 
 	m_DescriptorSetPerFrame = new DescriptorSetVK(m_Device, m_SwapChain, m_LayoutCamera);
-	m_DescriptorSetPerFrame->addUniformBuffer(0, m_UniformBuffer);
+	m_DescriptorSetPerFrame->addUniformBuffer(BINDING_UCL, m_UniformBuffer);
 	m_DescriptorSetPerFrame->submit();
 
 	m_ShaderVertex = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
@@ -103,15 +114,23 @@ GameObjectSimple* RendererSimple::createGameObject(Mesh* mesh, TextureVK* textur
 	return new GameObjectSimple(descriptorSet, mesh, uniformBuffer, texture, sampler);
 }
 
-#include <glm/gtc/matrix_transform.hpp>
-
-void RendererSimple::test(CameraVK* camera)
+void RendererSimple::update(float deltaSeconds, CameraVK* camera)
 {
 	UniformBufferObject ubo = {};
 
+	ubo.camPos = glm::vec4(camera->getPosition(), 1.0F);
 	ubo.view = camera->getView();
 	ubo.proj = glm::perspective(glm::radians(45.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.1f, 10.0f);
 	ubo.proj[1][1] *= -1;
+
+	if (!m_Lights.empty())
+	{
+		LightVK* light = *m_Lights.begin();
+		ubo.dir = glm::vec4(light->getDir(), 1.0F);
+		ubo.ambient = glm::vec4(light->getAmbient(), 1.0F);
+		ubo.diffuse = glm::vec4(light->getDiffuse(), 1.0F);
+		ubo.specular = glm::vec4(light->getSpecular(), 1.0F);
+	}
 
 	m_UniformBuffer->setData(&ubo);
 }
