@@ -32,26 +32,20 @@ public:
 
 private:
 	DescriptorSetLayoutVK* m_DescriptorSetLayout;
-	DescriptorSetLayoutVK* m_DescriptorSetLayout1;
+
 	PipelineVK* m_Pipeline;
 	PipelineVK* m_Pipeline1;
 	DescriptorSetVK* m_DescriptorSet;
-	DescriptorSetVK* m_DescriptorSet1;
+
 	ShaderVK* m_VertexShader;
 	ShaderVK* m_FragmentShader;
-	ShaderVK* m_VertexShader1;
-	ShaderVK* m_FragmentShader1;
+
 	StorageBufferVK* m_StorageBufferPos;
 	StorageBufferVK* m_StorageBufferNor;
 	StorageBufferVK* m_StorageBufferUV;
 	DescriptorSetLayoutVK* m_DescriptorSetLayout2;
-	PipelineVK* m_Pipeline;
-	ShaderVK* m_VertexShader;
-	ShaderVK* m_FragmentShader;
 	UniformBufferVK* m_UniformBuffer;
-	StorageBufferVK* m_StorageBufferPos1;
-	StorageBufferVK* m_StorageBufferNor1;
-	StorageBufferVK* m_StorageBufferUV1;
+	StorageBufferVK* m_StorageBufferCol1;
 	UniformBufferVK* m_UniformBuffer1;
 	TextureVK* m_Texture;
 	IndexBufferVK* m_IndexBuffer;

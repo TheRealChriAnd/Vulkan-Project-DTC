@@ -5,6 +5,7 @@
 #include "DeviceVK.h"
 #include "DescriptorSetVK.h"
 #include "TextureVK.h"
+#include "SkyBoxVK.h"
 #include "SamplerVK.h"
 #include "SwapChainVK.h"
 #include "UniformBufferVK.h"
@@ -31,6 +32,25 @@ GameObject::GameObject(DescriptorSetLayoutVK* layout, MeshVK* mesh, TextureVK* t
 	m_DescriptorSet->addStorageBuffer(1, mesh->m_StorageBufferUV, VK_WHOLE_SIZE, 0);
 	m_DescriptorSet->addUniformBuffer(2, m_UniformBuffer);
 	m_DescriptorSet->addTexture(3, texture, sampler);
+	m_DescriptorSet->submit();
+}
+
+GameObject::GameObject(DescriptorSetLayoutVK* layout, MeshVK* mesh, SkyBoxVK* texture, SamplerVK* sampler)
+{
+	m_Mesh = mesh;
+	//m_Texture = texture;
+	m_Sampler = sampler;
+
+	m_Transform = glm::mat4(1.0F);
+
+	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(glm::mat4));
+	m_UniformBuffer->setData(&m_Transform);
+
+	m_DescriptorSet = new DescriptorSetVK(m_Device, m_SwapChain, layout);
+	m_DescriptorSet->addStorageBuffer(0, mesh->m_StorageBufferPos, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet->addStorageBuffer(1, mesh->m_StorageBufferUV, VK_WHOLE_SIZE, 0);
+	m_DescriptorSet->addUniformBuffer(2, m_UniformBuffer);
+	m_DescriptorSet->addSkyBoxTexture(3, texture, sampler);
 	m_DescriptorSet->submit();
 }
 
