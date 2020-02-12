@@ -4,9 +4,6 @@
 
 class Mesh;
 class DescriptorSetVK;
-class DeviceVK;
-class SwapChainVK;
-class SamplerVK;
 class UniformBufferVK;
 
 class GameObject

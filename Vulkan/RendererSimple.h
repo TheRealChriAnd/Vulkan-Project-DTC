@@ -8,6 +8,9 @@ class GameObjectSimple;
 class DescriptorSetVK;
 class UniformBufferVK;
 class CameraVK;
+class PipelineVK;
+class Mesh;
+class ShaderVK;
 
 class RendererSimple : public IRenderer
 {
@@ -23,7 +26,11 @@ public:
 	void test(CameraVK* camera);
 
 protected:
+	PipelineVK* m_Pipeline;
 	DescriptorSetVK* m_DescriptorSetPerFrame;
+	DescriptorSetLayoutVK* m_LayoutCamera;
 	DescriptorSetLayoutVK* m_LayoutObject;
 	UniformBufferVK* m_UniformBuffer;
+	ShaderVK* m_ShaderFragment;
+	ShaderVK* m_ShaderVertex;
 };
