@@ -168,6 +168,7 @@
     <ClCompile Include="DeviceVK.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
     <ClCompile Include="InputVK.cpp" />
+    <ClCompile Include="LightVK.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MaterialVK.cpp" />
     <ClCompile Include="MeshVK.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />
     <ClInclude Include="InputVK.h" />
+    <ClInclude Include="LightVK.h" />
     <ClInclude Include="MaterialVK.h" />
     <ClInclude Include="MeshVK.h" />
     <ClInclude Include="PipelineVK.h" />

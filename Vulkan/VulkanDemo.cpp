@@ -21,12 +21,14 @@
 #include "CommandBufferVK.h"
 #include "IndexBufferVK.h"
 #include "CameraVK.h"
+#include "LightVK.h"
 
 #define BINDING_POS 0
 #define BINDING_COLOR 1
 #define BINDING_UV 2
 #define BINDING_UNI 3
 #define BINDING_TEXTURE 4
+#define BINDING_LIGHT 5
 
 std::vector<glm::vec4> pos = {
 	{-0.5f, -0.5f, 0.0f, 1.0f},
@@ -102,6 +104,14 @@ void VulkanDemo::init()
 
 	m_Sampler = new SamplerVK(m_Device);
 
+	m_Light = new LightVK(
+		glm::vec3(-0.2f, -1.0f, -0.3f), 
+		glm::vec3(0.2f, 0.2f, 0.2f), 
+		glm::vec3(0.5f, 0.5f, 0.5f), 
+		glm::vec3(1.0f, 1.0f, 1.0f));
+
+
+
 	m_StorageBufferPos = new StorageBufferVK(m_Device);
 	m_StorageBufferPos->setData(pos.data(), sizeof(glm::vec4) * pos.size(), 0);
 
@@ -122,6 +132,7 @@ void VulkanDemo::init()
 	m_DescriptorSet->addStorageBuffer(BINDING_UV, m_StorageBufferUV, VK_WHOLE_SIZE, 0);
 	m_DescriptorSet->addUniformBuffer(BINDING_UNI, m_UniformBuffer);
 	m_DescriptorSet->addTexture(BINDING_TEXTURE, m_Texture, m_Sampler);
+	m_DescriptorSet->addUniformBuffer(BINDING_LIGHT, )
 	m_DescriptorSet->submit();
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
@@ -173,6 +184,7 @@ void VulkanDemo::shutdown()
 	delete m_UniformBuffer;
 	delete m_Texture;
 	delete m_Sampler;
+	delete m_Light;
 	delete m_IndexBuffer;
 	delete m_DescriptorSet;
 	delete m_DescriptorSetLayout;

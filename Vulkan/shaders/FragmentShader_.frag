@@ -12,6 +12,15 @@ layout(location = 0) out vec4 outColor;
 
 layout(binding = BINDING_TEXTURE) uniform sampler2D texSampler;
 
+struct Light {
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;
+
 void main() {
     outColor = texture(texSampler, fragTexCoord) * fragColor;
 }

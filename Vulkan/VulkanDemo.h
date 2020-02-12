@@ -15,6 +15,7 @@ class SamplerVK;
 class CommandBufferVK;
 class IndexBufferVK;
 class CameraVK;
+class LightVK;
 
 class VulkanDemo : public Application
 {
@@ -41,6 +42,7 @@ private:
 	SamplerVK* m_Sampler;
 	IndexBufferVK* m_IndexBuffer;
 	CameraVK* m_Camera;
+	LightVK* m_Light;
 
 	std::vector<CommandBufferVK*> m_CommandBuffers;
 
