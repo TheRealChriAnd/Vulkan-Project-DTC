@@ -1,8 +1,12 @@
+#define TINYOBJLOADER_IMPLEMENTATION
+
 #include "Mesh.h"
 #include "DeviceVK.h"
 #include "StorageBufferVK.h"
 #include "DescriptorSetVK.h"
 #include "IndexBufferVK.h"
+#include "tiny_obj_loader.h"
+#include <unordered_map>
 
 Mesh::Mesh(DeviceVK* device, const std::vector<glm::vec4>& positions, const std::vector<glm::vec4>& normals, const std::vector<glm::vec2>& uvs, const std::vector<uint16_t>& indices)
 {
@@ -193,4 +197,69 @@ Mesh* Mesh::createCube(DeviceVK* device)
 	};
 
 	return new Mesh(device, pos, nor, uv, indices);
+}
+
+Mesh* Mesh::fromOBJ(DeviceVK* device, const std::string& file)
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, file.c_str()))
+	{
+		throw std::runtime_error(warn + err);
+	}
+
+	std::vector<glm::vec4> positions;
+	std::vector<glm::vec4> normals;
+	std::vector<glm::vec2> uvs;
+	std::vector<uint16_t> indices;
+
+	std::unordered_map<Vertex, uint32_t> uniqueVertices;
+
+	for (const auto& shape : shapes)
+	{
+		for (const auto& index : shape.mesh.indices)
+		{
+			Vertex vertex = {};
+
+			vertex.pos =
+			{
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2], 
+				1.0F
+			};
+
+			if (index.normal_index >= 0)
+			{
+				vertex.nor =
+				{
+					attrib.normals[3 * index.normal_index + 0],
+					attrib.normals[3 * index.normal_index + 1],
+					attrib.normals[3 * index.normal_index + 2],
+					1.0F
+				};
+			}
+
+			vertex.texCoord =
+			{
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			if (uniqueVertices.count(vertex) == 0)
+			{
+				uniqueVertices[vertex] = static_cast<uint32_t>(positions.size());
+				positions.push_back(vertex.pos);
+				normals.push_back(vertex.nor);
+				uvs.push_back(vertex.texCoord);
+			}
+
+			indices.push_back(uniqueVertices[vertex]);
+		}
+	}
+
+	return new Mesh(device, positions, normals, uvs, indices);
 }
