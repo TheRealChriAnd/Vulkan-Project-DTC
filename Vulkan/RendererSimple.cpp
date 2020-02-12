@@ -30,14 +30,20 @@ RendererSimple::RendererSimple(DeviceVK* device, SwapChainVK* swapChain, RenderP
 
 RendererSimple::~RendererSimple()
 {
-
+	delete m_Pipeline;
+	delete m_DescriptorSetPerFrame;
+	delete m_LayoutObject;
+	delete m_LayoutCamera;
+	delete m_UniformBuffer;
+	delete m_ShaderVertex;
+	delete m_ShaderFragment;
 }
 
 void RendererSimple::init()
 {
-	DescriptorSetLayoutVK* perFrameLayout = new DescriptorSetLayoutVK(m_Device);
-	perFrameLayout->addUniformBuffer(0, VK_SHADER_STAGE_VERTEX_BIT);
-	perFrameLayout->submit();
+	m_LayoutCamera = new DescriptorSetLayoutVK(m_Device);
+	m_LayoutCamera->addUniformBuffer(0, VK_SHADER_STAGE_VERTEX_BIT);
+	m_LayoutCamera->submit();
 
 	m_LayoutObject = new DescriptorSetLayoutVK(m_Device);
 	m_LayoutObject->addStorageBuffer(BINDING_POS, VK_SHADER_STAGE_VERTEX_BIT);
@@ -49,21 +55,21 @@ void RendererSimple::init()
 
 	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(UniformBufferObject));
 
-	m_DescriptorSetPerFrame = new DescriptorSetVK(m_Device, m_SwapChain, perFrameLayout);
+	m_DescriptorSetPerFrame = new DescriptorSetVK(m_Device, m_SwapChain, m_LayoutCamera);
 	m_DescriptorSetPerFrame->addUniformBuffer(0, m_UniformBuffer);
 	m_DescriptorSetPerFrame->submit();
 
-	ShaderVK* vertexShader = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
-	vertexShader->compile();
+	m_ShaderVertex = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
+	m_ShaderVertex->compile();
 
-	ShaderVK* fragmentShader = new ShaderVK(m_Device, "shaders/FragmentShader.glsl", VK_SHADER_STAGE_FRAGMENT_BIT);
-	fragmentShader->compile();
+	m_ShaderFragment = new ShaderVK(m_Device, "shaders/FragmentShader.glsl", VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_ShaderFragment->compile();
 
 	m_Pipeline = new PipelineVK(m_Device);
-	m_Pipeline->addDescriptorLayout(perFrameLayout);
+	m_Pipeline->addDescriptorLayout(m_LayoutCamera);
 	m_Pipeline->addDescriptorLayout(m_LayoutObject);
-	m_Pipeline->addShader(vertexShader);
-	m_Pipeline->addShader(fragmentShader);
+	m_Pipeline->addShader(m_ShaderVertex);
+	m_Pipeline->addShader(m_ShaderFragment);
 	m_Pipeline->submit(m_Device, m_RenderPass, m_SwapChain, VK_POLYGON_MODE_FILL);
 }
 

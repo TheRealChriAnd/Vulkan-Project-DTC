@@ -9,7 +9,6 @@ class DescriptorSetVK;
 
 class GameObjectSimple : public GameObject
 {
-	friend class Application;
 public:
 	GameObjectSimple(DescriptorSetVK* descriptorSet, Mesh* mesh, UniformBufferVK* uniformBuffer, TextureVK* m_Texture, SamplerVK* m_Sampler);
 	virtual ~GameObjectSimple();

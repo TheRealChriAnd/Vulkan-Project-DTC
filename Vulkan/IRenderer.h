@@ -2,9 +2,6 @@
 #include <set>
 
 class DeviceVK;
-class Mesh;
-class DescriptorSetLayoutVK;
-class PipelineVK;
 class SwapChainVK;
 class RenderPassVK;
 class CommandBufferVK;
@@ -25,6 +22,5 @@ protected:
 	DeviceVK* m_Device;
 	SwapChainVK* m_SwapChain;
 	RenderPassVK* m_RenderPass;
-	PipelineVK* m_Pipeline;
 	std::set<LightVK*> m_Lights;
 };
