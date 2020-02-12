@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <set>
 
 class DeviceVK;
 class Mesh;
@@ -9,6 +9,7 @@ class SwapChainVK;
 class RenderPassVK;
 class CommandBufferVK;
 class GameObject;
+class LightVK;
 
 class IRenderer
 {
@@ -19,10 +20,11 @@ public:
 	virtual void init() = 0;
 
 	virtual void render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects) = 0;
-
+	void addLight(LightVK* light);
 protected:
 	DeviceVK* m_Device;
 	SwapChainVK* m_SwapChain;
 	RenderPassVK* m_RenderPass;
 	PipelineVK* m_Pipeline;
+	std::set<LightVK*> m_Lights;
 };

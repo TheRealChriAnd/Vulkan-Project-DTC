@@ -4,6 +4,7 @@
 #define BINDING_COLOR 1
 #define BINDING_UVS 2
 #define BINDING_TEX 4
+#define BINDING_LIGHT 6
 
 struct Light {
     vec4 direction;
@@ -39,7 +40,7 @@ void main() {
     //specular
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
-    flaot spec = pow(max(dot(viewDir, reflectDir), 0.0), ||material.shininess);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), ||material.shininess);
     vec3 specular = light.specular * spec * texture(||material.specular, fragTexCoord).rgb;
 
     vec3 result = ambient + diffuse + specular;

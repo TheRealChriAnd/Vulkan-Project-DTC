@@ -130,14 +130,14 @@ void VulkanDemo::init()
 	m_RendererSimple->init();
 
 	m_Mesh = Mesh::createPlane(m_Device);
-	m_GameObject = m_RendererSimple->createGameObject(m_Mesh, m_Texture, new SamplerVK(m_Device));
 
 	m_Light = new LightVK(
-		glm::vec3(-0.2f, -1.0f, -0.3f), 
-		glm::vec3(0.2f, 0.2f, 0.2f), 
-		glm::vec3(0.5f, 0.5f, 0.5f), 
+		glm::vec3(-0.2f, -1.0f, -0.3f),
+		glm::vec3(0.2f, 0.2f, 0.2f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 
+	m_GameObject = m_RendererSimple->createGameObject(m_Mesh, m_Texture, new SamplerVK(m_Device));
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
@@ -182,7 +182,7 @@ void VulkanDemo::shutdown()
 	delete m_FragmentShader;
 	delete m_UniformBuffer;
 	delete m_Texture;
-	delete m_Sampler;
+	delete m_SkySampler;
 	delete m_Light;
 	delete m_IndexBuffer;
 	delete m_DescriptorSetLayout;
