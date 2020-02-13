@@ -9,10 +9,10 @@ public:
 	~LightVK();
 
 	void setDir(glm::vec3 dir);
-	glm::vec3 getDir() const;
-	glm::vec3 getAmbient() const;
-	glm::vec3 getDiffuse() const;
-	glm::vec3 getSpecular() const;
+	const glm::vec3& getDir() const;
+	const glm::vec3& getAmbient() const;
+	const glm::vec3& getDiffuse() const;
+	const glm::vec3& getSpecular() const;
 
 private:
 	glm::vec3 m_Direction;

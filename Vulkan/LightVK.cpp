@@ -21,22 +21,22 @@ void LightVK::setDir(glm::vec3 dir)
 	m_Direction = dir;
 }
 
-glm::vec3 LightVK::getDir() const
+const glm::vec3& LightVK::getDir() const
 {
 	return m_Direction;
 }
 
-glm::vec3 LightVK::getAmbient() const
+const glm::vec3& LightVK::getAmbient() const
 {
 	return m_Ambient;
 }
 
-glm::vec3 LightVK::getDiffuse() const
+const glm::vec3& LightVK::getDiffuse() const
 {
 	return m_Diffuse;
 }
 
-glm::vec3 LightVK::getSpecular() const
+const glm::vec3& LightVK::getSpecular() const
 {
 	return m_Specular;
 }

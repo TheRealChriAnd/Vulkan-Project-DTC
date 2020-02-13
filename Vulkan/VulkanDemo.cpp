@@ -38,13 +38,13 @@ void VulkanDemo::init()
 
 	m_Light = new LightVK(
 		glm::vec3(-0.2f, -1.0f, -0.3f),
-		glm::vec3(0.2f, 0.2f, 0.2f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3(0.5f, 0.5f, 0.5f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 
+	m_RendererSimple->addLight(m_Light);
+
 	m_GameObject = m_RendererSimple->createGameObject(m_Mesh, m_Texture, m_Sampler);
-
-
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
