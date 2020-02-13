@@ -111,7 +111,10 @@ GameObjectSimple* RendererSimple::createGameObject(Mesh* mesh, TextureVK* textur
 	descriptorSet->addTexture(BINDING_TEX, texture, sampler);
 	descriptorSet->submit();
 
-	return new GameObjectSimple(descriptorSet, mesh, uniformBuffer, texture, sampler);
+	GameObjectSimple* gameObject = new GameObjectSimple(descriptorSet, mesh, uniformBuffer, texture, sampler);
+	gameObject->applyTransform();
+
+	return gameObject;
 }
 
 void RendererSimple::update(float deltaSeconds, CameraVK* camera)

@@ -177,6 +177,7 @@
     <ClCompile Include="PipelineVK.cpp" />
     <ClCompile Include="RendererSimple.cpp" />
     <ClCompile Include="RenderPassVK.cpp" />
+    <ClCompile Include="RES.cpp" />
     <ClCompile Include="SamplerVK.cpp" />
     <ClCompile Include="ShaderVK.cpp" />
     <ClCompile Include="SkyBoxVK.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="PipelineVK.h" />
     <ClInclude Include="RendererSimple.h" />
     <ClInclude Include="RenderPassVK.h" />
+    <ClInclude Include="RES.h" />
     <ClInclude Include="SamplerVK.h" />
     <ClInclude Include="ShaderVK.h" />
     <ClInclude Include="SkyBoxVK.h" />

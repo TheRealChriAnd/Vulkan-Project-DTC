@@ -1,6 +1,8 @@
 #pragma once
 #include "Application.h"
 #include "Defines.h"
+#include "IKeyListener.h"
+#include "IMouseListener.h"
 
 class DeviceVK;
 
@@ -11,9 +13,10 @@ class CameraVK;
 class LightVK;
 class Mesh;
 class GameObjectSimple;
+class GameObject;
 class RendererSimple;
 
-class VulkanDemo : public Application
+class VulkanDemo : public Application, public IKeyListener, public IMouseListener
 {
 public:
 	VulkanDemo() {};
@@ -24,18 +27,21 @@ public:
 	virtual const std::vector<CommandBufferVK*>& frame() override;
 	virtual void shutdown() override;
 
+	virtual void onKeyPressed(int key) override;
+	virtual void onKeyReleased(int key) override;
+
+	virtual void onMouseButtonPressed(int button) override;
+	virtual void onMouseButtonRelease(int button) override;
+	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
+
 private:
 	CameraVK* m_Camera;
 	LightVK* m_Light;
-	SamplerVK* m_Sampler;
-
-	TextureVK* m_Texture;
-	TextureVK* m_TextureGround;
-	Mesh* m_Mesh;
-	Mesh* m_MeshGround;
+	
 	GameObjectSimple* m_GameObject;
 	GameObjectSimple* m_GameObjectGround;
 	RendererSimple* m_RendererSimple;
 
+	std::vector<GameObject*> m_SimpleGameObjects;
 	std::vector<CommandBufferVK*> m_CommandBuffers;
 };

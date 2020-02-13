@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <GLFW/glfw3.h>
 
 #include "VulkanDemo.h"
 
@@ -17,6 +18,8 @@
 #include "Mesh.h"
 #include "RendererSimple.h"
 #include "GameObjectSimple.h"
+#include "RES.h"
+#include "InputVK.h"
 
 struct UniformBufferObject
 {
@@ -26,19 +29,11 @@ struct UniformBufferObject
 
 void VulkanDemo::init()
 {
+	InputVK::addKeyListener(this);
+	InputVK::addMouseListener(this);
+
 	m_RendererSimple = new RendererSimple(m_Device, m_SwapChain, m_RenderPass);
 	m_RendererSimple->init();
-
-	m_Texture = new TextureVK(m_Device, 1);
-	m_Texture->loadFromFile("textures/test.png");
-
-	m_TextureGround = new TextureVK(m_Device, 1);
-	m_TextureGround->loadFromFile("textures/fatboy.png");
-
-	m_Sampler = new SamplerVK(m_Device);
-
-	m_MeshGround = Mesh::createPlane(m_Device);
-	m_Mesh = Mesh::fromOBJ(m_Device, "models/box_stack.obj");
 
 	m_Light = new LightVK(
 		glm::vec3(-0.2f, -1.0f, -0.3f),
@@ -47,11 +42,15 @@ void VulkanDemo::init()
 		glm::vec3(1.0f, 1.0f, 1.0f));
 
 	m_RendererSimple->addLight(m_Light);
-	m_GameObjectGround = m_RendererSimple->createGameObject(m_MeshGround, m_TextureGround, m_Sampler);
-	m_GameObject = m_RendererSimple->createGameObject(m_Mesh, m_Texture, m_Sampler);
 
-	m_GameObject->applyTransform();
+	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FATBOY, RES::SAMPLER_DEFAULT);
+	m_GameObject = m_RendererSimple->createGameObject(RES::MESH_TEST, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+
+	m_GameObjectGround->scale(10);
 	m_GameObjectGround->applyTransform();
+
+	m_SimpleGameObjects.push_back(m_GameObject);
+	m_SimpleGameObjects.push_back(m_GameObjectGround);
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
@@ -59,7 +58,7 @@ void VulkanDemo::init()
 		m_CommandBuffer->begin(i, (VkCommandBufferUsageFlagBits)0);
 		m_CommandBuffer->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
 	}
-	m_RendererSimple->render(m_CommandBuffer, { m_GameObject, m_GameObjectGround });
+	m_RendererSimple->render(m_CommandBuffer, m_SimpleGameObjects);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		m_CommandBuffer->endRenderPass(i);
@@ -88,17 +87,42 @@ const std::vector<CommandBufferVK*>& VulkanDemo::frame()
 
 void VulkanDemo::shutdown()
 {
+	InputVK::removeKeyListener(this);
+	InputVK::removeMouseListener(this);
+
 	for (CommandBufferVK* buffer : m_CommandBuffers)
 		delete buffer;
+
+	for (GameObject* gameObject : m_SimpleGameObjects)
+		delete gameObject;
 
 	delete m_Camera;
 	delete m_Light;
 	delete m_RendererSimple;
-	delete m_Sampler;
-	delete m_GameObject;
-	delete m_GameObjectGround;
-	delete m_Texture;
-	delete m_TextureGround;
-	delete m_Mesh;
-	delete m_MeshGround;
+}
+
+void VulkanDemo::onKeyPressed(int key)
+{
+	if (key == GLFW_KEY_ESCAPE)
+	{
+		InputVK::setCursorEnabled(true);
+	}
+}
+
+void VulkanDemo::onKeyReleased(int key)
+{
+
+}
+
+void VulkanDemo::onMouseButtonPressed(int button)
+{
+	InputVK::setCursorEnabled(false);
+}
+
+void VulkanDemo::onMouseButtonRelease(int button)
+{
+}
+
+void VulkanDemo::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
+{
 }

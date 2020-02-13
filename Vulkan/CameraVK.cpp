@@ -22,7 +22,7 @@ CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 
 CameraVK::CameraVK()
 {
-	m_Position = glm::vec3(0.0f, 0.0f, 2.0f);
+	m_Position = glm::vec3(0.0f, 2.0f, 5.0f);
 	m_Front = glm::vec3(0.0f, 0.0f, -1.0f);
 	m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
 	m_ViewMatrix = glm::lookAt(m_Position, m_Front, m_Up);
@@ -68,6 +68,9 @@ void CameraVK::onMouseButtonRelease(int button)
 
 void CameraVK::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 {
+	if (InputVK::isCursorEnabled())
+		return;
+
 	m_Yaw += offset.x * m_Sensitivity;
 	m_Pitch -= offset.y * m_Sensitivity;
 

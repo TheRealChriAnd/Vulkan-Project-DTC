@@ -5,6 +5,11 @@
 #include "stb_image.h"
 #include <iostream>
 
+TextureVK::TextureVK(DeviceVK* device, const std::string& file, uint32_t layers) : TextureVK(device, layers)
+{
+	loadFromFile(file);
+}
+
 TextureVK::TextureVK(DeviceVK* device, uint32_t layers):
 	m_Image(nullptr)
 {

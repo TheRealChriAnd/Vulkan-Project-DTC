@@ -37,10 +37,10 @@ layout(set=0, binding = BINDING_UCL) uniform UniformCameraLight
 	vec4 camPos;
 } ucl;
 
-out vec3 normal;
+layout(location = BINDING_NOR) out vec3 normal;
 
 void main() {
 	gl_Position = ucl.proj * ucl.view * uo.model * position_in[gl_VertexIndex];
     fragTexCoord = uv_in[gl_VertexIndex];
-	normal = normals_in[gl_VertexIndex].xyz;
+	normal = (uo.model * vec4(normals_in[gl_VertexIndex].xyz, 0)).xyz;
 }
