@@ -38,8 +38,13 @@ private:
 	CameraVK* m_Camera;
 	LightVK* m_Light;
 	
-	GameObjectSimple* m_GameObject;
+	GameObjectSimple* m_GameObjectSofa;
+	GameObjectSimple* m_GameObjectWall1;
+	GameObjectSimple* m_GameObjectWall2;
+	GameObjectSimple* m_GameObjectThinWall;
+	GameObjectSimple* m_GameObjectWindow;
 	GameObjectSimple* m_GameObjectGround;
+	GameObjectSimple* m_GameObjectTv;
 	RendererSimple* m_RendererSimple;
 
 	std::vector<GameObject*> m_SimpleGameObjects;

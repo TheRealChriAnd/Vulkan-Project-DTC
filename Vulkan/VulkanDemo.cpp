@@ -44,12 +44,42 @@ void VulkanDemo::init()
 	m_RendererSimple->addLight(m_Light);
 
 	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FATBOY, RES::SAMPLER_DEFAULT);
-	m_GameObject = m_RendererSimple->createGameObject(RES::MESH_TEST, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectSofa = m_RendererSimple->createGameObject(RES::MESH_SOFA, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectWall1 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectWall2 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectThinWall = m_RendererSimple->createGameObject(RES::MESH_WALL2, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectWindow = m_RendererSimple->createGameObject(RES::MESH_WINDOW, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectTv = m_RendererSimple->createGameObject(RES::MESH_TV, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
 
 	m_GameObjectGround->scale(10);
 	m_GameObjectGround->applyTransform();
 
-	m_SimpleGameObjects.push_back(m_GameObject);
+	m_GameObjectWall1->rotate(3.14/2, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectWall1->translate(glm::vec3(-1.5f, 0.0f, -3.0f));
+	m_GameObjectWall1->applyTransform();
+
+	m_GameObjectWall2->rotate(3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectWall2->translate(glm::vec3(1.5f, 0.0f, -3.0f));
+	m_GameObjectWall2->applyTransform();
+
+	m_GameObjectThinWall->rotate(3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectThinWall->translate(glm::vec3(0.0f, 0.0f, -3.5f));
+	m_GameObjectThinWall->applyTransform();
+
+	m_GameObjectWindow->rotate(3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectWindow->translate(glm::vec3(0.0f, 0.0f, 3.0f));
+	m_GameObjectWindow->applyTransform();
+
+	m_GameObjectTv->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectTv->translate(glm::vec3(0.0f, 0.0f, -3.0f));
+	m_GameObjectTv->applyTransform();
+
+	m_SimpleGameObjects.push_back(m_GameObjectSofa);
+	m_SimpleGameObjects.push_back(m_GameObjectWall1);
+	m_SimpleGameObjects.push_back(m_GameObjectWall2);
+	m_SimpleGameObjects.push_back(m_GameObjectThinWall);
+	m_SimpleGameObjects.push_back(m_GameObjectWindow);
+	m_SimpleGameObjects.push_back(m_GameObjectTv);
 	m_SimpleGameObjects.push_back(m_GameObjectGround);
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
@@ -73,9 +103,6 @@ void VulkanDemo::init()
 void VulkanDemo::update(float deltaSeconds)
 {
 	m_Camera->update(deltaSeconds);
-
-	m_GameObject->rotate(deltaSeconds, glm::vec3(0.0F, 1.0F, 0.0F));
-	m_GameObject->applyTransform();
 
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 }

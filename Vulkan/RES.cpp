@@ -6,7 +6,11 @@ TextureVK* RES::TEXTURE_FATBOY	= nullptr;
 SamplerVK* RES::SAMPLER_DEFAULT = nullptr;
 
 Mesh* RES::MESH_PLANE			= nullptr;
-Mesh* RES::MESH_TEST			= nullptr;
+Mesh* RES::MESH_SOFA			= nullptr;
+Mesh* RES::MESH_WALL1			= nullptr;
+Mesh* RES::MESH_WALL2			= nullptr;
+Mesh* RES::MESH_WINDOW			= nullptr;
+Mesh* RES::MESH_TV				= nullptr;
 
 void RES::init(DeviceVK* device)
 {
@@ -16,7 +20,13 @@ void RES::init(DeviceVK* device)
 	SAMPLER_DEFAULT = new SamplerVK(device);
 
 	MESH_PLANE		= Mesh::createPlane(device);
-	MESH_TEST		= Mesh::fromOBJ(device, "models/box_stack.obj");
+	MESH_SOFA		= Mesh::fromOBJ(device, "models/sofa4.obj");
+
+	MESH_WALL1		= Mesh::fromOBJ(device, "models/wall.obj");
+	MESH_WALL2		= Mesh::fromOBJ(device, "models/thinwall.obj");
+
+	MESH_WINDOW		= Mesh::fromOBJ(device, "models/window.obj");
+	MESH_TV			= Mesh::fromOBJ(device, "models/tv.obj");
 }
 
 void RES::shutdown()
@@ -27,5 +37,9 @@ void RES::shutdown()
 	delete SAMPLER_DEFAULT;
 
 	delete MESH_PLANE;
-	delete MESH_TEST;
+	delete MESH_SOFA;
+	delete MESH_WALL1;
+	delete MESH_WALL2;
+	delete MESH_WINDOW;
+	delete MESH_TV;
 }
