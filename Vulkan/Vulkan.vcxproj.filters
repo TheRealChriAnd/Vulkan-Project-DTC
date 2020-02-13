@@ -22,13 +22,16 @@
     <ClCompile Include="WindowVK.cpp" />
     <ClCompile Include="InputVK.cpp" />
     <ClCompile Include="LightVK.cpp" />
-    <ClCompile Include="SkyBoxVK.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="IRenderer.cpp" />
     <ClCompile Include="RendererSimple.cpp" />
     <ClCompile Include="GameObjectSimple.cpp" />
     <ClCompile Include="RES.cpp" />
+    <ClCompile Include="RendererSkyBox.cpp" />
+    <ClCompile Include="GameObjectSkyBox.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="TextureSkyBox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -54,13 +57,16 @@
     <ClInclude Include="WindowVK.h" />
     <ClInclude Include="InputVK.h" />
     <ClInclude Include="LightVK.h" />
-    <ClInclude Include="SkyBoxVK.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="RendererSimple.h" />
     <ClInclude Include="GameObjectSimple.h" />
     <ClInclude Include="RES.h" />
+    <ClInclude Include="RendererSkyBox.h" />
+    <ClInclude Include="GameObjectSkyBox.h" />
+    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureSkyBox.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\fatboy.png" />

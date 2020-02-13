@@ -17,9 +17,12 @@
 #include "GameObject.h"
 #include "Mesh.h"
 #include "RendererSimple.h"
+#include "RendererSkyBox.h"
 #include "GameObjectSimple.h"
+#include "GameObjectSkyBox.h"
 #include "RES.h"
 #include "InputVK.h"
+#include "TextureSkyBox.h"
 
 struct UniformBufferObject
 {
@@ -33,7 +36,9 @@ void VulkanDemo::init()
 	InputVK::addMouseListener(this);
 
 	m_RendererSimple = new RendererSimple(m_Device, m_SwapChain, m_RenderPass);
+	m_RendererSkyBox = new RendererSkyBox(m_Device, m_SwapChain, m_RenderPass);
 	m_RendererSimple->init();
+	m_RendererSkyBox->init();
 
 	m_Light = new LightVK(
 		glm::vec3(-0.2f, -1.0f, -0.3f),
@@ -46,31 +51,10 @@ void VulkanDemo::init()
 	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FATBOY, RES::SAMPLER_DEFAULT);
 	m_GameObject = m_RendererSimple->createGameObject(RES::MESH_TEST, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
 
+	m_GameObjectSkyBox = m_RendererSkyBox->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SKYBOX, RES::SAMPLER_DEFAULT);
+
 	m_GameObjectGround->scale(10);
 	m_GameObjectGround->applyTransform();
-
-
-	m_Skybox = new SkyBoxVK(m_Device, m_SwapChain, m_RenderPass);
-	m_Skybox->loadFromFile("textures/clouds/west.bmp", 0);
-	m_Skybox->loadFromFile("textures/clouds/east.bmp", 1);
-	m_Skybox->loadFromFile("textures/clouds/down.bmp", 2);
-	m_Skybox->loadFromFile("textures/clouds/up.bmp", 3);
-	m_Skybox->loadFromFile("textures/clouds/south.bmp", 4);
-	m_Skybox->loadFromFile("textures/clouds/north.bmp", 5);
-
-	
-
-					  
-	//m_StorageBufferCol1 = new StorageBufferVK(m_Device);
-	//m_StorageBufferCol1->setData(cubeColor.data(), sizeof(glm::vec4) * cubeColor.size(), 0);
-
-	//m_DescriptorSet1 = new DescriptorSetVK(m_Device, m_SwapChain, m_DescriptorSetLayout1);
-	//m_DescriptorSet1->addStorageBuffer(BINDING_POS, m_StorageBufferPos, VK_WHOLE_SIZE, 0);
-	//m_DescriptorSet1->addStorageBuffer(BINDING_COLOR, m_StorageBufferNor, VK_WHOLE_SIZE, 0);
-	//m_DescriptorSet1->addStorageBuffer(BINDING_UV, m_StorageBufferUV, VK_WHOLE_SIZE, 0);
-	//m_DescriptorSet1->addUniformBuffer(BINDING_UNI, m_UniformBuffer);
-	//m_DescriptorSet1->addSkyBoxTexture(BINDING_SKYBOX, m_Skybox, m_SkySampler);
-	//m_DescriptorSet1->submit();
 
 	m_SimpleGameObjects.push_back(m_GameObject);
 	m_SimpleGameObjects.push_back(m_GameObjectGround);
@@ -82,6 +66,7 @@ void VulkanDemo::init()
 		m_CommandBuffer->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
 	}
 	m_RendererSimple->render(m_CommandBuffer, m_SimpleGameObjects);
+	m_RendererSkyBox->render(m_CommandBuffer, { m_GameObjectSkyBox });
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		m_CommandBuffer->endRenderPass(i);
@@ -101,6 +86,7 @@ void VulkanDemo::update(float deltaSeconds)
 	m_GameObject->applyTransform();
 
 	m_RendererSimple->update(deltaSeconds, m_Camera);
+	m_RendererSkyBox->update(deltaSeconds, m_Camera);
 }
 
 const std::vector<CommandBufferVK*>& VulkanDemo::frame()
@@ -122,6 +108,9 @@ void VulkanDemo::shutdown()
 	delete m_Camera;
 	delete m_Light;
 	delete m_RendererSimple;
+
+	delete m_GameObjectSkyBox;
+	delete m_RendererSkyBox;
 }
 
 void VulkanDemo::onKeyPressed(int key)

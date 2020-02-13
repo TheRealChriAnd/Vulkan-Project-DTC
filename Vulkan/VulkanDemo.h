@@ -13,8 +13,10 @@ class CameraVK;
 class LightVK;
 class Mesh;
 class GameObjectSimple;
+class GameObjectSkyBox;
 class GameObject;
 class RendererSimple;
+class RendererSkyBox;
 
 class VulkanDemo : public Application, public IKeyListener, public IMouseListener
 {
@@ -41,6 +43,9 @@ private:
 	GameObjectSimple* m_GameObject;
 	GameObjectSimple* m_GameObjectGround;
 	RendererSimple* m_RendererSimple;
+
+	GameObject* m_GameObjectSkyBox;
+	RendererSkyBox* m_RendererSkyBox;
 
 	std::vector<GameObject*> m_SimpleGameObjects;
 	std::vector<CommandBufferVK*> m_CommandBuffers;

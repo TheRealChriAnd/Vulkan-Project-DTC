@@ -140,7 +140,7 @@ void SwapChainVK::createImageViews(DeviceVK* device)
 void SwapChainVK::createDepthResources(DeviceVK* device)
 {
 	m_DepthFormat = findDepthFormat(device);
-	device->createImage(m_Extent.width, m_Extent.height, 1, VK_IMAGE_VIEW_TYPE_2D, m_DepthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_DepthImage, m_DepthImageMemory);
+	device->createImage(m_Extent.width, m_Extent.height, 1, 0, m_DepthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_DepthImage, m_DepthImageMemory);
 	m_DepthImageView = device->createImageView(m_DepthImage, m_DepthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, VK_IMAGE_VIEW_TYPE_2D, 1);
 }
 

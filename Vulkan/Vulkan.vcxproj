@@ -168,6 +168,7 @@
     <ClCompile Include="DeviceVK.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectSimple.cpp" />
+    <ClCompile Include="GameObjectSkyBox.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
     <ClCompile Include="InputVK.cpp" />
     <ClCompile Include="LightVK.cpp" />
@@ -176,12 +177,14 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PipelineVK.cpp" />
     <ClCompile Include="RendererSimple.cpp" />
+    <ClCompile Include="RendererSkyBox.cpp" />
     <ClCompile Include="RenderPassVK.cpp" />
     <ClCompile Include="RES.cpp" />
     <ClCompile Include="SamplerVK.cpp" />
     <ClCompile Include="ShaderVK.cpp" />
-    <ClCompile Include="SkyBoxVK.cpp" />
     <ClCompile Include="SwapChainVK.cpp" />
+    <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="TextureSkyBox.cpp" />
     <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
     <ClCompile Include="StorageBufferVK.cpp" />
@@ -199,6 +202,7 @@
     <ClInclude Include="DeviceVK.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectSimple.h" />
+    <ClInclude Include="GameObjectSkyBox.h" />
     <ClInclude Include="IKeyListener.h" />
     <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />
@@ -208,12 +212,14 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PipelineVK.h" />
     <ClInclude Include="RendererSimple.h" />
+    <ClInclude Include="RendererSkyBox.h" />
     <ClInclude Include="RenderPassVK.h" />
     <ClInclude Include="RES.h" />
     <ClInclude Include="SamplerVK.h" />
     <ClInclude Include="ShaderVK.h" />
-    <ClInclude Include="SkyBoxVK.h" />
     <ClInclude Include="SwapChainVK.h" />
+    <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureSkyBox.h" />
     <ClInclude Include="TextureVK.h" />
     <ClInclude Include="UniformBufferVK.h" />
     <ClInclude Include="StorageBufferVK.h" />

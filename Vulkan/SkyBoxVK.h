@@ -25,7 +25,6 @@ public:
 	int loadFromFile(std::string filename, int index);
 	void bind(unsigned int slot);
 
-	VkImageView getImageView() const;
 	GameObject* getGameObject() const;
 	Mesh* getMesh() const;
 	DescriptorSetVK* getDescriptorSet() const;
@@ -47,9 +46,9 @@ private:
 private:
 	DeviceVK* m_Device;
 
-	VkImage m_Image;
-	VkImageView m_ImageView;
-	VkDeviceMemory m_ImageMemory;
+	//VkImage m_Image;
+	//VkImageView m_ImageView;
+	//VkDeviceMemory m_ImageMemory;
 
 	DescriptorSetVK* m_DescriptorSet;
 	DescriptorSetLayoutVK* m_DescriptorSetLayout;

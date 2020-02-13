@@ -7,10 +7,12 @@
 #include "TextureVK.h"
 #include "SamplerVK.h"
 
-GameObjectSimple::GameObjectSimple(DescriptorSetVK* descriptorSet, Mesh* mesh, UniformBufferVK* uniformBuffer, TextureVK* m_Texture, SamplerVK* m_Sampler) : 
+GameObjectSimple::GameObjectSimple(DescriptorSetVK* descriptorSet, Mesh* mesh, UniformBufferVK* uniformBuffer, TextureVK* texture, SamplerVK* sampler) : 
 	GameObject(descriptorSet, mesh, uniformBuffer)
 {
 	m_Transform = glm::mat4(1.0F);
+	m_Texture = texture;
+	m_Sampler = sampler;
 }
 
 GameObjectSimple::~GameObjectSimple()
