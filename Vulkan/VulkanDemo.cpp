@@ -175,13 +175,13 @@ void VulkanDemo::init()
 
 
 
-	//m_Skybox = new SkyBoxVK(m_Device, m_SwapChain, m_RenderPass);
-	//m_Skybox->loadFromFile("textures/clouds/west.bmp", 0);
-	//m_Skybox->loadFromFile("textures/clouds/east.bmp", 1);
-	//m_Skybox->loadFromFile("textures/clouds/down.bmp", 2);
-	//m_Skybox->loadFromFile("textures/clouds/up.bmp", 3);
-	//m_Skybox->loadFromFile("textures/clouds/south.bmp", 4);
-	//m_Skybox->loadFromFile("textures/clouds/north.bmp", 5);
+	m_Skybox = new SkyBoxVK(m_Device, m_SwapChain, m_RenderPass);
+	m_Skybox->loadFromFile("textures/clouds/west.bmp", 0);
+	m_Skybox->loadFromFile("textures/clouds/east.bmp", 1);
+	m_Skybox->loadFromFile("textures/clouds/down.bmp", 2);
+	m_Skybox->loadFromFile("textures/clouds/up.bmp", 3);
+	m_Skybox->loadFromFile("textures/clouds/south.bmp", 4);
+	m_Skybox->loadFromFile("textures/clouds/north.bmp", 5);
 
 	
 

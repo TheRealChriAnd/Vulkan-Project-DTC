@@ -12,13 +12,15 @@
 #include "MeshVK.h"
 #include "SamplerVK.h"
 #include "GameObject.h"
-#include "stb_image.h"
+
 #include <iostream>
-#define IMAGE_COUNT 6
+#define IMAGE_LAYERS 6
+#define IMAGE_COUNT 5
 
 
 SkyBoxVK::SkyBoxVK(DeviceVK* device, SwapChainVK* swapChain, RenderPassVK* renderPass) :
-	m_Image(nullptr)
+	m_Image(nullptr),
+	m_FirstImage(true)
 {
 	m_Device = device;
 
@@ -51,9 +53,49 @@ SkyBoxVK::~SkyBoxVK()
 
 int SkyBoxVK::loadFromFile(std::string filename, int index)
 {
-	createTextureImage(m_Device, filename, IMAGE_COUNT, index);
+
+	int texChannels;
+	stbi_uc* pixels = stbi_load(filename.c_str(), &m_TexWidth, &m_TexHeight, &texChannels, STBI_rgb_alpha);
+	VkDeviceSize imageSize = m_TexWidth * m_TexHeight * 4;
+
+	if (!pixels)
+		throw std::runtime_error("Error: Failed to load texture image!");
+
+	if (m_FirstImage)
+	{
+		m_Size = imageSize * 6;
+		void* data = new char[m_Size];
+		//måste preallokera minne till pixeldata, gör jag det rätt?
+		memcpy(m_PixelData, data, m_Size);
+		initImage();
+		m_FirstImage = false;
+	}
+	uint32_t bufferOffset = imageSize * index;
+	copyPixelData(pixels, bufferOffset, imageSize);
+
+	VkBufferImageCopy region = {};
+	region.bufferOffset = bufferOffset;
+	region.bufferRowLength = 0;
+	region.bufferImageHeight = 0;
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.baseArrayLayer = index;
+	region.imageSubresource.layerCount = 1;
+	region.imageOffset = { 0, 0, 0 };
+	region.imageExtent = {
+		m_TexWidth,
+		m_TexHeight,
+		1
+	};
+
+	//hur jag göra?
+	bufferCopyRegions.push_back(region);
+	if (index == IMAGE_COUNT)
+	{
+		createTextureImage(m_Device, filename, IMAGE_LAYERS, index);
 	
-	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, IMAGE_COUNT);
+		m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, IMAGE_LAYERS);
+	}
 	return 0;
 }
 
@@ -93,26 +135,26 @@ CommandBufferVK* SkyBoxVK::getCommandBuffer() const
 
 void SkyBoxVK::createTextureImage(DeviceVK* device, const std::string& file, uint32_t layers, int index)
 {
-	int texWidth;
-	int texHeight;
-	int texChannels;
-	stbi_uc* pixels = stbi_load(file.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
-	if (!pixels)
-		throw std::runtime_error("Error: Failed to load texture image!");
+	//int texChannels;
+	//stbi_uc* pixels = stbi_load(file.c_str(), &m_TexWidth, &m_TexHeight, &texChannels, STBI_rgb_alpha);
+	//VkDeviceSize imageSize = m_TexWidth * m_TexHeight * 4;
 
-	BufferVK buffer(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	//hur jag göra?
+	BufferVK buffer(device, m_Size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
+	//hur jag göra? Lägga till offset som vi kan skriva på?
+	//görs sist, precis innan vi skapar bild, dvs när alla bilders data ligger sparat.
+	buffer.writeData(m_PixelData, static_cast<size_t>(m_Size));
 
-	buffer.writeData(pixels, static_cast<size_t>(imageSize));
+	//kanske görs fel?
+	stbi_image_free(m_PixelData);
 
-	stbi_image_free(pixels);
-
-	device->createImage(texWidth, texHeight, layers, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
+	//behöver enbart göras en gång?
+	device->createImage(m_TexWidth, m_TexHeight, layers, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 
 	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, index);
-	copyBufferToImage(device, buffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), index);
+	copyBufferToImage(device, buffer, static_cast<uint32_t>(m_TexWidth), static_cast<uint32_t>(m_TexHeight), index);
 	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, index);
 }
 
@@ -131,7 +173,8 @@ void SkyBoxVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageL
 	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	barrier.subresourceRange.baseMipLevel = 0;
 	barrier.subresourceRange.levelCount = 1;
-	barrier.subresourceRange.baseArrayLayer = index;
+	//barrier.subresourceRange.baseArrayLayer = index;
+	barrier.subresourceRange.baseArrayLayer = 0;
 	barrier.subresourceRange.layerCount = 6;
 
 	VkPipelineStageFlags sourceStage;
@@ -176,22 +219,26 @@ void SkyBoxVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint3
 	CommandBufferVK commandBuffer(device);
 	commandBuffer.begin();
 
-	VkBufferImageCopy region = {};
-	region.bufferOffset = 0;
-	region.bufferRowLength = 0;
-	region.bufferImageHeight = 0;
-	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	region.imageSubresource.mipLevel = 0;
-	region.imageSubresource.baseArrayLayer = index;
-	region.imageSubresource.layerCount = 6;
-	region.imageOffset = { 0, 0, 0 };
-	region.imageExtent = {
-		width,
-		height,
-		1
-	};
+	//VkBufferImageCopy region = {};
+	//region.bufferOffset = 0;
+	//region.bufferRowLength = 0;
+	//region.bufferImageHeight = 0;
+	//region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	//region.imageSubresource.mipLevel = 0;
+	//region.imageSubresource.baseArrayLayer = index;
+	//region.imageSubresource.layerCount = 1;
+	//region.imageOffset = { 0, 0, 0 };//hur jag göra?
+	//region.imageExtent = {
+	//	width,
+	//	height,
+	//	1
+	//};
+	////hur jag göra?
+	//bufferCopyRegions.push_back(region);
+	
+	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()), bufferCopyRegions.data());
 
-	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+	//vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
 	commandBuffer.end();
 	commandBuffer.submit();
@@ -240,4 +287,19 @@ void SkyBoxVK::recordCommandBuffer(SwapChainVK* swapChain, RenderPassVK* renderP
 		m_CommandBuffer1->endRenderPass(i);
 		m_CommandBuffer1->end(i);
 	}
+}
+
+void SkyBoxVK::copyPixelData(stbi_uc* data, uint64_t offset, uint64_t size)
+{
+	memcpy(m_PixelData + offset, data, size);
+	stbi_image_free(data);
+}
+
+void SkyBoxVK::createRegion(int index, VkOffset3D offset)
+{
+}
+
+void SkyBoxVK::initImage()
+{
+	m_Device->createImage(m_TexWidth, m_TexHeight, IMAGE_LAYERS, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 }
