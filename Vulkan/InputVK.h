@@ -14,14 +14,15 @@ class InputVK
 public:
 	~InputVK();
 	
-	static void keyInput(
+	static void keyboardCallback(
 		GLFWwindow* window, 
 		int key, 
 		int scancode, 
 		int action, 
-		int mods);
-	static void mouseInput(GLFWwindow*, double, double);
-	//void onMouseMove();
+		int modKeys);
+
+	static void mouseMoveCallback(GLFWwindow* window, double x, double y);
+	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int modKeys);
 
 	static void addKeyListener(IKeyListener* listener);
 	static void removeKeyListener(IKeyListener* listener);
@@ -29,10 +30,13 @@ public:
 	static void removeMouseListener(IMouseListener* listener);
 	static bool isKeyDown(unsigned int key);
 	static const glm::vec2& getMousePosition();
+	static void setCursorEnabled(bool enabled);
+	static bool isCursorEnabled();
 
 private:
 	InputVK();
 	static void init(WindowVK* window);
+
 private:
 	static bool m_Keys[];
 	static std::set<IKeyListener*> m_KeyListeners;
@@ -40,5 +44,6 @@ private:
 
 	static WindowVK* m_Window;
 
+	static bool m_CursorEnabled;
 	static glm::vec2 m_LastPos;
 };

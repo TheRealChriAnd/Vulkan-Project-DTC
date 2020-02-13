@@ -54,18 +54,18 @@ Mesh* Mesh::createPlane(DeviceVK* device)
 {
 	static const std::vector<glm::vec4> pos =
 	{
-		{-0.5f, -0.5f, 0.0f, 1.0f},
-		{0.5f, -0.5f, 0.0f, 1.0f},
-		{0.5f, 0.5f, 0.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f, 1.0f}
+		{-0.5f, 0.0f, -0.5f, 1.0f},
+		{0.5f, 0.0f, -0.5f, 1.0f},
+		{0.5f, 0.0f, 0.5f, 1.0f},
+		{-0.5f, 0.0f, 0.5f, 1.0f}
 	};
 
 	static const std::vector<glm::vec4> nor =
 	{
-		{0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f, 0.0f, 1.0f, 1.0f},
-		{0.0f, 0.0f, 1.0f, 1.0f}
+		{0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f, 1.0f, 0.0f, 1.0f},
+		{0.0f, 1.0f, 0.0f, 1.0f}
 	};
 
 	static const std::vector<glm::vec2> uv =
