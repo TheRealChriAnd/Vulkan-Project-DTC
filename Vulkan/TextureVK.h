@@ -8,7 +8,8 @@ class BufferVK;
 class TextureVK
 {
 public:
-	TextureVK(DeviceVK* device, uint32_t layers);
+	TextureVK(DeviceVK* device, uint32_t layers = 1);
+	TextureVK(DeviceVK* device, const std::string& file, uint32_t layers = 1);
 	~TextureVK();
 
 	int loadFromFile(std::string filename);

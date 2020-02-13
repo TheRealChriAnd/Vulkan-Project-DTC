@@ -142,7 +142,7 @@ void DeviceVK::createImage(
 	VkImageCreateInfo imageInfo = {};
 	imageInfo.sType				= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType			= VK_IMAGE_TYPE_2D;
-	imageInfo.flags				= flags;
+	//imageInfo.flags				= flags;
 	imageInfo.extent.width		= width;
 	imageInfo.extent.height		= height;
 	imageInfo.extent.depth		= 1;

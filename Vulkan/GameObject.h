@@ -2,48 +2,21 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-class MeshVK;
+class Mesh;
 class DescriptorSetVK;
-class TextureVK;
-class SkyBoxVK;
-class SamplerVK;
-class DeviceVK;
-class SwapChainVK;
-class DescriptorSetLayoutVK;
 class UniformBufferVK;
 
 class GameObject
 {
-	friend class Application;
 public:
-	GameObject(DescriptorSetLayoutVK* layout, MeshVK* mesh, TextureVK* m_Texture, SamplerVK* m_Sampler = m_SamplerDefault);
-	GameObject(DescriptorSetLayoutVK* layout, MeshVK* mesh, SkyBoxVK* texture, SamplerVK* sampler = m_SamplerDefault);
-	~GameObject();
+	GameObject(DescriptorSetVK* descriptorSet, Mesh* mesh, UniformBufferVK* uniformBuffer);
+	virtual ~GameObject();
 
-	void translate(const glm::vec3& offset);
-	void rotate(float angle, const glm::vec3& axle);
-	void scale(float scale);
+	Mesh* getMesh() const;
+	DescriptorSetVK* getDescriptorSet() const;
 
-	void applyTransform();
-
-private:
-	static void init(DeviceVK* device, SwapChainVK* swapChain);
-	static void shutdown();
-
-public:
-	DescriptorSetVK* m_DescriptorSet;
-
-private:
-	MeshVK* m_Mesh;
-	TextureVK* m_Texture;
-	SkyBoxVK* m_SkyBox;
-	SamplerVK* m_Sampler;
+protected:
+	Mesh* m_Mesh;
 	UniformBufferVK* m_UniformBuffer;
-
-	glm::mat4 m_Transform;
-
-	static SamplerVK* m_SamplerDefault;
-	static DeviceVK* m_Device;
-	static SwapChainVK* m_SwapChain;
-	static DescriptorSetLayoutVK* m_Layout;
+	DescriptorSetVK* m_DescriptorSet;
 };

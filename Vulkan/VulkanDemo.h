@@ -1,25 +1,22 @@
 #pragma once
 #include "Application.h"
 #include "Defines.h"
+#include "IKeyListener.h"
+#include "IMouseListener.h"
 
 class DeviceVK;
 
-class DescriptorSetLayoutVK;
-class PipelineVK;
-class DescriptorSetVK;
-class ShaderVK;
-class StorageBufferVK;
-class UniformBufferVK;
 class TextureVK;
 class SamplerVK;
 class CommandBufferVK;
-class IndexBufferVK;
 class CameraVK;
-class SkyBoxVK;
-class MeshVK;
+class LightVK;
+class Mesh;
+class GameObjectSimple;
 class GameObject;
+class RendererSimple;
 
-class VulkanDemo : public Application
+class VulkanDemo : public Application, public IKeyListener, public IMouseListener
 {
 public:
 	VulkanDemo() {};
@@ -30,33 +27,21 @@ public:
 	virtual const std::vector<CommandBufferVK*>& frame() override;
 	virtual void shutdown() override;
 
+	virtual void onKeyPressed(int key) override;
+	virtual void onKeyReleased(int key) override;
+
+	virtual void onMouseButtonPressed(int button) override;
+	virtual void onMouseButtonRelease(int button) override;
+	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
+
 private:
-	DescriptorSetLayoutVK* m_DescriptorSetLayout;
-
-	PipelineVK* m_Pipeline;
-	PipelineVK* m_Pipeline1;
-	DescriptorSetVK* m_DescriptorSet;
-
-	ShaderVK* m_VertexShader;
-	ShaderVK* m_FragmentShader;
-
-	StorageBufferVK* m_StorageBufferPos;
-	StorageBufferVK* m_StorageBufferNor;
-	StorageBufferVK* m_StorageBufferUV;
-	DescriptorSetLayoutVK* m_DescriptorSetLayout2;
-	UniformBufferVK* m_UniformBuffer;
-	StorageBufferVK* m_StorageBufferCol1;
-	UniformBufferVK* m_UniformBuffer1;
-	TextureVK* m_Texture;
-	IndexBufferVK* m_IndexBuffer;
-	IndexBufferVK* m_IndexBuffer1;
-	DescriptorSetVK* m_DescriptorSet2;
 	CameraVK* m_Camera;
-	SkyBoxVK* m_Skybox;
-	SamplerVK* m_SkySampler;
+	LightVK* m_Light;
+	
+	GameObjectSimple* m_GameObject;
+	GameObjectSimple* m_GameObjectGround;
+	RendererSimple* m_RendererSimple;
 
-	MeshVK* m_Mesh;
-	GameObject* m_GameObject;
-
+	std::vector<GameObject*> m_SimpleGameObjects;
 	std::vector<CommandBufferVK*> m_CommandBuffers;
 };

@@ -10,8 +10,8 @@
 #include "RenderPassVK.h"
 #include "CommandBufferVK.h"
 #include "InputVK.h"
-#include "GameObject.h"
 #include "UniformBufferVK.h"
+#include "RES.h"
 
 #include <chrono>
 
@@ -31,8 +31,8 @@ void Application::run()
 
 	createSyncObjects();
 
-	GameObject::init(m_Device, m_SwapChain);
 	InputVK::init(m_Window);
+	RES::init(m_Device);
 	this->init();
 
 	auto lastTime = std::chrono::high_resolution_clock::now();
@@ -59,9 +59,8 @@ void Application::shutdownInternal()
 {
 	vkDeviceWaitIdle(m_Device->getDevice());
 
-	GameObject::shutdown();
-
 	this->shutdown();
+	RES::shutdown();
 
 	delete m_RenderPass;
 
