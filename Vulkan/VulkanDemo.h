@@ -25,13 +25,16 @@ public:
 	virtual void shutdown() override;
 
 private:
-	TextureVK* m_Texture;
 	CameraVK* m_Camera;
 	LightVK* m_Light;
 	SamplerVK* m_Sampler;
 
+	TextureVK* m_Texture;
+	TextureVK* m_TextureGround;
 	Mesh* m_Mesh;
+	Mesh* m_MeshGround;
 	GameObjectSimple* m_GameObject;
+	GameObjectSimple* m_GameObjectGround;
 	RendererSimple* m_RendererSimple;
 
 	std::vector<CommandBufferVK*> m_CommandBuffers;

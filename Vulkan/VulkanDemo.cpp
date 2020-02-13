@@ -30,11 +30,15 @@ void VulkanDemo::init()
 	m_RendererSimple->init();
 
 	m_Texture = new TextureVK(m_Device, 1);
-	m_Texture->loadFromFile("textures/fatboy.png");
+	m_Texture->loadFromFile("textures/test.png");
+
+	m_TextureGround = new TextureVK(m_Device, 1);
+	m_TextureGround->loadFromFile("textures/fatboy.png");
 
 	m_Sampler = new SamplerVK(m_Device);
 
-	m_Mesh = Mesh::createPlane(m_Device);
+	m_MeshGround = Mesh::createPlane(m_Device);
+	m_Mesh = Mesh::fromOBJ(m_Device, "models/box_stack.obj");
 
 	m_Light = new LightVK(
 		glm::vec3(-0.2f, -1.0f, -0.3f),
@@ -43,8 +47,11 @@ void VulkanDemo::init()
 		glm::vec3(1.0f, 1.0f, 1.0f));
 
 	m_RendererSimple->addLight(m_Light);
-
+	m_GameObjectGround = m_RendererSimple->createGameObject(m_MeshGround, m_TextureGround, m_Sampler);
 	m_GameObject = m_RendererSimple->createGameObject(m_Mesh, m_Texture, m_Sampler);
+
+	m_GameObject->applyTransform();
+	m_GameObjectGround->applyTransform();
 
 	CommandBufferVK* m_CommandBuffer = new CommandBufferVK(m_Device, m_SwapChain);
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
@@ -52,7 +59,7 @@ void VulkanDemo::init()
 		m_CommandBuffer->begin(i, (VkCommandBufferUsageFlagBits)0);
 		m_CommandBuffer->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
 	}
-	m_RendererSimple->render(m_CommandBuffer, { m_GameObject });
+	m_RendererSimple->render(m_CommandBuffer, { m_GameObject, m_GameObjectGround });
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		m_CommandBuffer->endRenderPass(i);
@@ -68,7 +75,7 @@ void VulkanDemo::update(float deltaSeconds)
 {
 	m_Camera->update(deltaSeconds);
 
-	m_GameObject->rotate(deltaSeconds, glm::vec3(0, 0, 1.0F));
+	m_GameObject->rotate(deltaSeconds, glm::vec3(0.0F, 1.0F, 0.0F));
 	m_GameObject->applyTransform();
 
 	m_RendererSimple->update(deltaSeconds, m_Camera);
@@ -85,10 +92,13 @@ void VulkanDemo::shutdown()
 		delete buffer;
 
 	delete m_Camera;
-	delete m_Texture;
-	delete m_Mesh;
 	delete m_Light;
 	delete m_RendererSimple;
 	delete m_Sampler;
 	delete m_GameObject;
+	delete m_GameObjectGround;
+	delete m_Texture;
+	delete m_TextureGround;
+	delete m_Mesh;
+	delete m_MeshGround;
 }
