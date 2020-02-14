@@ -95,7 +95,7 @@ void RendererSkyBox::update(float deltaSeconds, CameraVK* camera)
 
 	ubo.camPos = glm::vec4(camera->getPosition(), 1.0F);
 	ubo.view = glm::mat4(glm::mat3(camera->getView()));
-	ubo.proj = glm::perspective(glm::radians(90.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.01f, 500.0f);
+	ubo.proj = glm::perspective(glm::radians(75.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.01f, 500.0f);
 	ubo.proj[1][1] *= -1;
 	ubo.model = glm::scale(glm::mat4(1), glm::vec3(10, 10, 10));
 
