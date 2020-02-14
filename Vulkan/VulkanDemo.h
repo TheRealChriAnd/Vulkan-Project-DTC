@@ -51,6 +51,7 @@ private:
 	GameObjectSimple* m_GameObjectFrontWall;
 	GameObjectSimple* m_GameObjectWindow;
 	GameObjectSimple* m_GameObjectGround;
+	GameObjectSimple* m_GameObjectFloor;
 	GameObjectSimple* m_GameObjectTv;
 	RendererSimple* m_RendererSimple;
 
