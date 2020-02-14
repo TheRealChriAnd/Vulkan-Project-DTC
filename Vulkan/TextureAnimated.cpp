@@ -3,8 +3,9 @@
 #include "BufferVK.h"
 #include "CommandBufferVK.h"
 #include "opencv2/opencv.hpp"
+#include <thread>
 
-TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) : TextureVK(device), m_Timer(0)
+TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) : TextureVK(device), m_Timer(0), m_HasUpdate(false)
 {
 	m_VideoCapture = new cv::VideoCapture(file);
 	double fps = m_VideoCapture->get(cv::CAP_PROP_FPS);
@@ -29,6 +30,8 @@ TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) : Te
 	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height));
 	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	m_Thread = new std::thread(&TextureAnimated::run, this);
 }
 
 TextureAnimated::~TextureAnimated()
@@ -37,7 +40,7 @@ TextureAnimated::~TextureAnimated()
 	delete m_VideoCapture;
 	delete[] m_PixelData;
 	delete m_StagingBuffer;
-	cv::destroyAllWindows();
+	delete m_Thread;
 }
 
 void TextureAnimated::update(float deltaSeconds)
@@ -63,12 +66,20 @@ void TextureAnimated::update(float deltaSeconds)
 		m_PixelData[i + offset + 2] = frame.data[i];
 		offset += 1;
 	}
+	m_HasUpdate = true;
+}
 
-	m_StagingBuffer->writeData(m_PixelData, static_cast<size_t>(m_TotalSize));
+void TextureAnimated::update()
+{
+	if (m_HasUpdate)
+	{
+		m_StagingBuffer->writeData(m_PixelData, static_cast<size_t>(m_TotalSize));
+		m_HasUpdate = false;
 
-	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height));
-	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height));
+		transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
 }
 
 void TextureAnimated::transitionImageLayout(DeviceVK * device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
@@ -150,4 +161,17 @@ void TextureAnimated::copyBufferToImage(DeviceVK * device, const BufferVK & buff
 
 	commandBuffer.end();
 	commandBuffer.submit();
+}
+
+void TextureAnimated::run()
+{
+	auto lastTime = std::chrono::high_resolution_clock::now();
+	while (true)
+	{
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float delta = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
+		lastTime = currentTime;
+
+		update(delta);
+	}
 }

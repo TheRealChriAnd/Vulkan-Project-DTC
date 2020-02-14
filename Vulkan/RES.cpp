@@ -43,7 +43,7 @@ void RES::init(DeviceVK* device)
 
 	TEXTURE_SKYBOX->loadFromFile(texLayers);
 
-	TEXTURE_ANIMATED = new TextureAnimated(device, "videos/Toy Story 3.mp4");
+	TEXTURE_ANIMATED = new TextureAnimated(device, "videos/video.mp4");
 
 	SAMPLER_DEFAULT = new SamplerVK(device);
 
