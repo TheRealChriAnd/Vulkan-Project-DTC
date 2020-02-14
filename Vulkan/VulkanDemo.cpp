@@ -23,35 +23,31 @@
 #include "InputVK.h"
 #include "TextureSkyBox.h"
 
-struct UniformBufferObject
+void VulkanDemo::preInit()
 {
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
-};
-
-void VulkanDemo::init()
-{
-	InputVK::addKeyListener(this);
-	InputVK::addMouseListener(this);
-
-	m_RendererSimple = new RendererSimple(m_Device, m_SwapChain, m_RenderPass);
-	m_RendererSkyBox = new RendererSkyBox(m_Device, m_SwapChain, m_RenderPass);
-	m_RendererSimple->init();
-	m_RendererSkyBox->init();
-
 	m_Light = new LightVK(
 		glm::vec3(-0.2f, -1.0f, -0.3f),
 		glm::vec3(1.0f, 1.0f, 1.0f),
 		glm::vec3(0.5f, 0.5f, 0.5f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 
+	m_Camera = new CameraVK();
+}
+
+void VulkanDemo::onSwapChainCreated()
+{
+	m_RendererSimple = new RendererSimple(m_Device, m_SwapChain, m_RenderPass);
+	m_RendererSkyBox = new RendererSkyBox(m_Device, m_SwapChain, m_RenderPass);
+	m_RendererSimple->init();
+	m_RendererSkyBox->init();
+
 	m_RendererSimple->addLight(m_Light);
 
 	m_GameObjectScreen = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_ANIMATED, RES::SAMPLER_DEFAULT);
 	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FLOOR, RES::SAMPLER_DEFAULT);
 	m_GameObjectSofa = m_RendererSimple->createGameObject(RES::MESH_SOFA, RES::TEXTURE_SOFA, RES::SAMPLER_DEFAULT);
-	m_GameObjectWall_1 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);
-	m_GameObjectWall_2 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);
+	//m_GameObjectWall_1 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);
+	//m_GameObjectWall_2 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);
 	m_GameObjectRightWall = m_RendererSimple->createGameObject(RES::MESH_WALL2, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
 	m_GameObjectFrontWall = m_RendererSimple->createGameObject(RES::MESH_WALL2, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
 	m_GameObjectWindow = m_RendererSimple->createGameObject(RES::MESH_WINDOW, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
@@ -68,16 +64,8 @@ void VulkanDemo::init()
 	m_GameObjectGround->scale(10);
 	m_GameObjectGround->applyTransform();
 
-	m_GameObjectWall_1->rotate(3.14/2, glm::vec3(0.0f, 1.0f, 0.0f));
-	m_GameObjectWall_1->translate(glm::vec3(-1.5f, 0.0f, -3.0f));
-	m_GameObjectWall_1->applyTransform();
-
-	m_GameObjectWall_2->rotate(3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
-	m_GameObjectWall_2->translate(glm::vec3(1.5f, 0.0f, -3.0f));
-	m_GameObjectWall_2->applyTransform();
-
-	m_GameObjectRightWall->rotate(3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
-	m_GameObjectRightWall->translate(glm::vec3(0.0f, 0.0f, -3.5f));
+	m_GameObjectRightWall->rotate(-3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectRightWall->translate(glm::vec3(0.0f, 0.0f, 3.0f));
 	m_GameObjectRightWall->applyTransform();
 
 	m_GameObjectFrontWall->translate(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -93,8 +81,6 @@ void VulkanDemo::init()
 
 	m_SimpleGameObjects.push_back(m_GameObjectScreen);
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
-	m_SimpleGameObjects.push_back(m_GameObjectWall_1);
-	m_SimpleGameObjects.push_back(m_GameObjectWall_2);
 	m_SimpleGameObjects.push_back(m_GameObjectRightWall);
 	m_SimpleGameObjects.push_back(m_GameObjectFrontWall);
 	m_SimpleGameObjects.push_back(m_GameObjectWindow);
@@ -116,8 +102,29 @@ void VulkanDemo::init()
 	}
 
 	m_CommandBuffers.push_back(m_CommandBuffer);
+}
 
-	m_Camera = new CameraVK();
+void VulkanDemo::onSwapChainReleased()
+{
+	for (CommandBufferVK* buffer : m_CommandBuffers)
+		delete buffer;
+
+	for (GameObject* gameObject : m_SimpleGameObjects)
+		delete gameObject;
+
+	m_CommandBuffers.clear();
+	m_SimpleGameObjects.clear();
+
+	delete m_RendererSimple;
+	delete m_RendererSkyBox;
+
+	delete m_GameObjectSkyBox;
+}
+
+void VulkanDemo::init()
+{
+	InputVK::addKeyListener(this);
+	InputVK::addMouseListener(this);
 }
 
 void VulkanDemo::update(float deltaSeconds)
@@ -140,18 +147,8 @@ void VulkanDemo::shutdown()
 	InputVK::removeKeyListener(this);
 	InputVK::removeMouseListener(this);
 
-	for (CommandBufferVK* buffer : m_CommandBuffers)
-		delete buffer;
-
-	for (GameObject* gameObject : m_SimpleGameObjects)
-		delete gameObject;
-
 	delete m_Camera;
 	delete m_Light;
-	delete m_RendererSimple;
-
-	delete m_GameObjectSkyBox;
-	delete m_RendererSkyBox;
 }
 
 void VulkanDemo::onKeyPressed(int key)

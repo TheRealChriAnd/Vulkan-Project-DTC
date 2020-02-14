@@ -18,7 +18,6 @@ SamplerVK* RES::SAMPLER_DEFAULT = nullptr;
 Mesh* RES::MESH_PLANE			= nullptr;
 
 Mesh* RES::MESH_SOFA			= nullptr;
-Mesh* RES::MESH_WALL1			= nullptr;
 Mesh* RES::MESH_WALL2			= nullptr;
 Mesh* RES::MESH_WINDOW			= nullptr;
 Mesh* RES::MESH_TV				= nullptr;
@@ -52,10 +51,9 @@ void RES::init(DeviceVK* device)
 	MESH_SOFA		= Mesh::fromOBJ(device, "models/sofa.obj");
 	TEXTURE_SOFA	= new Texture2D(device, "textures/sofa_cloth.jpg");
 
-	MESH_WALL1		= Mesh::fromOBJ(device, "models/wall.obj");
 	MESH_WALL2		= Mesh::fromOBJ(device, "models/thinwall.obj");
 	TEXTURE_WALL	= new Texture2D(device, "textures/wall/plywood_texture.jpg");
-	TEXTURE_THIN	= new Texture2D(device, "textures/walltexture.jfif");
+	TEXTURE_THIN	= new Texture2D(device, "textures/walltexture.jpg");
 
 	MESH_WINDOW		= Mesh::fromOBJ(device, "models/window.obj");
 	MESH_TV			= Mesh::fromOBJ(device, "models/tv.obj");
@@ -83,7 +81,6 @@ void RES::shutdown()
 	delete MESH_PLANE;
 
 	delete MESH_SOFA;
-	delete MESH_WALL1;
 	delete MESH_WALL2;
 	delete MESH_WINDOW;
 	delete MESH_TV;

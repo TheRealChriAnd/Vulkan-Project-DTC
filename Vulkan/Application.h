@@ -17,13 +17,19 @@ public:
 	void run();
 
 protected:
+	virtual void preInit() = 0;
 	virtual void init() = 0;
 	virtual void update(float deltaSeconds) = 0;
 	virtual const std::vector<CommandBufferVK*>& frame() = 0;
 	virtual void shutdown() = 0;
 
+	virtual void onSwapChainReleased() = 0;
+	virtual void onSwapChainCreated() = 0;
+
 private:
 	void shutdownInternal();
+	void createSwapChainInternal();
+	void releaseSwapChainInternal();
 	void createSyncObjects();
 	void drawFrame(uint32_t imageIndex);
 

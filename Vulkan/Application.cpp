@@ -24,15 +24,14 @@ void Application::run()
 {
 	m_Window = new WindowVK("Vulkan Project", 1080, 720);
 	m_Device = new DeviceVK(m_Window, enableValidationLayers);
-	m_SwapChain = new SwapChainVK(m_Window, m_Device);
-	m_RenderPass = new RenderPassVK(m_Device, m_SwapChain);
 
-	m_SwapChain->createFramebuffers(m_Device, m_RenderPass);
+	RES::init(m_Device);
 
+	this->preInit();
+	createSwapChainInternal();
 	createSyncObjects();
 
 	InputVK::init(m_Window);
-	RES::init(m_Device);
 	this->init();
 
 	auto lastTime = std::chrono::high_resolution_clock::now();
@@ -47,6 +46,13 @@ void Application::run()
 		m_Device->waitForFence(&m_InFlightFences[currentFrame]);
 		uint32_t imageIndex = m_SwapChain->acquireNextImage(m_ImageAvailableSemaphores[currentFrame], currentFrame);
 
+		if (imageIndex == -1)
+		{
+			releaseSwapChainInternal();
+			createSwapChainInternal();
+			continue;
+		}
+
 		this->update(delta);
 		UniformBufferVK::transfer();
 		drawFrame(imageIndex);
@@ -60,9 +66,8 @@ void Application::shutdownInternal()
 	vkDeviceWaitIdle(m_Device->getDevice());
 
 	this->shutdown();
+	releaseSwapChainInternal();
 	RES::shutdown();
-
-	delete m_RenderPass;
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
@@ -71,9 +76,23 @@ void Application::shutdownInternal()
 		vkDestroyFence(m_Device->getDevice(), m_InFlightFences[i], nullptr);
 	}
 
-	delete m_SwapChain;
 	delete m_Device;
 	delete m_Window;
+}
+
+void Application::createSwapChainInternal()
+{
+	m_SwapChain = new SwapChainVK(m_Window, m_Device);
+	m_RenderPass = new RenderPassVK(m_Device, m_SwapChain);
+	m_SwapChain->createFramebuffers(m_Device, m_RenderPass);
+	this->onSwapChainCreated();
+}
+
+void Application::releaseSwapChainInternal()
+{
+	this->onSwapChainReleased();
+	delete m_RenderPass;
+	delete m_SwapChain;
 }
 
 void Application::createSyncObjects()

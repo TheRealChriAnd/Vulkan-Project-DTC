@@ -24,10 +24,14 @@ public:
 	VulkanDemo() {};
 	virtual ~VulkanDemo() {};
 
+	virtual void preInit() override;
 	virtual void init() override;
 	virtual void update(float deltaSeconds) override;
 	virtual const std::vector<CommandBufferVK*>& frame() override;
 	virtual void shutdown() override;
+	
+	virtual void onSwapChainReleased() override;
+	virtual void onSwapChainCreated() override;
 
 	virtual void onKeyPressed(int key) override;
 	virtual void onKeyReleased(int key) override;
@@ -43,8 +47,6 @@ private:
 	GameObjectSimple* m_GameObjectScreen;
 
 	GameObjectSimple* m_GameObjectSofa;
-	GameObjectSimple* m_GameObjectWall_1;
-	GameObjectSimple* m_GameObjectWall_2;
 	GameObjectSimple* m_GameObjectRightWall;
 	GameObjectSimple* m_GameObjectFrontWall;
 	GameObjectSimple* m_GameObjectWindow;
