@@ -39,9 +39,10 @@ private:
 	LightVK* m_Light;
 	
 	GameObjectSimple* m_GameObjectSofa;
-	GameObjectSimple* m_GameObjectWall1;
-	GameObjectSimple* m_GameObjectWall2;
-	GameObjectSimple* m_GameObjectThinWall;
+	GameObjectSimple* m_GameObjectWall_1;
+	GameObjectSimple* m_GameObjectWall_2;
+	GameObjectSimple* m_GameObjectRightWall;
+	GameObjectSimple* m_GameObjectFrontWall;
 	GameObjectSimple* m_GameObjectWindow;
 	GameObjectSimple* m_GameObjectGround;
 	GameObjectSimple* m_GameObjectTv;

@@ -12,6 +12,10 @@ class RES
 public:
 	static TextureVK* TEXTURE_TEST;
 	static TextureVK* TEXTURE_FATBOY;
+	static TextureVK* TEXTURE_WALL;
+	static TextureVK* TEXTURE_THIN;
+	static TextureVK* TEXTURE_SOFA;
+	static TextureVK* TEXTURE_TV;
 
 	static SamplerVK* SAMPLER_DEFAULT;
 	
