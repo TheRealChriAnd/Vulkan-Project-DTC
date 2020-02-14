@@ -1,15 +1,13 @@
 #include "RES.h"
 
 
-TextureVK* RES::TEXTURE_TEST	= nullptr;
-TextureVK* RES::TEXTURE_FATBOY	= nullptr;
-TextureVK* RES::TEXTURE_WALL	= nullptr;
-TextureVK* RES::TEXTURE_THIN	= nullptr;
-TextureVK* RES::TEXTURE_SOFA	= nullptr;
-TextureVK* RES::TEXTURE_TV		= nullptr;
-
 Texture2D* RES::TEXTURE_TEST	= nullptr;
 Texture2D* RES::TEXTURE_FATBOY	= nullptr;
+Texture2D* RES::TEXTURE_WALL	= nullptr;
+Texture2D* RES::TEXTURE_THIN	= nullptr;
+Texture2D* RES::TEXTURE_SOFA	= nullptr;
+Texture2D* RES::TEXTURE_TV		= nullptr;
+
 
 TextureSkyBox* RES::TEXTURE_SKYBOX = nullptr;
 
@@ -48,16 +46,16 @@ void RES::init(DeviceVK* device)
 	MESH_PLANE		= Mesh::createPlane(device);
 
 	MESH_SOFA		= Mesh::fromOBJ(device, "models/sofa.obj");
-	TEXTURE_SOFA	= new TextureVK(device, "textures/cloth_dif.jpg");
+	TEXTURE_SOFA	= new Texture2D(device, "textures/cloth_dif.jpg");
 
 	MESH_WALL1		= Mesh::fromOBJ(device, "models/wall.obj");
 	MESH_WALL2		= Mesh::fromOBJ(device, "models/thinwall.obj");
-	TEXTURE_WALL	= new TextureVK(device, "textures/wall/plywood_texture.jpg");
-	TEXTURE_THIN	= new TextureVK(device, "textures/walltexture.jfif");
+	TEXTURE_WALL	= new Texture2D(device, "textures/wall/plywood_texture.jpg");
+	TEXTURE_THIN	= new Texture2D(device, "textures/walltexture.jfif");
 
 	MESH_WINDOW		= Mesh::fromOBJ(device, "models/window.obj");
 	MESH_TV			= Mesh::fromOBJ(device, "models/tv.obj");
-	TEXTURE_TV	= new TextureVK(device, "textures/blackgloss.jfif");
+	TEXTURE_TV	= new Texture2D(device, "textures/blackgloss.jfif");
 
 	MESH_CUBE		= Mesh::createCube(device);
 	MESH_TEST		= Mesh::fromOBJ(device, "models/box_stack.obj");

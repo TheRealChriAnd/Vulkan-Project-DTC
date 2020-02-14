@@ -11,10 +11,10 @@ class RES
 {
 	friend class Application;
 public:
-	static TextureVK* TEXTURE_WALL;
-	static TextureVK* TEXTURE_THIN;
-	static TextureVK* TEXTURE_SOFA;
-	static TextureVK* TEXTURE_TV;
+	static Texture2D* TEXTURE_WALL;
+	static Texture2D* TEXTURE_THIN;
+	static Texture2D* TEXTURE_SOFA;
+	static Texture2D* TEXTURE_TV;
 	static Texture2D* TEXTURE_TEST;
 	static Texture2D* TEXTURE_FATBOY;
 
