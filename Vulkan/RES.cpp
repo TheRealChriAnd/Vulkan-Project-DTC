@@ -2,7 +2,7 @@
 
 
 Texture2D* RES::TEXTURE_TEST	= nullptr;
-Texture2D* RES::TEXTURE_FATBOY	= nullptr;
+Texture2D* RES::TEXTURE_FLOOR	= nullptr;
 Texture2D* RES::TEXTURE_WALL	= nullptr;
 Texture2D* RES::TEXTURE_THIN	= nullptr;
 Texture2D* RES::TEXTURE_SOFA	= nullptr;
@@ -29,7 +29,7 @@ Mesh* RES::MESH_TEST			= nullptr;
 void RES::init(DeviceVK* device)
 {
 	TEXTURE_TEST	= new Texture2D(device, "textures/test.png");
-	TEXTURE_FATBOY	= new Texture2D(device, "textures/fatboy.png");
+	TEXTURE_FLOOR = new Texture2D(device, "textures/floor.jfif");
 
 	TEXTURE_SKYBOX = new TextureSkyBox(device);
 
@@ -50,7 +50,7 @@ void RES::init(DeviceVK* device)
 	MESH_PLANE		= Mesh::createPlane(device);
 
 	MESH_SOFA		= Mesh::fromOBJ(device, "models/sofa.obj");
-	TEXTURE_SOFA	= new Texture2D(device, "textures/cloth_dif.jpg");
+	TEXTURE_SOFA	= new Texture2D(device, "textures/sofa_cloth.jpg");
 
 	MESH_WALL1		= Mesh::fromOBJ(device, "models/wall.obj");
 	MESH_WALL2		= Mesh::fromOBJ(device, "models/thinwall.obj");
@@ -68,7 +68,7 @@ void RES::init(DeviceVK* device)
 void RES::shutdown()
 {
 	delete TEXTURE_TEST;
-	delete TEXTURE_FATBOY;
+	delete TEXTURE_FLOOR;
 	delete TEXTURE_WALL;
 	delete TEXTURE_THIN;
 	delete TEXTURE_SOFA;
