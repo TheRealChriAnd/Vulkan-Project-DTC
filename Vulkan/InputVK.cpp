@@ -31,6 +31,9 @@ void InputVK::init(WindowVK* window)
 
 void InputVK::keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int modKeys)
 {
+	if (key < 0)
+		return;
+
 	if (action == GLFW_PRESS) 
 	{
 		m_Keys[key] = true;	
