@@ -11,6 +11,8 @@ Texture2D* RES::TEXTURE_TV		= nullptr;
 
 TextureSkyBox* RES::TEXTURE_SKYBOX = nullptr;
 
+TextureAnimated* RES::TEXTURE_ANIMATED = nullptr;
+
 SamplerVK* RES::SAMPLER_DEFAULT = nullptr;
 
 Mesh* RES::MESH_PLANE			= nullptr;
@@ -41,6 +43,8 @@ void RES::init(DeviceVK* device)
 
 	TEXTURE_SKYBOX->loadFromFile(texLayers);
 
+	TEXTURE_ANIMATED = new TextureAnimated(device, "videos/Toy Story 3.mp4");
+
 	SAMPLER_DEFAULT = new SamplerVK(device);
 
 	MESH_PLANE		= Mesh::createPlane(device);
@@ -64,12 +68,15 @@ void RES::init(DeviceVK* device)
 void RES::shutdown()
 {
 	delete TEXTURE_TEST;
-	delete TEXTURE_SKYBOX;
 	delete TEXTURE_FATBOY;
 	delete TEXTURE_WALL;
 	delete TEXTURE_THIN;
 	delete TEXTURE_SOFA;
 	delete TEXTURE_TV;
+
+	delete TEXTURE_SKYBOX;
+
+	delete TEXTURE_ANIMATED;
 
 	delete SAMPLER_DEFAULT;
 

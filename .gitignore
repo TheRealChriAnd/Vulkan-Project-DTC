@@ -42,3 +42,4 @@ Vulkan/shaders/VertexShader.spv
 Vulkan/shaders/VertexShader_.vert
 Vulkan/shaders/FragmentShader.spv
 Vulkan/shaders/FragmentShader_.frag
+*.mp4

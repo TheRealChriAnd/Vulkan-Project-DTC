@@ -119,6 +119,8 @@ void VulkanDemo::update(float deltaSeconds)
 
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
+
+	RES::TEXTURE_ANIMATED->update(deltaSeconds);
 }
 
 const std::vector<CommandBufferVK*>& VulkanDemo::frame()
