@@ -1,32 +1,24 @@
 #pragma once
 #include "Defines.h"
-#include <string>
 
 class DeviceVK;
-class BufferVK;
 
 class TextureVK
 {
 public:
-	TextureVK(DeviceVK* device, uint32_t layers = 1);
-	TextureVK(DeviceVK* device, const std::string& file, uint32_t layers = 1);
-	~TextureVK();
-
-	int loadFromFile(std::string filename);
+	TextureVK(DeviceVK* device);
+	virtual ~TextureVK();
 
 	VkImageView getImageView() const;
-	uint32_t getImageLayers() const;
+	VkImage getImage() const;
+	VkDeviceMemory getDeviceMemory() const;
 
 private:
-	void createTextureImage(DeviceVK* device, const std::string& file);
-	void transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-	void copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height);
 
-private:
+protected:
 	VkImage m_Image;
 	VkImageView m_ImageView;
 	VkDeviceMemory m_ImageMemory;
 
-	uint32_t m_Layers;
 	DeviceVK* m_Device;
 };

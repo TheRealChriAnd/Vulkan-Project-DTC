@@ -1,6 +1,7 @@
 #pragma once
 
-#include "TextureVK.h"
+#include "Texture2D.h"
+#include "TextureSkyBox.h"
 #include "SamplerVK.h"
 #include "Mesh.h"
 
@@ -10,12 +11,14 @@ class RES
 {
 	friend class Application;
 public:
-	static TextureVK* TEXTURE_TEST;
-	static TextureVK* TEXTURE_FATBOY;
 	static TextureVK* TEXTURE_WALL;
 	static TextureVK* TEXTURE_THIN;
 	static TextureVK* TEXTURE_SOFA;
 	static TextureVK* TEXTURE_TV;
+	static Texture2D* TEXTURE_TEST;
+	static Texture2D* TEXTURE_FATBOY;
+
+	static TextureSkyBox* TEXTURE_SKYBOX;
 
 	static SamplerVK* SAMPLER_DEFAULT;
 	
@@ -25,6 +28,8 @@ public:
 	static Mesh* MESH_WALL2;
 	static Mesh* MESH_WINDOW;
 	static Mesh* MESH_TV;
+	static Mesh* MESH_CUBE;
+	static Mesh* MESH_TEST;
 
 private:
 	static void init(DeviceVK* device);

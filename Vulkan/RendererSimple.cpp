@@ -21,19 +21,6 @@
 
 #define BINDING_UCL 0
 
-struct UniformBufferObject
-{
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
-
-	glm::vec4 dir;
-	glm::vec4 ambient;
-	glm::vec4 diffuse;
-	glm::vec4 specular;
-
-	glm::vec4 camPos;
-};
-
 RendererSimple::RendererSimple(DeviceVK* device, SwapChainVK* swapChain, RenderPassVK* renderPass) : IRenderer(device, swapChain, renderPass)
 {
 
@@ -123,7 +110,7 @@ void RendererSimple::update(float deltaSeconds, CameraVK* camera)
 
 	ubo.camPos = glm::vec4(camera->getPosition(), 1.0F);
 	ubo.view = camera->getView();
-	ubo.proj = glm::perspective(glm::radians(45.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.1f, 10.0f);
+	ubo.proj = glm::perspective(glm::radians(90.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.01f, 500.0f);
 	ubo.proj[1][1] *= -1;
 
 	if (!m_Lights.empty())
