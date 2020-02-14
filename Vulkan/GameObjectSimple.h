@@ -16,6 +16,7 @@ public:
 	void translate(const glm::vec3& offset);
 	void rotate(float angle, const glm::vec3& axle);
 	void scale(float scale);
+	void scale(const glm::vec3& scale);
 
 	void applyTransform();
 

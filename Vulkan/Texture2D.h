@@ -9,7 +9,7 @@ class Texture2D : public TextureVK
 {
 public:
 	Texture2D(DeviceVK* device, const std::string& file);
-	~Texture2D();
+	virtual ~Texture2D();
 
 private:
 	void createTextureImage(DeviceVK* device, const std::string& file);

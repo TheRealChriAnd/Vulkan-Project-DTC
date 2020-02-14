@@ -34,6 +34,11 @@ void GameObjectSimple::scale(float scale)
 	m_Transform = glm::scale(m_Transform, glm::vec3(scale, scale, scale));
 }
 
+void GameObjectSimple::scale(const glm::vec3& scale)
+{
+	m_Transform = glm::scale(m_Transform, scale);
+}
+
 void GameObjectSimple::applyTransform()
 {
 	m_UniformBuffer->setData(&m_Transform);
