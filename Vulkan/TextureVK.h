@@ -1,7 +1,9 @@
 #pragma once
 #include "Defines.h"
+#include <vector>
 
 class DeviceVK;
+class BufferVK;
 
 class TextureVK
 {
@@ -13,7 +15,9 @@ public:
 	VkImage getImage() const;
 	VkDeviceMemory getDeviceMemory() const;
 
-private:
+protected:
+	void transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1);
+	void copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions);
 
 protected:
 	VkImage m_Image;
