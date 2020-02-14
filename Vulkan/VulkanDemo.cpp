@@ -48,7 +48,7 @@ void VulkanDemo::init()
 
 	m_RendererSimple->addLight(m_Light);
 
-	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FATBOY, RES::SAMPLER_DEFAULT);
+	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FLOOR, RES::SAMPLER_DEFAULT);
 	m_GameObjectSofa = m_RendererSimple->createGameObject(RES::MESH_SOFA, RES::TEXTURE_SOFA, RES::SAMPLER_DEFAULT);
 	m_GameObjectWall_1 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);
 	m_GameObjectWall_2 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);

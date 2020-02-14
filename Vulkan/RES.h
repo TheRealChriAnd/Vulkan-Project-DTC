@@ -17,7 +17,7 @@ public:
 	static Texture2D* TEXTURE_SOFA;
 	static Texture2D* TEXTURE_TV;
 	static Texture2D* TEXTURE_TEST;
-	static Texture2D* TEXTURE_FATBOY;
+	static Texture2D* TEXTURE_FLOOR;
 
 	static TextureSkyBox* TEXTURE_SKYBOX;
 
