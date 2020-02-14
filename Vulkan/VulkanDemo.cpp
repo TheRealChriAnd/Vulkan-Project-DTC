@@ -48,6 +48,7 @@ void VulkanDemo::init()
 
 	m_RendererSimple->addLight(m_Light);
 
+	m_GameObjectScreen = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_ANIMATED, RES::SAMPLER_DEFAULT);
 	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FATBOY, RES::SAMPLER_DEFAULT);
 	m_GameObjectSofa = m_RendererSimple->createGameObject(RES::MESH_SOFA, RES::TEXTURE_SOFA, RES::SAMPLER_DEFAULT);
 	m_GameObjectWall_1 = m_RendererSimple->createGameObject(RES::MESH_WALL1, RES::TEXTURE_WALL, RES::SAMPLER_DEFAULT);
@@ -58,6 +59,12 @@ void VulkanDemo::init()
 	m_GameObjectTv = m_RendererSimple->createGameObject(RES::MESH_TV, RES::TEXTURE_TV, RES::SAMPLER_DEFAULT);
 
 	m_GameObjectSkyBox = m_RendererSkyBox->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SKYBOX, RES::SAMPLER_DEFAULT);
+
+	m_GameObjectScreen->scale(glm::vec3(3.0f, 1.555f, 1.0f));
+	m_GameObjectScreen->translate(glm::vec3(0.0f, 0.895f, 3.0f));
+	m_GameObjectScreen->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
+	m_GameObjectScreen->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectScreen->applyTransform();
 
 	m_GameObjectGround->scale(10);
 	m_GameObjectGround->applyTransform();
@@ -85,6 +92,7 @@ void VulkanDemo::init()
 	m_GameObjectTv->translate(glm::vec3(0.0f, 0.5f, -3.0f));
 	m_GameObjectTv->applyTransform();
 
+	m_SimpleGameObjects.push_back(m_GameObjectScreen);
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
 	m_SimpleGameObjects.push_back(m_GameObjectWall_1);
 	m_SimpleGameObjects.push_back(m_GameObjectWall_2);

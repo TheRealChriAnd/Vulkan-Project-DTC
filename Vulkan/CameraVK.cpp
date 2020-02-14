@@ -31,7 +31,7 @@ CameraVK::CameraVK()
 
 
 	m_Sensitivity = 0.005f;
-	m_CameraSpeed = 0.005f;
+	m_CameraSpeed = 0.01f;
 
 	onMouseMove(glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
 

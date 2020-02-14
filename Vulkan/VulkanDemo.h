@@ -40,6 +40,8 @@ private:
 	CameraVK* m_Camera;
 	LightVK* m_Light;
 	
+	GameObjectSimple* m_GameObjectScreen;
+
 	GameObjectSimple* m_GameObjectSofa;
 	GameObjectSimple* m_GameObjectWall_1;
 	GameObjectSimple* m_GameObjectWall_2;
