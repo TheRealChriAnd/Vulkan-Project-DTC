@@ -31,5 +31,4 @@ private:
 
 	bool m_FirstImage;
 	std::vector<VkBufferImageCopy> bufferCopyRegions;
-	unsigned char* m_PixelData;
 };

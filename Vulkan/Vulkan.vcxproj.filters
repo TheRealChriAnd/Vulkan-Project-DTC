@@ -32,6 +32,7 @@
     <ClCompile Include="GameObjectSkyBox.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="TextureSkyBox.cpp" />
+    <ClCompile Include="TextureAnimated.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -67,6 +68,7 @@
     <ClInclude Include="GameObjectSkyBox.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureSkyBox.h" />
+    <ClInclude Include="TextureAnimated.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\fatboy.png" />

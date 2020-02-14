@@ -18,6 +18,7 @@ TextureSkyBox::~TextureSkyBox()
 void TextureSkyBox::loadFromFile(const TextureLayers& layers)
 {
 	int texChannels;
+	unsigned char* pixelData = nullptr;
 	for (int i = 0; i < IMAGE_LAYERS; i++)
 	{
 		stbi_uc* pixels = stbi_load(layers.fileNames[i].c_str(), &m_Width, &m_Height, &texChannels, STBI_rgb_alpha);
@@ -25,16 +26,16 @@ void TextureSkyBox::loadFromFile(const TextureLayers& layers)
 		{
 			m_SizePerImage = m_Width * m_Height * 4;
 			m_Size = m_SizePerImage * 6;
-			m_PixelData = new stbi_uc[m_Size];
+			pixelData = new stbi_uc[m_Size];
 		}
-		 memcpy(m_PixelData + i * m_SizePerImage, pixels, m_SizePerImage);
+		 memcpy(pixelData + i * m_SizePerImage, pixels, m_SizePerImage);
 		 stbi_image_free(pixels);
 	}
 
 	m_Device->createImage(m_Width, m_Height, IMAGE_LAYERS, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 	BufferVK buffer(m_Device, m_Size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-	buffer.writeData(m_PixelData, static_cast<size_t>(m_Size));
-	delete[] m_PixelData;
+	buffer.writeData(pixelData, static_cast<size_t>(m_Size));
+	delete[] pixelData;
 
 	for (int i = 0; i < IMAGE_LAYERS; i++)
 	{

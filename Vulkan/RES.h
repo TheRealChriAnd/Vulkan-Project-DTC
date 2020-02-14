@@ -2,6 +2,7 @@
 
 #include "Texture2D.h"
 #include "TextureSkyBox.h"
+#include "TextureAnimated.h"
 #include "SamplerVK.h"
 #include "Mesh.h"
 
@@ -15,6 +16,8 @@ public:
 	static Texture2D* TEXTURE_FATBOY;
 
 	static TextureSkyBox* TEXTURE_SKYBOX;
+
+	static TextureAnimated* TEXTURE_ANIMATED;
 
 	static SamplerVK* SAMPLER_DEFAULT;
 	

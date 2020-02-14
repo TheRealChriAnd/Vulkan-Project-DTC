@@ -4,7 +4,6 @@
 #include "CommandBufferVK.h"
 #include "stb_image.h"
 #include <iostream>
-//#include "TextureSkyBox.h"
 
 Texture2D::Texture2D(DeviceVK* device, const std::string& file) : TextureVK(device)
 {
@@ -27,15 +26,15 @@ void Texture2D::createTextureImage(DeviceVK * device, const std::string & file)
 	if (!pixels)
 		throw std::runtime_error("Error: Failed to load texture image!");
 
-	BufferVK buffer(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-	buffer.writeData(pixels, static_cast<size_t>(imageSize));
+	BufferVK stagingBuffer(device, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+	stagingBuffer.writeData(pixels, static_cast<size_t>(imageSize));
 
 	stbi_image_free(pixels);
 
 	device->createImage(texWidth, texHeight, 1, 0, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 
 	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	copyBufferToImage(device, buffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	copyBufferToImage(device, stagingBuffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 	transitionImageLayout(device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 }
 

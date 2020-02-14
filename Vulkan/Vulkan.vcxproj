@@ -89,14 +89,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libraries\opencv\build\include;$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)libraries\opencv\build\x64\vc15\lib;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,14 +106,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libraries\opencv\build\include;$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)libraries\opencv\build\x64\vc15\lib;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;opencv_world420d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libraries\opencv\build\include;$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -133,8 +133,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)libraries\opencv\build\x64\vc15\lib;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;opencv_world420.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,7 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libraries\opencv\build\include;$(SolutionDir)libraries\Vulkan\1.1.130.0\Include;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\include;$(SolutionDir)libraries\glm;$(SolutionDir)libraries\tiny_obj_loader;$(SolutionDir)libraries\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -154,8 +154,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)libraries\opencv\build\x64\vc15\lib;$(SolutionDir)libraries\glfw-3.3.2.bin.WIN64\lib-vc2017;$(SolutionDir)libraries\Vulkan\1.1.130.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;opencv_world420.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -184,6 +184,7 @@
     <ClCompile Include="ShaderVK.cpp" />
     <ClCompile Include="SwapChainVK.cpp" />
     <ClCompile Include="Texture2D.cpp" />
+    <ClCompile Include="TextureAnimated.cpp" />
     <ClCompile Include="TextureSkyBox.cpp" />
     <ClCompile Include="TextureVK.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="ShaderVK.h" />
     <ClInclude Include="SwapChainVK.h" />
     <ClInclude Include="Texture2D.h" />
+    <ClInclude Include="TextureAnimated.h" />
     <ClInclude Include="TextureSkyBox.h" />
     <ClInclude Include="TextureVK.h" />
     <ClInclude Include="UniformBufferVK.h" />

@@ -48,10 +48,12 @@ void VulkanDemo::init()
 
 	m_RendererSimple->addLight(m_Light);
 
-	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_FATBOY, RES::SAMPLER_DEFAULT);
-	m_GameObject = m_RendererSimple->createGameObject(RES::MESH_TEST, RES::TEXTURE_TEST, RES::SAMPLER_DEFAULT);
+	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_ANIMATED, RES::SAMPLER_DEFAULT);
+	m_GameObject = m_RendererSimple->createGameObject(RES::MESH_TEST, RES::TEXTURE_ANIMATED, RES::SAMPLER_DEFAULT);
 
 	m_GameObjectSkyBox = m_RendererSkyBox->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SKYBOX, RES::SAMPLER_DEFAULT);
+
+	m_GameObject->translate(glm::vec3(0, 1, 0));
 
 	m_GameObjectGround->scale(10);
 	m_GameObjectGround->applyTransform();
@@ -87,6 +89,8 @@ void VulkanDemo::update(float deltaSeconds)
 
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
+
+	RES::TEXTURE_ANIMATED->update(deltaSeconds);
 }
 
 const std::vector<CommandBufferVK*>& VulkanDemo::frame()
