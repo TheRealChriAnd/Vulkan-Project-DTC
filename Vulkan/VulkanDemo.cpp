@@ -9,7 +9,6 @@
 #include "SwapChainVK.h"
 #include "RenderPassVK.h"
 #include "TextureVK.h"
-#include "SkyBoxVK.h"
 #include "SamplerVK.h"
 #include "CommandBufferVK.h"
 #include "CameraVK.h"

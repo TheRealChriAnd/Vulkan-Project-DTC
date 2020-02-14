@@ -5,7 +5,6 @@
 #include "DeviceVK.h"
 #include "DescriptorSetVK.h"
 #include "TextureVK.h"
-#include "SkyBoxVK.h"
 #include "SamplerVK.h"
 #include "SwapChainVK.h"
 #include "UniformBufferVK.h"

@@ -3,7 +3,6 @@
 #include "SwapChainVK.h"
 #include "DescriptorSetLayoutVK.h"
 #include "TextureVK.h"
-#include "SkyBoxVK.h"
 #include "UniformBufferVK.h"
 #include "SamplerVK.h"
 #include "StorageBufferVK.h"
