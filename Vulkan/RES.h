@@ -11,6 +11,10 @@ class RES
 {
 	friend class Application;
 public:
+	static TextureVK* TEXTURE_WALL;
+	static TextureVK* TEXTURE_THIN;
+	static TextureVK* TEXTURE_SOFA;
+	static TextureVK* TEXTURE_TV;
 	static Texture2D* TEXTURE_TEST;
 	static Texture2D* TEXTURE_FATBOY;
 
@@ -19,6 +23,11 @@ public:
 	static SamplerVK* SAMPLER_DEFAULT;
 	
 	static Mesh* MESH_PLANE;
+	static Mesh* MESH_SOFA;
+	static Mesh* MESH_WALL1;
+	static Mesh* MESH_WALL2;
+	static Mesh* MESH_WINDOW;
+	static Mesh* MESH_TV;
 	static Mesh* MESH_CUBE;
 	static Mesh* MESH_TEST;
 
