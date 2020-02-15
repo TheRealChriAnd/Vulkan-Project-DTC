@@ -17,6 +17,7 @@ public:
 	static Texture2D* TEXTURE_TV;
 	static Texture2D* TEXTURE_FLOOR;
 	static Texture2D* TEXTURE_GROUND;
+	static Texture2D* TEXTURE_TABLE;
 
 	static TextureSkyBox* TEXTURE_SKYBOX;
 
@@ -30,6 +31,7 @@ public:
 	static Mesh* MESH_WINDOW;
 	static Mesh* MESH_TV;
 	static Mesh* MESH_CUBE;
+	static Mesh* MESH_TABLE;
 
 private:
 	static void init(DeviceVK* device);

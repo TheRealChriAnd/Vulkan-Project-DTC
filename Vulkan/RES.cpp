@@ -5,6 +5,7 @@ Texture2D* RES::TEXTURE_THIN	= nullptr;
 Texture2D* RES::TEXTURE_SOFA	= nullptr;
 Texture2D* RES::TEXTURE_TV		= nullptr;
 Texture2D* RES::TEXTURE_GROUND  = nullptr;
+Texture2D* RES::TEXTURE_TABLE	= nullptr;
 
 TextureSkyBox* RES::TEXTURE_SKYBOX = nullptr;
 
@@ -18,6 +19,7 @@ Mesh* RES::MESH_SOFA			= nullptr;
 Mesh* RES::MESH_WALL2			= nullptr;
 Mesh* RES::MESH_WINDOW			= nullptr;
 Mesh* RES::MESH_TV				= nullptr;
+Mesh* RES::MESH_TABLE			= nullptr;
 
 Mesh* RES::MESH_CUBE			= nullptr;
 
@@ -53,7 +55,10 @@ void RES::init(DeviceVK* device)
 
 	MESH_WINDOW		= Mesh::fromOBJ(device, "models/window.obj");
 	MESH_TV			= Mesh::fromOBJ(device, "models/tv.obj");
-	TEXTURE_TV	= new Texture2D(device, "textures/blackgloss.jfif");
+	TEXTURE_TV		= new Texture2D(device, "textures/blackgloss.jfif");
+
+	MESH_TABLE		= Mesh::fromOBJ(device, "models/coffeetable.obj");
+	TEXTURE_TABLE	= new Texture2D(device, "textures/wood_bump.png");
 
 	MESH_CUBE		= Mesh::createCube(device);
 }
@@ -65,6 +70,7 @@ void RES::shutdown()
 	delete TEXTURE_SOFA;
 	delete TEXTURE_TV;
 	delete TEXTURE_GROUND;
+	delete TEXTURE_TABLE;
 
 	delete TEXTURE_SKYBOX;
 

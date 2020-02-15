@@ -51,6 +51,7 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectFrontWall = m_RendererSimple->createGameObject(RES::MESH_WALL2, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
 	m_GameObjectWindow = m_RendererSimple->createGameObject(RES::MESH_WINDOW, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
 	m_GameObjectTv = m_RendererSimple->createGameObject(RES::MESH_TV, RES::TEXTURE_TV, RES::SAMPLER_DEFAULT);
+	m_GameObjectTable = m_RendererSimple->createGameObject(RES::MESH_TABLE, RES::TEXTURE_TABLE, RES::SAMPLER_DEFAULT);
 
 	m_GameObjectSkyBox = m_RendererSkyBox->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SKYBOX, RES::SAMPLER_DEFAULT);
 
@@ -82,12 +83,16 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTv->translate(glm::vec3(0.0f, 0.5f, -3.3f));
 	m_GameObjectTv->applyTransform();
 
+	m_GameObjectTable->translate(glm::vec3(0.0f, 0.0f, 1.0f));
+	m_GameObjectTable->applyTransform();
+
 	m_SimpleGameObjects.push_back(m_GameObjectScreen);
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
 	m_SimpleGameObjects.push_back(m_GameObjectRightWall);
 	m_SimpleGameObjects.push_back(m_GameObjectFrontWall);
 	m_SimpleGameObjects.push_back(m_GameObjectWindow);
 	m_SimpleGameObjects.push_back(m_GameObjectTv);
+	m_SimpleGameObjects.push_back(m_GameObjectTable);
 	m_SimpleGameObjects.push_back(m_GameObjectFloor);
 	m_SimpleGameObjects.push_back(m_GameObjectGround);
 
