@@ -53,6 +53,7 @@ private:
 	GameObjectSimple* m_GameObjectGround;
 	GameObjectSimple* m_GameObjectFloor;
 	GameObjectSimple* m_GameObjectTv;
+	GameObjectSimple* m_GameObjectTable;
 	RendererSimple* m_RendererSimple;
 
 	GameObject* m_GameObjectSkyBox;
