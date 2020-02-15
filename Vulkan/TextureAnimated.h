@@ -2,6 +2,7 @@
 #include "TextureVK.h"
 #include <string>
 #include <atomic>
+#include "IAsynchronous.h"
 
 class BufferVK;
 
@@ -10,21 +11,21 @@ namespace cv
 	class VideoCapture;
 }
 
-namespace std
-{
-	class thread;
-}
-
-class TextureAnimated : public TextureVK
+class TextureAnimated : public TextureVK, public IAsynchronous
 {
 public:
 	TextureAnimated(DeviceVK* device, const std::string& file);
 	virtual ~TextureAnimated();
 
+	void play();
+	void stop();
 	void submit();
 
+	bool isPlaying() const;
+
+	virtual void updateAsynchronous(float deltaSeconds) override;
+
 private:
-	void run();
 	void update(float deltaSeconds);
 
 private:
@@ -36,8 +37,9 @@ private:
 	int m_TotalSize;
 	int m_Width;
 	int m_Height;
+	int m_FrameCount;
+	int m_CurrentFrame;
 	unsigned char* m_PixelData;
 	std::atomic_bool m_HasUpdate;
-	std::atomic_bool m_Shutdown;
-	std::thread* m_Thread;
+	std::atomic_bool m_Playing;
 };

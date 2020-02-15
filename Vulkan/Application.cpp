@@ -12,12 +12,13 @@
 #include "InputVK.h"
 #include "UniformBufferVK.h"
 #include "RES.h"
+#include "ThreadManager.h"
 
 #include <chrono>
 
 Application::Application()
 {
-	
+	ThreadManager::init();
 }
 
 void Application::run()
@@ -63,6 +64,8 @@ void Application::run()
 
 void Application::shutdownInternal()
 {
+	ThreadManager::shutdown();
+
 	vkDeviceWaitIdle(m_Device->getDevice());
 
 	this->shutdown();

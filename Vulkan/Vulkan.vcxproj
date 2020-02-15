@@ -187,6 +187,7 @@
     <ClCompile Include="TextureAnimated.cpp" />
     <ClCompile Include="TextureSkyBox.cpp" />
     <ClCompile Include="TextureVK.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="UniformBufferVK.cpp" />
     <ClCompile Include="StorageBufferVK.cpp" />
     <ClCompile Include="VulkanDemo.cpp" />
@@ -208,6 +209,8 @@
     <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />
     <ClInclude Include="InputVK.h" />
+    <ClInclude Include="IExecutable.h" />
+    <ClInclude Include="IAsynchronous.h" />
     <ClInclude Include="LightVK.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="Mesh.h" />
@@ -219,6 +222,7 @@
     <ClInclude Include="SamplerVK.h" />
     <ClInclude Include="ShaderVK.h" />
     <ClInclude Include="SwapChainVK.h" />
+    <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="TextureAnimated.h" />
     <ClInclude Include="TextureSkyBox.h" />

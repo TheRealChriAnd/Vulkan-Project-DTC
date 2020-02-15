@@ -129,6 +129,8 @@ void VulkanDemo::init()
 {
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
+
+	RES::TEXTURE_ANIMATED->play();
 }
 
 void VulkanDemo::update(float deltaSeconds)
@@ -158,9 +160,12 @@ void VulkanDemo::shutdown()
 void VulkanDemo::onKeyPressed(int key)
 {
 	if (key == GLFW_KEY_ESCAPE)
-	{
 		InputVK::setCursorEnabled(true);
-	}
+	else if (key == GLFW_KEY_SPACE)
+		if (RES::TEXTURE_ANIMATED->isPlaying())
+			RES::TEXTURE_ANIMATED->stop();
+		else
+			RES::TEXTURE_ANIMATED->play();
 }
 
 void VulkanDemo::onKeyReleased(int key)

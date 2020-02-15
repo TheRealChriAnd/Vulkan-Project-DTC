@@ -3,16 +3,23 @@
 #include "BufferVK.h"
 #include "CommandBufferVK.h"
 #include "opencv2/opencv.hpp"
-#include <thread>
+#include "ThreadManager.h"
 
-TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) : TextureVK(device), m_Timer(0), m_HasUpdate(false), m_Shutdown(false)
+TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) :
+	TextureVK(device),
+	m_Timer(0),
+	m_HasUpdate(false),
+	m_Playing(false),
+	m_FrameCount(0),
+	m_CurrentFrame(0)
 {
 	m_VideoCapture = new cv::VideoCapture(file);
 	double fps = m_VideoCapture->get(cv::CAP_PROP_FPS);
+	m_FrameCount = m_VideoCapture->get(cv::CAP_PROP_FRAME_COUNT);
 	m_SleepTime = 1.0F / fps;
 
 	if (!m_VideoCapture->isOpened())
-		std::cout << "Error opening video stream or file" << std::endl;
+		throw std::runtime_error("Error opening video stream or file!");
 
 	m_Width = m_VideoCapture->get(cv::CAP_PROP_FRAME_WIDTH);
 	m_Height = m_VideoCapture->get(cv::CAP_PROP_FRAME_HEIGHT);
@@ -46,20 +53,27 @@ TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) : Te
 	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), { m_Region });
 	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-	m_Thread = new std::thread(&TextureAnimated::run, this);
 }
 
 TextureAnimated::~TextureAnimated()
 {
-	m_Shutdown = true;
-	m_Thread->join();
-	delete m_Thread;
-
+	this->stop();
 	m_VideoCapture->release();
 	delete m_VideoCapture;
 	delete[] m_PixelData;
 	delete m_StagingBuffer;
+}
+
+void TextureAnimated::play()
+{
+	m_Playing = true;
+	ThreadManager::addAsynchronousService(this);
+}
+
+void TextureAnimated::stop()
+{
+	m_Playing = false;
+	ThreadManager::removeAsynchronousService(this);
 }
 
 void TextureAnimated::submit()
@@ -75,6 +89,28 @@ void TextureAnimated::submit()
 	}
 }
 
+bool TextureAnimated::isPlaying() const
+{
+	return m_Playing;
+}
+
+double timer = 0;
+int ups = 0;
+
+void TextureAnimated::updateAsynchronous(float deltaSeconds)
+{
+	update(deltaSeconds);
+
+	ups++;
+	timer += deltaSeconds;
+	if (timer >= 1.0F)
+	{
+		timer -= 1.0F;
+		std::cout << "UPS: " << ups << std::endl;
+		ups = 0;
+	}
+}
+
 void TextureAnimated::update(float deltaSeconds)
 {
 	m_Timer += deltaSeconds;
@@ -82,6 +118,10 @@ void TextureAnimated::update(float deltaSeconds)
 		return;
 
 	m_Timer -= m_SleepTime;
+	m_CurrentFrame++;
+
+	if (m_CurrentFrame == m_FrameCount)
+		this->stop();
 
 	if (deltaSeconds > m_SleepTime)
 	{
@@ -105,29 +145,4 @@ void TextureAnimated::update(float deltaSeconds)
 		offset += 1;
 	}
 	m_HasUpdate = true;
-}
-
-void TextureAnimated::run()
-{
-	double timer = 0;
-	int ups = 0;
-
-	auto lastTime = std::chrono::high_resolution_clock::now();
-	while (!m_Shutdown)
-	{
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float delta = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
-		lastTime = currentTime;
-
-		update(delta);
-
-		ups++;
-		timer += delta;
-		if (timer >= 1.0F)
-		{
-			timer -= 1.0F;
-			std::cout << "UPS: " << ups << std::endl;
-			ups = 0;
-		}
-	}
 }
