@@ -16,8 +16,11 @@
 
 #include <chrono>
 
+#include "Profiler.h"
+
 Application::Application()
 {
+	Profiler::begin("INIT");
 	ThreadManager::init();
 }
 
@@ -26,15 +29,27 @@ void Application::run()
 	m_Window = new WindowVK("Vulkan Project", 1080, 720);
 	m_Device = new DeviceVK(m_Window, enableValidationLayers);
 
+	Profiler::begin("RESOURCES");
 	RES::init(m_Device);
+	Profiler::end();
 
+	Profiler::begin("PRE_INIT");
 	this->preInit();
+	Profiler::end();
+
 	createSwapChainInternal();
+
+	Profiler::begin("SYNC_OBJECTS");
 	createSyncObjects();
+	Profiler::end();
 
 	InputVK::init(m_Window);
 	this->init();
+	Profiler::end();
 
+	Profiler::printResults();
+
+	float debugTimer = 0;
 	auto lastTime = std::chrono::high_resolution_clock::now();
 	while (!m_Window->shouldClose())
 	{
@@ -43,6 +58,7 @@ void Application::run()
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float delta = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
 		lastTime = currentTime;
+		debugTimer += delta;
 
 		m_Device->waitForFence(&m_InFlightFences[currentFrame]);
 		uint32_t imageIndex = m_SwapChain->acquireNextImage(m_ImageAvailableSemaphores[currentFrame], currentFrame);
@@ -54,12 +70,31 @@ void Application::run()
 			continue;
 		}
 
+		Profiler::begin("UPDATE");
 		this->update(delta);
-		UniformBufferVK::transfer();
-		drawFrame(imageIndex);
-	}
+		Profiler::end();
 
+		Profiler::begin("UNIFORM_BUFFER");
+		UniformBufferVK::transfer();
+		Profiler::end();
+
+		Profiler::begin("FRAME");
+		drawFrame(imageIndex);
+		Profiler::end();
+
+		if (debugTimer >= 1.0F)
+		{
+			debugTimer -= 1.0F;
+			Profiler::printResults();
+		}
+	}
+	Profiler::printResults();
+
+	Profiler::begin("SHUTDOWN");
 	shutdownInternal();
+	Profiler::end();
+
+	Profiler::printResults();
 }
 
 void Application::shutdownInternal()
@@ -85,10 +120,12 @@ void Application::shutdownInternal()
 
 void Application::createSwapChainInternal()
 {
+	Profiler::begin("CREATE");
 	m_SwapChain = new SwapChainVK(m_Window, m_Device);
 	m_RenderPass = new RenderPassVK(m_Device, m_SwapChain);
 	m_SwapChain->createFramebuffers(m_Device, m_RenderPass);
 	this->onSwapChainCreated();
+	Profiler::end();
 }
 
 void Application::releaseSwapChainInternal()

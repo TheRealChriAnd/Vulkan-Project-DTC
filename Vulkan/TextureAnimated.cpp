@@ -106,7 +106,7 @@ void TextureAnimated::updateAsynchronous(float deltaSeconds)
 	if (timer >= 1.0F)
 	{
 		timer -= 1.0F;
-		std::cout << "UPS: " << ups << std::endl;
+		//std::cout << "UPS: " << ups << std::endl;
 		ups = 0;
 	}
 }

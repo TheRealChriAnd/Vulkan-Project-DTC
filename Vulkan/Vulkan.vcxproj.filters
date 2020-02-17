@@ -34,6 +34,7 @@
     <ClCompile Include="TextureSkyBox.cpp" />
     <ClCompile Include="TextureAnimated.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
+    <ClCompile Include="Profiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -73,6 +74,7 @@
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="IExecutable.h" />
     <ClInclude Include="IAsynchronous.h" />
+    <ClInclude Include="Profiler.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\fatboy.png" />
