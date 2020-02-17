@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AccelerationStructure.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BufferVK.cpp" />
     <ClCompile Include="CameraVK.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectSimple.cpp" />
     <ClCompile Include="GameObjectSkyBox.cpp" />
+    <ClCompile Include="HelloRT.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
     <ClCompile Include="InputVK.cpp" />
     <ClCompile Include="LightVK.cpp" />
@@ -193,6 +195,7 @@
     <ClCompile Include="WindowVK.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AccelerationStructure.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BufferVK.h" />
     <ClInclude Include="CameraVK.h" />
@@ -204,6 +207,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObjectSimple.h" />
     <ClInclude Include="GameObjectSkyBox.h" />
+    <ClInclude Include="HelloRT.h" />
     <ClInclude Include="IKeyListener.h" />
     <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />

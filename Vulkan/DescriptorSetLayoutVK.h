@@ -15,6 +15,8 @@ public:
 	void addUniformBuffer(uint16_t binding, VkShaderStageFlags shaderStages);
 	void addTexture(uint16_t binding, VkShaderStageFlagBits shaderStages);
 	void addStorageBuffer(uint16_t binding, VkShaderStageFlags shaderStages);
+	void addAccelerationStructure(uint16_t binding, VkShaderStageFlags shaderStages);
+	void addResultImageLayout(uint16_t binding, VkShaderStageFlags shaderStages);
 	void submit();
 
 private:

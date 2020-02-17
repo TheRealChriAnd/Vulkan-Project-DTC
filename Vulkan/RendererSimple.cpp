@@ -13,13 +13,17 @@
 #include "CameraVK.h"
 #include "LightVK.h"
 
-#define BINDING_POS 0
-#define BINDING_NOR 1
-#define BINDING_UVS 2
-#define BINDING_UBO 3
-#define BINDING_TEX 4
+#define BINDING_G_POS 0
+#define BINDING_G_NOR 1
+#define BINDING_G_UVS 2
+#define BINDING_G_UBO 3
+#define BINDING_G_TEX 4
 
-#define BINDING_UCL 0
+#define BINDING_G_UCL 0
+
+#define BINDING_R_AS 0
+#define BINDING_R_RI 1
+#define BINDING_R_UBO 2
 
 RendererSimple::RendererSimple(DeviceVK* device, SwapChainVK* swapChain, RenderPassVK* renderPass) : IRenderer(device, swapChain, renderPass)
 {
@@ -39,22 +43,24 @@ RendererSimple::~RendererSimple()
 
 void RendererSimple::init()
 {
+	// __GRAPHICS_PIPELINE__
 	m_LayoutCamera = new DescriptorSetLayoutVK(m_Device);
-	m_LayoutCamera->addUniformBuffer(BINDING_UCL, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_LayoutCamera->addUniformBuffer(BINDING_G_UCL, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	m_LayoutCamera->submit();
 
 	m_LayoutObject = new DescriptorSetLayoutVK(m_Device);
-	m_LayoutObject->addStorageBuffer(BINDING_POS, VK_SHADER_STAGE_VERTEX_BIT);
-	m_LayoutObject->addStorageBuffer(BINDING_NOR, VK_SHADER_STAGE_VERTEX_BIT);
-	m_LayoutObject->addStorageBuffer(BINDING_UVS, VK_SHADER_STAGE_VERTEX_BIT);
-	m_LayoutObject->addUniformBuffer(BINDING_UBO, VK_SHADER_STAGE_VERTEX_BIT);
-	m_LayoutObject->addTexture(BINDING_TEX, VK_SHADER_STAGE_FRAGMENT_BIT);
+	m_LayoutObject->addStorageBuffer(BINDING_G_POS, VK_SHADER_STAGE_VERTEX_BIT);
+	m_LayoutObject->addStorageBuffer(BINDING_G_NOR, VK_SHADER_STAGE_VERTEX_BIT);
+	m_LayoutObject->addStorageBuffer(BINDING_G_UVS, VK_SHADER_STAGE_VERTEX_BIT);
+	m_LayoutObject->addUniformBuffer(BINDING_G_UBO, VK_SHADER_STAGE_VERTEX_BIT);
+	m_LayoutObject->addTexture(BINDING_G_TEX, VK_SHADER_STAGE_FRAGMENT_BIT);
+
 	m_LayoutObject->submit();
 
 	m_UniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(UniformBufferObject));
 
 	m_DescriptorSetPerFrame = new DescriptorSetVK(m_Device, m_SwapChain, m_LayoutCamera);
-	m_DescriptorSetPerFrame->addUniformBuffer(BINDING_UCL, m_UniformBuffer);
+	m_DescriptorSetPerFrame->addUniformBuffer(BINDING_G_UCL, m_UniformBuffer);
 	m_DescriptorSetPerFrame->submit();
 
 	m_ShaderVertex = new ShaderVK(m_Device, "shaders/VertexShader.glsl", VK_SHADER_STAGE_VERTEX_BIT);
@@ -69,6 +75,24 @@ void RendererSimple::init()
 	m_Pipeline->addShader(m_ShaderVertex);
 	m_Pipeline->addShader(m_ShaderFragment);
 	m_Pipeline->submit(m_Device, m_RenderPass, m_SwapChain, VK_POLYGON_MODE_FILL);
+
+	// __RAY_TRACING_PIPELINE__
+
+	m_LayoutRayTracing = new DescriptorSetLayoutVK(m_Device);
+	m_LayoutRayTracing->addAccelerationStructure(BINDING_R_AS, VK_SHADER_STAGE_RAYGEN_BIT_NV);
+	m_LayoutRayTracing->addAccelerationStructure(BINDING_R_RI, VK_SHADER_STAGE_RAYGEN_BIT_NV);
+	m_LayoutRayTracing->addAccelerationStructure(BINDING_R_UBO, VK_SHADER_STAGE_RAYGEN_BIT_NV);
+
+	m_LayoutRayTracing->submit();
+
+	m_ShaderRaygen = new ShaderVK(m_Device, "shaders/Raygen.rgen", VK_SHADER_STAGE_RAYGEN_BIT_NV);
+	m_ShaderRaygen->compile();
+
+	m_ShaderMiss = new ShaderVK(m_Device, "shaders/Miss.rmiss", VK_SHADER_STAGE_MISS_BIT_NV);
+	m_ShaderMiss->compile();
+
+	m_ShaderChit = new ShaderVK(m_Device, "shaders/Rchit", VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV);
+	m_ShaderChit->compile();
 }
 
 void RendererSimple::render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects)
@@ -91,11 +115,11 @@ GameObjectSimple* RendererSimple::createGameObject(Mesh* mesh, TextureVK* textur
 	UniformBufferVK* uniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(glm::mat4));
 
 	DescriptorSetVK* descriptorSet = new DescriptorSetVK(m_Device, m_SwapChain, m_LayoutObject);
-	descriptorSet->addStorageBuffer(BINDING_POS, mesh->getStorageBufferPos(), VK_WHOLE_SIZE, 0);
-	descriptorSet->addStorageBuffer(BINDING_NOR, mesh->getStorageBufferNor(), VK_WHOLE_SIZE, 0);
-	descriptorSet->addStorageBuffer(BINDING_UVS, mesh->getStorageBufferUV(), VK_WHOLE_SIZE, 0);
-	descriptorSet->addUniformBuffer(BINDING_UBO, uniformBuffer);
-	descriptorSet->addTexture(BINDING_TEX, texture, sampler);
+	descriptorSet->addStorageBuffer(BINDING_G_POS, mesh->getStorageBufferPos(), VK_WHOLE_SIZE, 0);
+	descriptorSet->addStorageBuffer(BINDING_G_NOR, mesh->getStorageBufferNor(), VK_WHOLE_SIZE, 0);
+	descriptorSet->addStorageBuffer(BINDING_G_UVS, mesh->getStorageBufferUV(), VK_WHOLE_SIZE, 0);
+	descriptorSet->addUniformBuffer(BINDING_G_UBO, uniformBuffer);
+	descriptorSet->addTexture(BINDING_G_TEX, texture, sampler);
 	descriptorSet->submit();
 
 	GameObjectSimple* gameObject = new GameObjectSimple(descriptorSet, mesh, uniformBuffer, texture, sampler);

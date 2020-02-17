@@ -23,18 +23,23 @@ DeviceVK::DeviceVK(WindowVK* window, bool enableValidationLayers) :
 	{
 		VK_KHR_SURFACE_EXTENSION_NAME,
 		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-		VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+		VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
 	};
 
 	const std::vector<const char*> deviceExtentions =
 	{
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+		VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME
+		//VK_NV_RAY_TRACING_EXTENSION_NAME,  // need an rtx card for it
+		//VK_KHR_MAINTENANCE3_EXTENSION_NAME
 	};
 
 	createInstance(validationLayers, instanceExtentions);
 	setupValidationLayer();
 	window->createSurface(this);
 	pickPhysicalDevice(deviceExtentions);
+	initRayTracing();
 	createLogicalDevice(validationLayers, deviceExtentions);
 	createCommandPool();
 	createDescriptorPool();
@@ -320,6 +325,12 @@ void DeviceVK::createDescriptorPool()
 
 	if (vkCreateDescriptorPool(m_Device, &poolInfo, nullptr, &m_DescriptorPool) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to create descriptor pool!");
+}
+
+void DeviceVK::initRayTracing()
+{
+	// requesting ray tracing properties
+	//auto properties = m_PhysicalDevice.getProperties2<VkPhysicalDeviceProperties2, VkPhysicalDeviceRayTracingPropertiesNV = "">();
 }
 
 bool DeviceVK::isDeviceSuitable(VkPhysicalDevice device, const std::vector<const char*>& extensions)

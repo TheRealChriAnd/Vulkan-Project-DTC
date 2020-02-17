@@ -26,9 +26,11 @@ public:
 
 private:
 	void createGraphicsPipeline(DeviceVK* device, RenderPassVK* renderPass, SwapChainVK* swapChain, VkPolygonMode polygonMode);
+	void createRayTracingPipeline(DeviceVK* device, RenderPassVK* renderPass, SwapChainVK* swapChain);
 
 private:
 	VkPipelineLayout m_PipelineLayout;
+	VkPipeline m_Pipeline;
 	VkPipeline m_Pipeline;
 	std::vector<VkPipelineShaderStageCreateInfo> m_Shaders;
 	std::vector<VkDescriptorSetLayout> m_Layouts;

@@ -31,9 +31,13 @@ protected:
 	DescriptorSetVK* m_DescriptorSetPerFrame;
 	DescriptorSetLayoutVK* m_LayoutCamera;
 	DescriptorSetLayoutVK* m_LayoutObject;
+	DescriptorSetLayoutVK* m_LayoutRayTracing;
 	UniformBufferVK* m_UniformBuffer;
 	ShaderVK* m_ShaderFragment;
 	ShaderVK* m_ShaderVertex;
+	ShaderVK* m_ShaderRaygen;
+	ShaderVK* m_ShaderMiss;
+	ShaderVK* m_ShaderChit;
 
 private:
 	struct UniformBufferObject

@@ -62,6 +62,7 @@ private:
 	void createLogicalDevice(const std::vector<const char*>& validationLayers, const std::vector<const char*>& extentions);
 	void createCommandPool();
 	void createDescriptorPool();
+	void initRayTracing();
 
 
 private:

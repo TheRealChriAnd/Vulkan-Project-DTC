@@ -7,6 +7,10 @@
 #include <iostream>
 #include <fstream>
 
+#define INDEX_RAYGEN 0
+#define INDEX_MISS 1
+#define INDEX_CLOSEST_HIT 2
+
 PipelineVK::PipelineVK(DeviceVK* device)
 {
 	m_Device = device;
@@ -146,4 +150,51 @@ void PipelineVK::createGraphicsPipeline(DeviceVK* device, RenderPassVK* renderPa
 
 	if (vkCreateGraphicsPipelines(device->getDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_Pipeline) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to create graphics pipeline!");
+}
+
+void PipelineVK::createRayTracingPipeline(DeviceVK* device, RenderPassVK* renderPass, SwapChainVK* swapChain)
+{
+	VkPipelineLayoutCreateInfo pipeLineLayoutCreateInfo{};
+	pipeLineLayoutCreateInfo.sType			= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipeLineLayoutCreateInfo.setLayoutCount = m_Layouts.size();
+	pipeLineLayoutCreateInfo.pSetLayouts	= m_Layouts.data();
+
+	if (vkCreatePipelineLayout(device->getDevice(), &pipeLineLayoutCreateInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
+		throw std::runtime_error("Error: Failed to create pipeline layout!");
+
+	const uint32_t shaderIndexRaygen		= 0;
+	const uint32_t shaderIndexMiss			= 1;
+	const uint32_t shaderIndexClosestHit	= 2;
+
+	std::array<VkRayTracingShaderGroupCreateInfoNV, 3> groups{};
+	for (auto& group : groups)
+	{
+		group.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV;
+		group.generalShader			= VK_SHADER_UNUSED_NV;
+		group.closestHitShader		= VK_SHADER_UNUSED_NV;
+		group.anyHitShader			= VK_SHADER_UNUSED_NV;
+		group.intersectionShader	= VK_SHADER_UNUSED_NV;
+	}
+
+	groups[INDEX_RAYGEN].type					= VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
+	groups[INDEX_RAYGEN].generalShader			= shaderIndexRaygen;
+	groups[INDEX_MISS].type						= VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_NV;
+	groups[INDEX_MISS].generalShader			= shaderIndexMiss;
+	groups[INDEX_CLOSEST_HIT].type				= VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_NV;
+	groups[INDEX_CLOSEST_HIT].generalShader		= VK_SHADER_UNUSED_NV;
+	groups[INDEX_CLOSEST_HIT].closestHitShader	= shaderIndexClosestHit;
+	//------- dubbelkolla raden mellan
+
+	VkRayTracingPipelineCreateInfoNV rayPipelineInfo{};
+	rayPipelineInfo.sType				= VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV;
+	rayPipelineInfo.stageCount			= static_cast<uint32_t>(m_Shaders.size());
+	rayPipelineInfo.pStages				= m_Shaders.data();
+	rayPipelineInfo.groupCount			= static_cast<uint32_t>(groups.size());
+	rayPipelineInfo.pGroups				= groups.data();
+	rayPipelineInfo.maxRecursionDepth	= 1;
+	rayPipelineInfo.layout				= m_PipelineLayout;
+	
+	if (vkCreateRayTracingPipelinesNV(device->getDevice(), VK_NULL_HANDLE, 1, &rayPipelineInfo, nullptr, &m_Pipeline) != VK_SUCCESS)
+		throw std::runtime_error("Error: Failed to create raytracing pipeline!");
+
 }

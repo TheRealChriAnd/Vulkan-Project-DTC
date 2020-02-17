@@ -55,6 +55,28 @@ void DescriptorSetLayoutVK::addStorageBuffer(uint16_t binding, VkShaderStageFlag
 	m_LayoutBindings.push_back(storageLayoutBinding);
 }
 
+void DescriptorSetLayoutVK::addAccelerationStructure(uint16_t binding, VkShaderStageFlags shaderStages)
+{
+	VkDescriptorSetLayoutBinding accelerationStructureLayoutBinding{};
+	accelerationStructureLayoutBinding.binding = binding;
+	accelerationStructureLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV;
+	accelerationStructureLayoutBinding.descriptorCount = 1;
+	accelerationStructureLayoutBinding.stageFlags = shaderStages;
+
+	m_LayoutBindings.push_back(accelerationStructureLayoutBinding);
+}
+
+void DescriptorSetLayoutVK::addResultImageLayout(uint16_t binding, VkShaderStageFlags shaderStages)
+{
+	VkDescriptorSetLayoutBinding resultImageLayoutBinding{};
+	resultImageLayoutBinding.binding = binding;
+	resultImageLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	resultImageLayoutBinding.descriptorCount = 1;
+	resultImageLayoutBinding.stageFlags = shaderStages;
+
+	m_LayoutBindings.push_back(resultImageLayoutBinding);
+}
+
 void DescriptorSetLayoutVK::submit()
 {
 	VkDescriptorSetLayoutCreateInfo layoutInfo = {};
