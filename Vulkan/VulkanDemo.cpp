@@ -21,15 +21,25 @@
 #include "GameObjectSkyBox.h"
 #include "RES.h"
 #include "InputVK.h"
+#include "LightPoint.h"
 #include "TextureSkyBox.h"
+#include <iostream>
 
 void VulkanDemo::preInit()
 {
-	m_Light = new LightVK(
-		glm::vec3(-0.2f, -1.0f, -0.3f),
-		glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(0.5f, 0.5f, 0.5f),
-		glm::vec3(1.0f, 1.0f, 1.0f));
+	//m_Light.push_back(new LightPoint(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.09f, 0.032f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 2.1f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 2.1f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 0.7f, 3.45f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(0.0f, 1.4f, 3.45f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.09f, 0.032f)));
+
+	//std::cout << typeid(m_Light).name() << std::endl;
+	//std::cout << typeid(new LightVK()).name() << std::endl;
+	//std::cout << typeid(new LightPoint()).name() << std::endl;
+	//std::cout << typeid((LightVK*)(new LightPoint())).name() << std::endl;
+	//long long hej = typeid(LightVK*).hash_code();
+	//std::cout << hej << std::endl;
 
 	m_Camera = new CameraVK();
 }
@@ -41,7 +51,10 @@ void VulkanDemo::onSwapChainCreated()
 	m_RendererSimple->init();
 	m_RendererSkyBox->init();
 
-	m_RendererSimple->addLight(m_Light);
+	for (int i = 0; i < m_PointLight.size(); i++)
+	{
+		m_RendererSimple->addLight(m_PointLight[i]);
+	}
 
 	m_GameObjectGround = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_GROUND, RES::SAMPLER_DEFAULT);
 	m_GameObjectScreen = m_RendererSimple->createGameObject(RES::MESH_PLANE, RES::TEXTURE_ANIMATED, RES::SAMPLER_DEFAULT);
@@ -53,6 +66,11 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTv = m_RendererSimple->createGameObject(RES::MESH_TV, RES::TEXTURE_TV, RES::SAMPLER_DEFAULT);
 	m_GameObjectTable = m_RendererSimple->createGameObject(RES::MESH_TABLE, RES::TEXTURE_TABLE, RES::SAMPLER_DEFAULT);
 
+	m_GameObjectLamp1 = m_RendererSimple->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SOFA, RES::SAMPLER_DEFAULT);
+	m_GameObjectLamp2 = m_RendererSimple->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SOFA, RES::SAMPLER_DEFAULT);
+	m_GameObjectLamp3 = m_RendererSimple->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SOFA, RES::SAMPLER_DEFAULT);
+	
+
 	m_GameObjectSkyBox = m_RendererSkyBox->createGameObject(RES::MESH_CUBE, RES::TEXTURE_SKYBOX, RES::SAMPLER_DEFAULT);
 
 	m_GameObjectScreen->scale(glm::vec3(3.0f, 1.555f, 1.0f));
@@ -63,6 +81,21 @@ void VulkanDemo::onSwapChainCreated()
 
 	m_GameObjectFloor->scale(7);
 	m_GameObjectFloor->applyTransform();
+
+
+	m_GameObjectLamp1->translate(glm::vec3(1.5f, 2.1f, 3.45f));
+	m_GameObjectLamp1->scale(0.10);
+	m_GameObjectLamp1->applyTransform();
+	m_GameObjectLamp2->translate(glm::vec3(-1.5f, 2.1f, 3.45f));
+	m_GameObjectLamp2->scale(0.10);
+	m_GameObjectLamp2->applyTransform();
+	m_GameObjectLamp3->translate(glm::vec3(-1.5f, 0.7f, 3.45f));
+	m_GameObjectLamp3->scale(0.10);
+	m_GameObjectLamp3->applyTransform();
+
+
+
+	m_GameObjectGround->translate(glm::vec3(0.0f, -0.1f, 0.0f));
 
 	m_GameObjectGround->translate(glm::vec3(0.0f, -0.1f, 0.0f));
 	m_GameObjectGround->scale(100);
@@ -87,6 +120,9 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTable->applyTransform();
 
 	m_SimpleGameObjects.push_back(m_GameObjectScreen);
+	m_SimpleGameObjects.push_back(m_GameObjectLamp1);
+	m_SimpleGameObjects.push_back(m_GameObjectLamp2);
+	m_SimpleGameObjects.push_back(m_GameObjectLamp3);
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
 	m_SimpleGameObjects.push_back(m_GameObjectRightWall);
 	m_SimpleGameObjects.push_back(m_GameObjectFrontWall);
@@ -145,6 +181,13 @@ void VulkanDemo::update(float deltaSeconds)
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
 
+	glm::mat4 sampleColor = RES::TEXTURE_ANIMATED->getSampledCornerColors();
+
+	for (int i = 0; i < 4; i++)
+	{
+		m_PointLight[i]->setAmbientColor(sampleColor[i]);
+	}
+
 	RES::TEXTURE_ANIMATED->submit();
 }
 
@@ -159,7 +202,10 @@ void VulkanDemo::shutdown()
 	InputVK::removeMouseListener(this);
 
 	delete m_Camera;
-	delete m_Light;
+	for (LightPoint* light : m_PointLight)
+	{
+		delete light;
+	}
 }
 
 void VulkanDemo::onKeyPressed(int key)

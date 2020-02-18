@@ -1,6 +1,8 @@
 #pragma once
 #include <set>
 #include <vector>
+#include <unordered_map>
+#include <typeinfo>
 
 class DeviceVK;
 class SwapChainVK;
@@ -25,5 +27,5 @@ protected:
 	DeviceVK* m_Device;
 	SwapChainVK* m_SwapChain;
 	RenderPassVK* m_RenderPass;
-	std::set<LightVK*> m_Lights;
+	std::unordered_map<long long, std::vector<LightVK*>> m_Lights;
 };

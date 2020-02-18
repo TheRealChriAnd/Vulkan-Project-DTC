@@ -11,6 +11,7 @@
 #include "Mesh.h"
 #include "GameObjectSimple.h"
 #include "CameraVK.h"
+#include "LightPoint.h"
 #include "LightVK.h"
 
 #define BINDING_POS 0
@@ -113,13 +114,17 @@ void RendererSimple::update(float deltaSeconds, CameraVK* camera)
 	ubo.proj = glm::perspective(glm::radians(75.0f), m_SwapChain->getExtent().width / (float)m_SwapChain->getExtent().height, 0.01f, 500.0f);
 	ubo.proj[1][1] *= -1;
 
-	if (!m_Lights.empty())
+	
+	for (auto lightType : m_Lights)
 	{
-		LightVK* light = *m_Lights.begin();
-		ubo.dir = glm::vec4(light->getDir(), 1.0F);
-		ubo.ambient = glm::vec4(light->getAmbient(), 1.0F);
-		ubo.diffuse = glm::vec4(light->getDiffuse(), 1.0F);
-		ubo.specular = glm::vec4(light->getSpecular(), 1.0F);
+		const std::vector<LightVK*>& lights = lightType.second;
+		if (lightType.first == typeid(LightPoint*).hash_code())
+		{
+			for (int i = 0; i < lights.size(); i++)
+			{
+				ubo.lights[i] = ((LightPoint*)lights[i])->getPointLight();
+			}
+		}
 	}
 
 	m_UniformBuffer->setData(&ubo);

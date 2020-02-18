@@ -31,12 +31,12 @@ void RES::init(DeviceVK* device)
 	TEXTURE_SKYBOX = new TextureSkyBox(device);
 
 	TextureLayers texLayers;
-	texLayers.fileNames[0] = "textures/clouds/east.bmp";
-	texLayers.fileNames[1] = "textures/clouds/west.bmp";
-	texLayers.fileNames[2] = "textures/clouds/up.bmp";
-	texLayers.fileNames[3] = "textures/clouds/down.bmp";
-	texLayers.fileNames[4] = "textures/clouds/north.bmp";
-	texLayers.fileNames[5] = "textures/clouds/south.bmp";
+	texLayers.fileNames[0] = "textures/night/north.tga";
+	texLayers.fileNames[1] = "textures/night/south.tga";
+	texLayers.fileNames[2] = "textures/night/up.tga";
+	texLayers.fileNames[3] = "textures/night/down.tga";
+	texLayers.fileNames[4] = "textures/night/east.tga";
+	texLayers.fileNames[5] = "textures/night/west.tga";
 
 	TEXTURE_SKYBOX->loadFromFile(texLayers);
 

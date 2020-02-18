@@ -171,6 +171,7 @@
     <ClCompile Include="GameObjectSkyBox.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
     <ClCompile Include="InputVK.cpp" />
+    <ClCompile Include="LightPoint.cpp" />
     <ClCompile Include="LightVK.cpp" />
     <ClCompile Include="IRenderer.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="InputVK.h" />
     <ClInclude Include="IExecutable.h" />
     <ClInclude Include="IAsynchronous.h" />
+    <ClInclude Include="LightPoint.h" />
     <ClInclude Include="LightVK.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="Mesh.h" />

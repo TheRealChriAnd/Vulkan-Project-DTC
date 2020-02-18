@@ -1,22 +1,22 @@
 #pragma once
 #include "glm/glm.hpp"
-
+#include <vector>
 
 class LightVK 
 {
 public:
-	LightVK(glm::vec3 dir, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
-	~LightVK();
+	virtual ~LightVK();
 
-	void setDir(glm::vec3 dir);
-	const glm::vec3& getDir() const;
-	const glm::vec3& getAmbient() const;
-	const glm::vec3& getDiffuse() const;
-	const glm::vec3& getSpecular() const;
+	//void createPointLight(glm::vec3 pos, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 clq);
+	long long getLightType() const;
+
+public:
+	long long m_LightType;
+
+protected:
+	LightVK(long long type);
 
 private:
-	glm::vec3 m_Direction;
-	glm::vec3 m_Ambient;
-	glm::vec3 m_Diffuse;
-	glm::vec3 m_Specular;
+
+	//std::vector<PointLight> m_PLights;
 };

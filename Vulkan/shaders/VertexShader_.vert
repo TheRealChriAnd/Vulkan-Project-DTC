@@ -7,6 +7,7 @@
 #define BINDING_UBO 3
 #define BINDING_TEX 4
 #define BINDING_UCL 0
+#define NR_POINT_LIIGHTS 5
 
 layout(set=1, binding = BINDING_POS) buffer pos 
 {
@@ -26,20 +27,27 @@ layout(set=1, binding = BINDING_UBO) uniform UniformObject
 	mat4 model;
 } uo;
 
+struct PLight {
+    vec4 position;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	vec4 CQL;
+};
+
 layout(set=0, binding = BINDING_UCL) uniform UniformCameraLight
 {
 	mat4 view;
 	mat4 proj;
-	vec4 dir;
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
+	PLight lights[NR_POINT_LIIGHTS];
 	vec4 camPos;
 } ucl;
 
 layout(location = BINDING_NOR) out vec3 normal;
+layout(location = 10) out vec3 worldPos;
 
 void main() {
+	worldPos = (uo.model * position_in[gl_VertexIndex]).xyz;
 	gl_Position = ucl.proj * ucl.view * uo.model * position_in[gl_VertexIndex];
     fragTexCoord = uv_in[gl_VertexIndex];
 	normal = (uo.model * vec4(normals_in[gl_VertexIndex].xyz, 0)).xyz;

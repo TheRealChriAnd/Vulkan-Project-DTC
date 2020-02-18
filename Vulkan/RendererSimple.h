@@ -1,6 +1,7 @@
 #pragma once
 #include "IRenderer.h"
 #include <glm/glm.hpp>
+#include "LightPoint.h"
 
 class DescriptorSetLayoutVK;
 class TextureVK;
@@ -12,6 +13,8 @@ class CameraVK;
 class PipelineVK;
 class Mesh;
 class ShaderVK;
+class LightVK;
+
 
 class RendererSimple : public IRenderer
 {
@@ -40,12 +43,7 @@ private:
 	{
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 proj;
-
-		glm::vec4 dir;
-		glm::vec4 ambient;
-		glm::vec4 diffuse;
-		glm::vec4 specular;
-
+		Light lights[5];
 		glm::vec4 camPos;
 	};
 

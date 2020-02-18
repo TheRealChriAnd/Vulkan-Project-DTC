@@ -11,6 +11,7 @@ class SamplerVK;
 class CommandBufferVK;
 class CameraVK;
 class LightVK;
+class LightPoint;
 class Mesh;
 class GameObjectSimple;
 class GameObjectSkyBox;
@@ -42,7 +43,7 @@ public:
 
 private:
 	CameraVK* m_Camera;
-	LightVK* m_Light;
+	std::vector<LightPoint*> m_PointLight;
 	
 	GameObjectSimple* m_GameObjectScreen;
 
@@ -52,6 +53,10 @@ private:
 	GameObjectSimple* m_GameObjectWindow;
 	GameObjectSimple* m_GameObjectGround;
 	GameObjectSimple* m_GameObjectFloor;
+	GameObjectSimple* m_GameObjectLamp1;
+	GameObjectSimple* m_GameObjectLamp2;
+	GameObjectSimple* m_GameObjectLamp3;
+
 	GameObjectSimple* m_GameObjectTv;
 	GameObjectSimple* m_GameObjectTable;
 	RendererSimple* m_RendererSimple;

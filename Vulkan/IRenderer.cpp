@@ -16,7 +16,15 @@ IRenderer::~IRenderer()
 
 }
 
-void IRenderer::addLight(LightVK* light)
+void IRenderer::addLight(LightVK* light) 
 {
-	m_Lights.insert(light);
+	auto iterator = m_Lights.find(light->m_LightType);
+	if (iterator != m_Lights.end())
+	{
+		iterator->second.push_back(light);
+	}
+	else
+	{
+		m_Lights.insert({ light->m_LightType, {light} });
+	}
 }

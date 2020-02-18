@@ -94,6 +94,21 @@ bool TextureAnimated::isPlaying() const
 	return m_Playing;
 }
 
+const glm::mat4& TextureAnimated::getSampledCornerColors() const
+{
+	glm::mat4 averageColors;
+	int temp;
+	averageColors[0] = glm::vec4(m_PixelData[0] * 0.00392f, m_PixelData[1] * 0.00392f, m_PixelData[2] * 0.00392f, 1.0f);
+	temp = m_Width * 3;
+	averageColors[1] = glm::vec4(m_PixelData[temp] * 0.00392f, m_PixelData[temp + 1] * 0.00392f, m_PixelData[temp + 2] * 0.00392f, 1.0);
+	temp = m_Height * m_Width * 3 - m_Width;
+	averageColors[2] = glm::vec4(m_PixelData[temp] * 0.00392f, m_PixelData[temp + 1] * 0.00392f, m_PixelData[temp + 2] * 0.00392f, 1.0);
+	temp = m_Height * m_Width * 3;
+	averageColors[3] = glm::vec4(m_PixelData[temp] * 0.00392f, m_PixelData[temp + 1] * 0.00392f, m_PixelData[temp + 2] * 0.00392f, 255);
+	
+	return averageColors;
+}
+
 double timer = 0;
 int ups = 0;
 

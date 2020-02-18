@@ -1,42 +1,21 @@
 #include "LightVK.h"
 
-LightVK::LightVK(
-	glm::vec3 dir, 
-	glm::vec3 ambient, 
-	glm::vec3 diffuse, 
-	glm::vec3 specular)
+LightVK::LightVK(long long type)
 {
-	m_Direction = dir;
-	m_Ambient = ambient;
-	m_Diffuse = diffuse;
-	m_Specular = specular;
+	m_LightType = type;
 }
 
 LightVK::~LightVK()
 {
 }
 
-void LightVK::setDir(glm::vec3 dir)
+//void LightVK::createPointLight(glm::vec3 pos, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 clq)
+//{
+//	
+//}
+
+long long LightVK::getLightType() const
 {
-	m_Direction = dir;
+	return m_LightType;
 }
 
-const glm::vec3& LightVK::getDir() const
-{
-	return m_Direction;
-}
-
-const glm::vec3& LightVK::getAmbient() const
-{
-	return m_Ambient;
-}
-
-const glm::vec3& LightVK::getDiffuse() const
-{
-	return m_Diffuse;
-}
-
-const glm::vec3& LightVK::getSpecular() const
-{
-	return m_Specular;
-}

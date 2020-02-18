@@ -2,7 +2,10 @@
 #include "TextureVK.h"
 #include <string>
 #include <atomic>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "IAsynchronous.h"
+
 
 class BufferVK;
 
@@ -22,6 +25,7 @@ public:
 	void submit();
 
 	bool isPlaying() const;
+	const glm::mat4& getSampledCornerColors() const;
 
 	virtual void updateAsynchronous(float deltaSeconds) override;
 
