@@ -7,30 +7,32 @@
 #include "BufferVK.h"
 #include "IndexBufferVK.h"
 #include "DescriptorSetVK.h"
+#include "CommandPoolVK.h"
 #include <iostream>
 #include <array>
 
-
-CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, 1) 
+CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, device->getCommandPool(), 1, true)
 {
 	
 }
 
-CommandBufferVK::CommandBufferVK(DeviceVK* device, SwapChainVK* swapChain) : CommandBufferVK(device, swapChain->getCount())
+CommandBufferVK::CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, SwapChainVK* swapChain, bool primary) : CommandBufferVK(device, commandPool, swapChain->getCount(), primary)
 {
 
 }
 
-CommandBufferVK::CommandBufferVK(DeviceVK* device, int buffers)
+CommandBufferVK::CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, int buffers, bool primary)
 {
 	m_Device = device;
+	m_CommandPool = commandPool;
+	m_Primary = primary;
 
 	m_CommandBuffers.resize(buffers);
 
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType					= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.level					= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandPool			= device->getCommandPool();
+	allocInfo.level					= primary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+	allocInfo.commandPool			= commandPool->m_CommandPool;
 	allocInfo.commandBufferCount	= buffers;
 
 	if (vkAllocateCommandBuffers(device->getDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
@@ -39,14 +41,25 @@ CommandBufferVK::CommandBufferVK(DeviceVK* device, int buffers)
 
 CommandBufferVK::~CommandBufferVK()
 {
-	vkFreeCommandBuffers(m_Device->getDevice(), m_Device->getCommandPool(), m_CommandBuffers.size(), m_CommandBuffers.data());
+	vkFreeCommandBuffers(m_Device->getDevice(), m_CommandPool->m_CommandPool, m_CommandBuffers.size(), m_CommandBuffers.data());
 }
 
-void CommandBufferVK::begin(int index, VkCommandBufferUsageFlagBits bufferUsage) const
+void CommandBufferVK::begin(int index, VkCommandBufferUsageFlagBits bufferUsage, RenderPassVK* renderPass) const
 {
+	VkCommandBufferInheritanceInfo inheritanceInfo = {};
+	if (!m_Primary)
+	{
+		inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+		inheritanceInfo.renderPass = renderPass->getRenderPass();
+		inheritanceInfo.subpass = 0;
+		inheritanceInfo.framebuffer = VK_NULL_HANDLE;
+		inheritanceInfo.occlusionQueryEnable = VK_FALSE;
+	}
+
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = bufferUsage;
+	beginInfo.pInheritanceInfo = m_Primary ? nullptr : &inheritanceInfo;
 
 	if (vkBeginCommandBuffer(m_CommandBuffers[index], &beginInfo) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to begin recording command buffer!");
@@ -94,7 +107,16 @@ void CommandBufferVK::beginRenderPass(int index, RenderPassVK* renderPass, SwapC
 	renderPassInfo.clearValueCount		= static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues			= clearValues.data();
 
-	vkCmdBeginRenderPass(m_CommandBuffers[index], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(m_CommandBuffers[index], &renderPassInfo, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+}
+
+void CommandBufferVK::writeSecondaryBuffers(int index, const std::vector<CommandBufferVK*>& buffers)
+{
+	std::vector<VkCommandBuffer> commandBuffers(buffers.size());
+	for (int i = 0; i < buffers.size(); i++)
+		commandBuffers[i] = buffers[i]->m_CommandBuffers[index];
+
+	vkCmdExecuteCommands(m_CommandBuffers[index], commandBuffers.size(), commandBuffers.data());
 }
 
 void CommandBufferVK::bindPipeline(int index, PipelineVK* pipeline)

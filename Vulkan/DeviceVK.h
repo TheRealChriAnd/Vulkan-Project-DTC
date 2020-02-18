@@ -5,6 +5,7 @@
 #include <set>
 
 class WindowVK;
+class CommandPoolVK;
 
 struct QueueFamilyIndices
 {
@@ -39,14 +40,18 @@ public:
 	VkDevice getDevice() const;
 	VkPhysicalDevice getPhysicalDevice() const;
 	VkSurfaceKHR getSurface() const;
-	VkCommandPool getCommandPool() const;
+	CommandPoolVK* getCommandPool() const;
 	VkDescriptorPool getDescriptorPool() const;
 	VkQueue getGraphicsQueue() const;
 	VkQueue getPresentQueue() const;
 
 	VkPhysicalDeviceProperties getProperties() const;
 
-	void waitForFence(const VkFence* fence) const;
+	void waitForIdle() const;
+	void waitForFence(const VkFence fence) const;
+	void resetFence(const VkFence fence) const;
+	void submitToGraphicsQueue(const VkSubmitInfo& submitInfo, const VkFence fence) const;
+
 	SwapChainSupportDetails querySwapChainSupport();
 	QueueFamilyIndices findQueueFamilies();
 	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layers);
@@ -60,7 +65,6 @@ private:
 	void setupValidationLayer();
 	void pickPhysicalDevice(const std::vector<const char*>& extentions);
 	void createLogicalDevice(const std::vector<const char*>& validationLayers, const std::vector<const char*>& extentions);
-	void createCommandPool();
 	void createDescriptorPool();
 
 
@@ -86,8 +90,8 @@ private:
 	VkDevice m_Device;
 	VkQueue m_GraphicsQueue;
 	VkQueue m_PresentQueue;
-	VkCommandPool m_CommandPool;
 	VkDescriptorPool m_DescriptorPool;
+	CommandPoolVK* m_CommandPool;
 
 	VkPhysicalDeviceProperties m_Properties;
 

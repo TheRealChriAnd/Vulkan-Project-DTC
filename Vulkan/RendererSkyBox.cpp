@@ -61,16 +61,14 @@ void RendererSkyBox::init()
 
 void RendererSkyBox::render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects)
 {
-	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
+	int index = m_SwapChain->getCurrentImageIndex();
+	m_CommandBuffer->bindPipeline(index, m_Pipeline);
+	for (GameObject* gameObject : gameObjects)
 	{
-		m_CommandBuffer->bindPipeline(i, m_Pipeline);
-		for (GameObject* gameObject : gameObjects)
-		{
-			Mesh* mesh = gameObject->getMesh();
-			m_CommandBuffer->bindIndexBuffer(i, mesh->getIndexBuffer());
-			m_CommandBuffer->bindDescriptorSets(i, m_Pipeline, { gameObject->getDescriptorSet() });
-			m_CommandBuffer->drawIndexed(i, mesh->getIndexBuffer());
-		}
+		Mesh* mesh = gameObject->getMesh();
+		m_CommandBuffer->bindIndexBuffer(index, mesh->getIndexBuffer());
+		m_CommandBuffer->bindDescriptorSets(index, m_Pipeline, { gameObject->getDescriptorSet() });
+		m_CommandBuffer->drawIndexed(index, mesh->getIndexBuffer());
 	}
 }
 

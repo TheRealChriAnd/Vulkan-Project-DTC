@@ -10,15 +10,16 @@ class PipelineVK;
 class StorageBufferVK;
 class IndexBufferVK;
 class DescriptorSetVK;
+class CommandPoolVK;
 
 class CommandBufferVK
 {
 public:
-	CommandBufferVK(DeviceVK* device, SwapChainVK* swapChain);
 	CommandBufferVK(DeviceVK* device);
+	CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, SwapChainVK* swapChain, bool primary);
 	~CommandBufferVK();
 
-	void begin(int index = 0, VkCommandBufferUsageFlagBits bufferUsage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT) const;
+	void begin(int index = 0, VkCommandBufferUsageFlagBits bufferUsage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, RenderPassVK* renderPass = nullptr) const;
 	void end(int index = 0) const;
 	void submit() const;
 
@@ -27,6 +28,7 @@ public:
 
 public:
 	void beginRenderPass(int index, RenderPassVK* renderPass, SwapChainVK* swapChain, const glm::vec4& clearColor, float clearDepth, uint32_t clearStencil) const;
+	void writeSecondaryBuffers(int index, const std::vector<CommandBufferVK*>& buffers);
 	void bindPipeline(int index, PipelineVK* pipeline);
 	void bindVertexBuffers(int index, const std::vector<StorageBufferVK*>& vertexBuffers);
 	void bindIndexBuffer(int index, IndexBufferVK* indexBuffer);
@@ -36,10 +38,11 @@ public:
 	void endRenderPass(int index);
 
 private:
-	CommandBufferVK(DeviceVK* device, int buffers);
+	CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, int buffers, bool primary);
 
 private:
 	std::vector<VkCommandBuffer> m_CommandBuffers;
-
+	bool m_Primary;
 	DeviceVK* m_Device;
+	CommandPoolVK* m_CommandPool;
 };
