@@ -27,7 +27,7 @@ public:
 	virtual void preInit() override;
 	virtual void init() override;
 	virtual void update(float deltaSeconds) override;
-	virtual const std::vector<CommandBufferVK*>& frame() override;
+	virtual CommandBufferVK* frame() override;
 	virtual void shutdown() override;
 	
 	virtual void onSwapChainReleased() override;
@@ -60,5 +60,8 @@ private:
 	RendererSkyBox* m_RendererSkyBox;
 
 	std::vector<GameObject*> m_SimpleGameObjects;
-	std::vector<CommandBufferVK*> m_CommandBuffers;
+
+	CommandBufferVK* m_CommandBufferPrimary;
+	CommandBufferVK* m_CommandBufferSkyBox;
+	CommandBufferVK* m_CommandBufferSimple;
 };

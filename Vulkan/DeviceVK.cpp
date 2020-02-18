@@ -92,9 +92,25 @@ VkPhysicalDeviceProperties DeviceVK::getProperties() const
 	return m_Properties;
 }
 
-void DeviceVK::waitForFence(const VkFence* fence) const
+void DeviceVK::waitForIdle() const
 {
-	vkWaitForFences(m_Device, 1, fence, VK_TRUE, UINT64_MAX);
+	vkDeviceWaitIdle(m_Device);
+}
+
+void DeviceVK::waitForFence(const VkFence fence) const
+{
+	vkWaitForFences(m_Device, 1, &fence, VK_TRUE, UINT64_MAX);
+}
+
+void DeviceVK::resetFence(const VkFence fence) const
+{
+	vkResetFences(m_Device, 1, &fence);
+}
+
+void DeviceVK::submitToGraphicsQueue(const VkSubmitInfo& submitInfo, const VkFence fence) const
+{
+	if (vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS)
+		throw std::runtime_error("Error: Failed to submit draw command buffer!");
 }
 
 SwapChainSupportDetails DeviceVK::querySwapChainSupport()

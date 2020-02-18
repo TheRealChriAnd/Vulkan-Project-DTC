@@ -24,6 +24,7 @@ public:
 	void createFramebuffers(DeviceVK* device, RenderPassVK* renderPass);
 
 	int acquireNextImage(VkSemaphore semaphore, int currentFrame);
+	bool present(const VkSemaphore signalSemaphore) const;
 
 private:
 	void createSwapChain(WindowVK* window, DeviceVK* device);

@@ -170,6 +170,25 @@ void SwapChainVK::createFramebuffers(DeviceVK* device, RenderPassVK* renderPass)
 	}
 }
 
+bool SwapChainVK::present(const VkSemaphore signalSemaphore) const
+{
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = &signalSemaphore;
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &m_SwapChain;
+	presentInfo.pImageIndices = &m_ImageIndex;
+
+	VkResult result = vkQueuePresentKHR(m_Device->getPresentQueue(), &presentInfo);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+		return false;
+	else if (result != VK_SUCCESS)
+		throw std::runtime_error("failed to present swap chain image!");
+
+	return true;
+}
+
 int SwapChainVK::acquireNextImage(VkSemaphore semaphore, int currentFrame)
 {
 	VkResult result = vkAcquireNextImageKHR(m_Device->getDevice(), m_SwapChain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &m_ImageIndex);

@@ -46,7 +46,11 @@ public:
 
 	VkPhysicalDeviceProperties getProperties() const;
 
-	void waitForFence(const VkFence* fence) const;
+	void waitForIdle() const;
+	void waitForFence(const VkFence fence) const;
+	void resetFence(const VkFence fence) const;
+	void submitToGraphicsQueue(const VkSubmitInfo& submitInfo, const VkFence fence) const;
+
 	SwapChainSupportDetails querySwapChainSupport();
 	QueueFamilyIndices findQueueFamilies();
 	VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layers);

@@ -60,13 +60,12 @@ void Application::run()
 		lastTime = currentTime;
 		debugTimer += delta;
 
-		m_Device->waitForFence(&m_InFlightFences[currentFrame]);
+		m_Device->waitForFence(m_InFlightFences[currentFrame]);
 		uint32_t imageIndex = m_SwapChain->acquireNextImage(m_ImageAvailableSemaphores[currentFrame], currentFrame);
 
 		if (imageIndex == -1)
 		{
-			releaseSwapChainInternal();
-			createSwapChainInternal();
+			recreateSwapChain();
 			continue;
 		}
 
@@ -101,7 +100,7 @@ void Application::shutdownInternal()
 {
 	ThreadManager::shutdown();
 
-	vkDeviceWaitIdle(m_Device->getDevice());
+	m_Device->waitForIdle();
 
 	this->shutdown();
 	releaseSwapChainInternal();
@@ -135,6 +134,13 @@ void Application::releaseSwapChainInternal()
 	delete m_SwapChain;
 }
 
+void Application::recreateSwapChain()
+{
+	m_Device->waitForIdle();
+	releaseSwapChainInternal();
+	createSwapChainInternal();
+}
+
 void Application::createSyncObjects()
 {
 	m_ImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -162,57 +168,36 @@ void Application::createSyncObjects()
 
 void Application::drawFrame(uint32_t imageIndex)
 {
-	if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE)
+	VkFence lastFence = m_ImagesInFlight[imageIndex];
+	if (lastFence != VK_NULL_HANDLE)
 	{
-		m_Device->waitForFence(&m_ImagesInFlight[imageIndex]);
+		m_Device->waitForFence(lastFence);
 	}
 
-	m_ImagesInFlight[imageIndex] = m_InFlightFences[currentFrame];
+	VkFence newFence = m_InFlightFences[currentFrame];
 
-	VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[currentFrame] };
-	VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	m_ImagesInFlight[imageIndex] = newFence;
 
-	const std::vector<CommandBufferVK*>& commandBuffers = this->frame();
-	std::vector<VkCommandBuffer> buffers(commandBuffers.size());
-	for (int i = 0; i < commandBuffers.size(); i++)
-		buffers[i] = commandBuffers[i]->getCommandBuffer(imageIndex);
+	VkCommandBuffer commandBuffer = this->frame()->getCommandBuffer(imageIndex);
+	VkSemaphore waitSemaphore = m_ImageAvailableSemaphores[currentFrame];
+	VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	VkSemaphore signalSemaphore = m_RenderFinishedSemaphores[currentFrame];
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
 	submitInfo.waitSemaphoreCount = 1;
-	submitInfo.pWaitSemaphores = waitSemaphores;
-	submitInfo.pWaitDstStageMask = waitStages;
-	submitInfo.commandBufferCount = buffers.size();
-	submitInfo.pCommandBuffers = buffers.data();
-
-	VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[currentFrame] };
+	submitInfo.pWaitSemaphores = &waitSemaphore;
+	submitInfo.pWaitDstStageMask = &waitStage;
 	submitInfo.signalSemaphoreCount = 1;
-	submitInfo.pSignalSemaphores = signalSemaphores;
+	submitInfo.pSignalSemaphores = &signalSemaphore;
 
-	vkResetFences(m_Device->getDevice(), 1, &m_InFlightFences[currentFrame]);
+	m_Device->resetFence(newFence);
 
-	if (vkQueueSubmit(m_Device->getGraphicsQueue(), 1, &submitInfo, m_InFlightFences[currentFrame]) != VK_SUCCESS)
-		throw std::runtime_error("Error: Failed to submit draw command buffer!");
+	m_Device->submitToGraphicsQueue(submitInfo, newFence);
 
-	VkPresentInfoKHR presentInfo = {};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = signalSemaphores;
-
-	VkSwapchainKHR swapChains[] = { m_SwapChain->getSwapChain() };
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = swapChains;
-	presentInfo.pImageIndices = &imageIndex;
-
-	VkResult result = vkQueuePresentKHR(m_Device->getPresentQueue(), &presentInfo);
-
-	/*if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-		framebufferResized = false;
-		recreateSwapChain();
-	}
-	else if (result != VK_SUCCESS) {
-		throw std::runtime_error("failed to present swap chain image!");
-	}*/
+	m_SwapChain->present(signalSemaphore);
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }

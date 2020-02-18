@@ -84,6 +84,7 @@ void RES::shutdown()
 	delete MESH_WALL2;
 	delete MESH_WINDOW;
 	delete MESH_TV;
+	delete MESH_TABLE;
 
 	delete MESH_CUBE;
 }
