@@ -22,6 +22,8 @@
 #include "RES.h"
 #include "InputVK.h"
 #include "TextureSkyBox.h"
+#include "ThreadManager.h"
+#include "CommandPoolVK.h"
 
 void VulkanDemo::preInit()
 {
@@ -32,6 +34,8 @@ void VulkanDemo::preInit()
 		glm::vec3(1.0f, 1.0f, 1.0f));
 
 	m_Camera = new CameraVK();
+
+	m_CommandPool2 = new CommandPoolVK(m_Device);
 }
 
 void VulkanDemo::onSwapChainCreated()
@@ -95,42 +99,66 @@ void VulkanDemo::onSwapChainCreated()
 	m_SimpleGameObjects.push_back(m_GameObjectFloor);
 	m_SimpleGameObjects.push_back(m_GameObjectGround);
 
+
+	m_CommandBufferSimple = new CommandBufferVK(m_Device, m_CommandPool2, m_SwapChain, false);
+	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, false);
+	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, true);
+}
+
+void VulkanDemo::init()
+{
+	InputVK::addKeyListener(this);
+	InputVK::addMouseListener(this);
+
+	RES::TEXTURE_ANIMATED->play();
+}
+
+void VulkanDemo::createCommandBuffers()
+{
 	std::vector<CommandBufferVK*> buffers;
 
-	m_CommandBufferSimple = new CommandBufferVK(m_Device, m_SwapChain, false);
-	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
-	{
-		m_CommandBufferSimple->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
-	}
-	m_RendererSimple->render(m_CommandBufferSimple, m_SimpleGameObjects);
-	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
-	{
-		m_CommandBufferSimple->end(i);
-	}
+	size_t i = m_SwapChain->getCurrentImageIndex();
+	buffers.push_back(m_CommandBufferSkyBox);
 	buffers.push_back(m_CommandBufferSimple);
 
+	bool done = false;
 
-	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_SwapChain, false);
-	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
+	ThreadManager::scheduleExecution([this, i, &done]()
 	{
-		m_CommandBufferSkyBox->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
-	}
+		m_CommandBufferSimple->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
+		m_RendererSimple->render(m_CommandBufferSimple, m_SimpleGameObjects);
+		m_CommandBufferSimple->end(i);
+		done = true;
+	});
+
+	m_CommandBufferSkyBox->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
 	m_RendererSkyBox->render(m_CommandBufferSkyBox, { m_GameObjectSkyBox });
-	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
-	{
-		m_CommandBufferSkyBox->end(i);
-	}
-	buffers.push_back(m_CommandBufferSkyBox);
+	m_CommandBufferSkyBox->end(i);
 
-	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_SwapChain, true);
-	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
-	{
-		m_CommandBufferPrimary->begin(i, (VkCommandBufferUsageFlagBits)0);
-		m_CommandBufferPrimary->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
-		m_CommandBufferPrimary->writeSecondaryBuffers(i, buffers);
-		m_CommandBufferPrimary->endRenderPass(i);
-		m_CommandBufferPrimary->end(i);
-	}
+	while (!done) {};
+
+	m_CommandBufferPrimary->begin(i, (VkCommandBufferUsageFlagBits)0);
+	m_CommandBufferPrimary->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
+	m_CommandBufferPrimary->writeSecondaryBuffers(i, buffers);
+	m_CommandBufferPrimary->endRenderPass(i);
+	m_CommandBufferPrimary->end(i);
+}
+
+void VulkanDemo::update(float deltaSeconds)
+{
+	m_Camera->update(deltaSeconds);
+
+	m_RendererSimple->update(deltaSeconds, m_Camera);
+	m_RendererSkyBox->update(deltaSeconds, m_Camera);
+
+	RES::TEXTURE_ANIMATED->submit();
+
+	createCommandBuffers();
+}
+
+CommandBufferVK* VulkanDemo::frame()
+{
+	return m_CommandBufferPrimary;
 }
 
 void VulkanDemo::onSwapChainReleased()
@@ -150,29 +178,6 @@ void VulkanDemo::onSwapChainReleased()
 	delete m_GameObjectSkyBox;
 }
 
-void VulkanDemo::init()
-{
-	InputVK::addKeyListener(this);
-	InputVK::addMouseListener(this);
-
-	RES::TEXTURE_ANIMATED->play();
-}
-
-void VulkanDemo::update(float deltaSeconds)
-{
-	m_Camera->update(deltaSeconds);
-
-	m_RendererSimple->update(deltaSeconds, m_Camera);
-	m_RendererSkyBox->update(deltaSeconds, m_Camera);
-
-	RES::TEXTURE_ANIMATED->submit();
-}
-
-CommandBufferVK* VulkanDemo::frame()
-{
-	return m_CommandBufferPrimary;
-}
-
 void VulkanDemo::shutdown()
 {
 	InputVK::removeKeyListener(this);
@@ -180,6 +185,7 @@ void VulkanDemo::shutdown()
 
 	delete m_Camera;
 	delete m_Light;
+	delete m_CommandPool2;
 }
 
 void VulkanDemo::onKeyPressed(int key)

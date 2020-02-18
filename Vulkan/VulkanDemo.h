@@ -17,6 +17,7 @@ class GameObjectSkyBox;
 class GameObject;
 class RendererSimple;
 class RendererSkyBox;
+class CommandPoolVK;
 
 class VulkanDemo : public Application, public IKeyListener, public IMouseListener
 {
@@ -26,6 +27,7 @@ public:
 
 	virtual void preInit() override;
 	virtual void init() override;
+	void createCommandBuffers();
 	virtual void update(float deltaSeconds) override;
 	virtual CommandBufferVK* frame() override;
 	virtual void shutdown() override;
@@ -64,4 +66,6 @@ private:
 	CommandBufferVK* m_CommandBufferPrimary;
 	CommandBufferVK* m_CommandBufferSkyBox;
 	CommandBufferVK* m_CommandBufferSimple;
+
+	CommandPoolVK* m_CommandPool2;
 };

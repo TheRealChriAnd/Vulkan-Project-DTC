@@ -10,12 +10,13 @@ class PipelineVK;
 class StorageBufferVK;
 class IndexBufferVK;
 class DescriptorSetVK;
+class CommandPoolVK;
 
 class CommandBufferVK
 {
 public:
 	CommandBufferVK(DeviceVK* device);
-	CommandBufferVK(DeviceVK* device, SwapChainVK* swapChain, bool primary);
+	CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, SwapChainVK* swapChain, bool primary);
 	~CommandBufferVK();
 
 	void begin(int index = 0, VkCommandBufferUsageFlagBits bufferUsage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, RenderPassVK* renderPass = nullptr) const;
@@ -37,10 +38,11 @@ public:
 	void endRenderPass(int index);
 
 private:
-	CommandBufferVK(DeviceVK* device, int buffers, bool primary);
+	CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, int buffers, bool primary);
 
 private:
 	std::vector<VkCommandBuffer> m_CommandBuffers;
 	bool m_Primary;
 	DeviceVK* m_Device;
+	CommandPoolVK* m_CommandPool;
 };

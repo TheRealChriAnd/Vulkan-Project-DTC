@@ -1,5 +1,6 @@
 #include "DeviceVK.h"
 #include "WindowVK.h"
+#include "CommandPoolVK.h"
 #include <iostream>
 #include <array>
 
@@ -36,7 +37,7 @@ DeviceVK::DeviceVK(WindowVK* window, bool enableValidationLayers) :
 	window->createSurface(this);
 	pickPhysicalDevice(deviceExtentions);
 	createLogicalDevice(validationLayers, deviceExtentions);
-	createCommandPool();
+	m_CommandPool = new CommandPoolVK(this);
 	createDescriptorPool();
 }
 
@@ -46,7 +47,7 @@ DeviceVK::~DeviceVK()
 		destroyDebugUtilsMessengerEXT();
 
 	vkDestroyDescriptorPool(m_Device, m_DescriptorPool, nullptr);
-	vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+	delete m_CommandPool;
 	vkDestroyDevice(m_Device, nullptr);
 	vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
 	vkDestroyInstance(m_Instance, nullptr);
@@ -67,7 +68,7 @@ VkSurfaceKHR DeviceVK::getSurface() const
 	return m_Surface;
 }
 
-VkCommandPool DeviceVK::getCommandPool() const
+CommandPoolVK* DeviceVK::getCommandPool() const
 {
 	return m_CommandPool;
 }
@@ -301,19 +302,6 @@ void DeviceVK::createLogicalDevice(const std::vector<const char*>& validationLay
 
 	vkGetDeviceQueue(m_Device, indices.m_GraphicsFamily.value(), 0, &m_GraphicsQueue);
 	vkGetDeviceQueue(m_Device, indices.m_PresentFamily.value(), 0, &m_PresentQueue);
-}
-
-void DeviceVK::createCommandPool()
-{
-	QueueFamilyIndices queueFamilyIndices = findQueueFamilies();
-
-	VkCommandPoolCreateInfo poolInfo = {};
-	poolInfo.sType				= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	poolInfo.queueFamilyIndex	= queueFamilyIndices.m_GraphicsFamily.value();
-	poolInfo.flags				= VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-	if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
-		throw std::runtime_error("Error: Failed to create graphics command pool!");
 }
 
 void DeviceVK::createDescriptorPool()

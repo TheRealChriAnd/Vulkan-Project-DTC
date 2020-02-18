@@ -3,13 +3,13 @@
 #include <set>
 #include <mutex>
 #include <atomic>
+#include <functional>
 
 namespace std
 {
 	class thread;
 }
 
-class IExecutable;
 class IAsynchronous;
 
 class ThreadManager
@@ -17,7 +17,7 @@ class ThreadManager
 	friend class Application;
 
 public:
-	static void scheduleExecution(IExecutable* target);
+	static void scheduleExecution(const std::function<void()>& target);
 	static void addAsynchronousService(IAsynchronous* target);
 	static void removeAsynchronousService(IAsynchronous* target);
 
@@ -28,7 +28,7 @@ private:
 	static void runSet();
 
 private:
-	static std::vector<IExecutable*> m_Queue;
+	static std::vector<std::function<void()>> m_Queue;
 	static std::set<IAsynchronous*> m_Set;
 	static std::mutex m_MutexQueue;
 	static std::mutex m_MutexSetAdd;

@@ -102,8 +102,8 @@ void Application::shutdownInternal()
 
 	m_Device->waitForIdle();
 
-	this->shutdown();
 	releaseSwapChainInternal();
+	this->shutdown();
 	RES::shutdown();
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)

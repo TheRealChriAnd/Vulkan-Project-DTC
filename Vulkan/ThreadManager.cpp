@@ -1,9 +1,8 @@
 #include "ThreadManager.h"
-#include "IExecutable.h"
 #include "IAsynchronous.h"
 #include <thread>
 
-std::vector<IExecutable*> ThreadManager::m_Queue;
+std::vector<std::function<void()>> ThreadManager::m_Queue;
 std::set<IAsynchronous*> ThreadManager::m_Set;
 std::atomic_bool ThreadManager::m_Running = true;
 std::mutex ThreadManager::m_MutexQueue;
@@ -21,7 +20,7 @@ void ThreadManager::init()
 void ThreadManager::shutdown()
 {
 	m_MutexQueue.lock();
-	m_Queue = std::vector<IExecutable*>();
+	m_Queue = std::vector<std::function<void()>>();
 	m_MutexQueue.unlock();
 
 	m_MutexSetAdd.lock();
@@ -43,13 +42,13 @@ void ThreadManager::runQueue()
 			continue;
 
 		m_MutexQueue.lock();
-		std::vector<IExecutable*> queue = m_Queue;
-		m_Queue = std::vector<IExecutable*>();
+		std::vector<std::function<void()>> queue = m_Queue;
+		m_Queue = std::vector<std::function<void()>>();
 		m_MutexQueue.unlock();
 
-		for (IExecutable* target : queue)
+		for (const std::function<void()>& target : queue)
 		{
-			target->execute();
+			target();
 		}
 	}
 }
@@ -78,7 +77,7 @@ void ThreadManager::runSet()
 	}
 }
 
-void ThreadManager::scheduleExecution(IExecutable* target)
+void ThreadManager::scheduleExecution(const std::function<void()>& target)
 {
 	m_MutexQueue.lock();
 	m_Queue.push_back(target);

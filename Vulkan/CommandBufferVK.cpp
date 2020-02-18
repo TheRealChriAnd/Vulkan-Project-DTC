@@ -7,23 +7,24 @@
 #include "BufferVK.h"
 #include "IndexBufferVK.h"
 #include "DescriptorSetVK.h"
+#include "CommandPoolVK.h"
 #include <iostream>
 #include <array>
 
-
-CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, 1, true) 
+CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, device->getCommandPool(), 1, true)
 {
 	
 }
 
-CommandBufferVK::CommandBufferVK(DeviceVK* device, SwapChainVK* swapChain, bool primary) : CommandBufferVK(device, swapChain->getCount(), primary)
+CommandBufferVK::CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, SwapChainVK* swapChain, bool primary) : CommandBufferVK(device, commandPool, swapChain->getCount(), primary)
 {
 
 }
 
-CommandBufferVK::CommandBufferVK(DeviceVK* device, int buffers, bool primary)
+CommandBufferVK::CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, int buffers, bool primary)
 {
 	m_Device = device;
+	m_CommandPool = commandPool;
 	m_Primary = primary;
 
 	m_CommandBuffers.resize(buffers);
@@ -31,7 +32,7 @@ CommandBufferVK::CommandBufferVK(DeviceVK* device, int buffers, bool primary)
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType					= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.level					= primary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	allocInfo.commandPool			= device->getCommandPool();
+	allocInfo.commandPool			= commandPool->m_CommandPool;
 	allocInfo.commandBufferCount	= buffers;
 
 	if (vkAllocateCommandBuffers(device->getDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
@@ -40,7 +41,7 @@ CommandBufferVK::CommandBufferVK(DeviceVK* device, int buffers, bool primary)
 
 CommandBufferVK::~CommandBufferVK()
 {
-	vkFreeCommandBuffers(m_Device->getDevice(), m_Device->getCommandPool(), m_CommandBuffers.size(), m_CommandBuffers.data());
+	vkFreeCommandBuffers(m_Device->getDevice(), m_CommandPool->m_CommandPool, m_CommandBuffers.size(), m_CommandBuffers.data());
 }
 
 void CommandBufferVK::begin(int index, VkCommandBufferUsageFlagBits bufferUsage, RenderPassVK* renderPass) const

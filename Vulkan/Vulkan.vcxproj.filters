@@ -35,6 +35,7 @@
     <ClCompile Include="TextureAnimated.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="Profiler.cpp" />
+    <ClCompile Include="CommandPoolVK.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -72,9 +73,9 @@
     <ClInclude Include="TextureSkyBox.h" />
     <ClInclude Include="TextureAnimated.h" />
     <ClInclude Include="ThreadManager.h" />
-    <ClInclude Include="IExecutable.h" />
     <ClInclude Include="IAsynchronous.h" />
     <ClInclude Include="Profiler.h" />
+    <ClInclude Include="CommandPoolVK.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\fatboy.png" />
