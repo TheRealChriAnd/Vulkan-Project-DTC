@@ -55,9 +55,6 @@ private:
 	GameObjectSimple* m_GameObjectWindow;
 	GameObjectSimple* m_GameObjectGround;
 	GameObjectSimple* m_GameObjectFloor;
-	GameObjectSimple* m_GameObjectLamp1;
-	GameObjectSimple* m_GameObjectLamp2;
-	GameObjectSimple* m_GameObjectLamp3;
 
 	GameObjectSimple* m_GameObjectTv;
 	GameObjectSimple* m_GameObjectTable;
