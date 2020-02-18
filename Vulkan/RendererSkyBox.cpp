@@ -59,9 +59,8 @@ void RendererSkyBox::init()
 	m_UniformBuffer->setData(&ubo);
 }
 
-void RendererSkyBox::render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects)
+void RendererSkyBox::render(CommandBufferVK* m_CommandBuffer, int index, const std::vector<GameObject*>& gameObjects)
 {
-	int index = m_SwapChain->getCurrentImageIndex();
 	m_CommandBuffer->bindPipeline(index, m_Pipeline);
 	for (GameObject* gameObject : gameObjects)
 	{

@@ -72,9 +72,8 @@ void RendererSimple::init()
 	m_Pipeline->submit(m_Device, m_RenderPass, m_SwapChain, VK_POLYGON_MODE_FILL);
 }
 
-void RendererSimple::render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects)
+void RendererSimple::render(CommandBufferVK* m_CommandBuffer, int index, const std::vector<GameObject*>& gameObjects)
 {
-	int index = m_SwapChain->getCurrentImageIndex();
 	m_CommandBuffer->bindPipeline(index, m_Pipeline);
 	for (GameObject* gameObject : gameObjects)
 	{

@@ -28,7 +28,7 @@ public:
 
 	virtual void preInit() override;
 	virtual void init() override;
-	void createCommandBuffers();
+	void createCommandBuffers(size_t index);
 	virtual void update(float deltaSeconds) override;
 	virtual CommandBufferVK* frame() override;
 	virtual void shutdown() override;

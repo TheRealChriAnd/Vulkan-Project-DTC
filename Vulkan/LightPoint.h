@@ -15,11 +15,13 @@ struct Light
 class LightPoint : public LightVK
 {
 public:
-	LightPoint(glm::vec3 pos, glm::vec3 amb, glm::vec3 diff, glm::vec3 spec, glm::vec3 clq);
+	LightPoint(const glm::vec3& pos, const glm::vec3& amb, const glm::vec3& diff, const glm::vec3& spec, const glm::vec3& clq);
 	virtual ~LightPoint();
 
 	Light getPointLight() const;
-	void setAmbientColor(glm::vec3 color);
+	void setAmbientColor(const glm::vec4& color);
+	void setSpecColor(const glm::vec4& color);
+	void setDiffuseColor(const glm::vec4& color);
 
 private:
 	Light m_PointLight;

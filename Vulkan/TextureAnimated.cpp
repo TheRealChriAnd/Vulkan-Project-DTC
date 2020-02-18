@@ -89,24 +89,40 @@ void TextureAnimated::submit()
 	}
 }
 
+int TextureAnimated::getHeight() const
+{
+	return m_Height;
+}
+
+int TextureAnimated::getWidth() const
+{
+	return m_Width;
+}
+
 bool TextureAnimated::isPlaying() const
 {
 	return m_Playing;
 }
 
-const glm::mat4& TextureAnimated::getSampledCornerColors() const
+glm::u8vec3 TextureAnimated::getColor(int x, int y) const
 {
-	glm::mat4 averageColors;
-	int temp;
-	averageColors[0] = glm::vec4(m_PixelData[0] * 0.00392f, m_PixelData[1] * 0.00392f, m_PixelData[2] * 0.00392f, 1.0f);
-	temp = m_Width * 3;
-	averageColors[1] = glm::vec4(m_PixelData[temp] * 0.00392f, m_PixelData[temp + 1] * 0.00392f, m_PixelData[temp + 2] * 0.00392f, 1.0);
-	temp = m_Height * m_Width * 3 - m_Width;
-	averageColors[2] = glm::vec4(m_PixelData[temp] * 0.00392f, m_PixelData[temp + 1] * 0.00392f, m_PixelData[temp + 2] * 0.00392f, 1.0);
-	temp = m_Height * m_Width * 3;
-	averageColors[3] = glm::vec4(m_PixelData[temp] * 0.00392f, m_PixelData[temp + 1] * 0.00392f, m_PixelData[temp + 2] * 0.00392f, 255);
-	
-	return averageColors;
+	int index = (y * m_Width + x) * 4;
+
+	return glm::u8vec3(m_PixelData[index], m_PixelData[index + 1], m_PixelData[index + 2]);
+}
+
+glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, int offsetY) const
+{
+	float samples = width * height;
+	glm::vec3 sampleColor;
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			sampleColor += getColor(x + offsetX, y + offsetY);
+		}
+	}
+	return sampleColor / samples;
 }
 
 double timer = 0;
@@ -136,7 +152,7 @@ void TextureAnimated::update(float deltaSeconds)
 	m_CurrentFrame++;
 
 	if (m_CurrentFrame == m_FrameCount)
-		this->stop();
+		m_VideoCapture->set(cv::CAP_PROP_POS_FRAMES, 0);
 
 	if (deltaSeconds > m_SleepTime)
 	{

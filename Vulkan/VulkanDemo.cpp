@@ -25,15 +25,25 @@
 #include "TextureSkyBox.h"
 #include "ThreadManager.h"
 #include "CommandPoolVK.h"
+#include <atomic>
 
 void VulkanDemo::preInit()
 {
+	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 2.1f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 2.1f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 0.7f, 3.45f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	
+	m_PointLight.push_back(new LightPoint(glm::vec3(-0.75f, 2.1f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(0.75f, 2.1f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-0.75f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(0.75f, 0.7f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	
+	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 1.4f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 1.4f, 3.45f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
 
-	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 2.1f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 2.1f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 0.7f, 3.45f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.7f, 1.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(0.0f, 1.4f, 3.45f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 0.09f, 0.032f)));
+	
+	m_PointLight.push_back(new LightPoint(glm::vec3(0.0f, 1.4f, 3.45f), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.25f, 0.09f, 0.032f)));
 
 	m_Camera = new CameraVK();
 
@@ -110,6 +120,11 @@ void VulkanDemo::onSwapChainCreated()
 	m_CommandBufferSimple = new CommandBufferVK(m_Device, m_CommandPool2, m_SwapChain, false);
 	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, false);
 	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, true);
+
+#ifdef SINGLE_THREADED
+	for(int i = 0; i < m_SwapChain->getCount(); i++)
+		createCommandBuffers(i);
+#endif
 }
 
 void VulkanDemo::init()
@@ -120,35 +135,34 @@ void VulkanDemo::init()
 	RES::TEXTURE_ANIMATED->play();
 }
 
-void VulkanDemo::createCommandBuffers()
+void VulkanDemo::createCommandBuffers(size_t index)
 {
 	std::vector<CommandBufferVK*> buffers;
 
-	size_t i = m_SwapChain->getCurrentImageIndex();
 	buffers.push_back(m_CommandBufferSkyBox);
 	buffers.push_back(m_CommandBufferSimple);
 
-	bool done = false;
+	std::atomic_bool done = false;
 
-	ThreadManager::scheduleExecution([this, i, &done]()
+	ThreadManager::scheduleExecution([this, index, &done]()
 	{
-		m_CommandBufferSimple->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
-		m_RendererSimple->render(m_CommandBufferSimple, m_SimpleGameObjects);
-		m_CommandBufferSimple->end(i);
+		m_CommandBufferSimple->begin(index, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
+		m_RendererSimple->render(m_CommandBufferSimple, index, m_SimpleGameObjects);
+		m_CommandBufferSimple->end(index);
 		done = true;
 	});
 
-	m_CommandBufferSkyBox->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
-	m_RendererSkyBox->render(m_CommandBufferSkyBox, { m_GameObjectSkyBox });
-	m_CommandBufferSkyBox->end(i);
+	m_CommandBufferSkyBox->begin(index, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
+	m_RendererSkyBox->render(m_CommandBufferSkyBox, index, { m_GameObjectSkyBox });
+	m_CommandBufferSkyBox->end(index);
 
 	while (!done) {};
 
-	m_CommandBufferPrimary->begin(i, (VkCommandBufferUsageFlagBits)0);
-	m_CommandBufferPrimary->beginRenderPass(i, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
-	m_CommandBufferPrimary->writeSecondaryBuffers(i, buffers);
-	m_CommandBufferPrimary->endRenderPass(i);
-	m_CommandBufferPrimary->end(i);
+	m_CommandBufferPrimary->begin(index, (VkCommandBufferUsageFlagBits)0);
+	m_CommandBufferPrimary->beginRenderPass(index, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
+	m_CommandBufferPrimary->writeSecondaryBuffers(index, buffers);
+	m_CommandBufferPrimary->endRenderPass(index);
+	m_CommandBufferPrimary->end(index);
 }
 
 void VulkanDemo::update(float deltaSeconds)
@@ -158,16 +172,59 @@ void VulkanDemo::update(float deltaSeconds)
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
 
-	glm::mat4 sampleColor = RES::TEXTURE_ANIMATED->getSampledCornerColors();
 
-	for (int i = 0; i < 4; i++)
+	TextureAnimated* t = RES::TEXTURE_ANIMATED;
+	int width = t->getWidth();
+	int height = t->getHeight();
+	int squareSize = height * 0.05F;
+
+	glm::vec4 sampleColor[10];
+	sampleColor[0] = glm::vec4(t->getSampleColor(squareSize, squareSize, 0, 0), 255.0F) / 255.0F;
+	sampleColor[1] = glm::vec4(t->getSampleColor(squareSize, squareSize, width - squareSize - 1, 0), 255.0F) / 255.0F;
+	sampleColor[2] = glm::vec4(t->getSampleColor(squareSize, squareSize, 0, height - squareSize - 1), 255.0F) / 255.0F;
+	sampleColor[3] = glm::vec4(t->getSampleColor(squareSize, squareSize, width - squareSize - 1, height - squareSize - 1), 255.0F) / 255.0F;
+
+	sampleColor[4] = glm::vec4(t->getSampleColor(squareSize, squareSize, 2 * width/ 3 - squareSize / 2, 0), 255.0F) / 255.0F;
+	sampleColor[5] = glm::vec4(t->getSampleColor(squareSize, squareSize, width/3 - squareSize/2, 0), 255.0F) / 255.0F;
+
+	sampleColor[6] = glm::vec4(t->getSampleColor(squareSize, squareSize, 2 * width / 3 - squareSize / 2, height - squareSize - 1), 255.0F) / 255.0F;
+	sampleColor[7] = glm::vec4(t->getSampleColor(squareSize, squareSize, width / 3 - squareSize / 2, height - squareSize - 1), 255.0F) / 255.0F;
+
+	sampleColor[8] = glm::vec4(t->getSampleColor(squareSize, squareSize, 0, height/2 - squareSize/2), 255.0F) / 255.0F;
+	sampleColor[9] = glm::vec4(t->getSampleColor(squareSize, squareSize, width - squareSize - 1, height / 2 - squareSize / 2), 255.0F) / 255.0F;
+
+	for (int i = 0; i < 10; i++)
 	{
 		m_PointLight[i]->setAmbientColor(sampleColor[i]);
+		m_PointLight[i]->setDiffuseColor(sampleColor[i]);
+		m_PointLight[i]->setSpecColor(sampleColor[i]);
 	}
+	glm::vec3 color = RES::TEXTURE_ANIMATED->getSampleColor(1920, 1080, 0, 0) / 255.0F;
+
+	color *= 5.0f;
+	float length = glm::sqrt(color.x * color.x + color.y * color.y + color.z * color.z);
+	float maxValue = glm::sqrt(3);
+	if (length > maxValue)
+	{
+		color.x /= length;
+		color.y /= length;
+		color.z /= length;
+
+		color *= maxValue;
+	}
+
+	glm::vec4 finalColor(color, 1.0F);
+
+	int index = m_PointLight.size() - 1;
+	m_PointLight[index]->setAmbientColor(finalColor);
+	m_PointLight[index]->setDiffuseColor(finalColor);
+	m_PointLight[index]->setSpecColor(finalColor);
 
 	RES::TEXTURE_ANIMATED->submit();
 
-	createCommandBuffers();
+#ifdef MULTI_THREADED
+	createCommandBuffers(m_SwapChain->getCurrentImageIndex());
+#endif
 }
 
 CommandBufferVK* VulkanDemo::frame()

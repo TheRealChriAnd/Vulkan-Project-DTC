@@ -20,7 +20,7 @@ public:
 	virtual ~RendererSkyBox();
 
 	virtual void init() override;
-	virtual void render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects) override;
+	virtual void render(CommandBufferVK* m_CommandBuffer, int index, const std::vector<GameObject*>& gameObjects) override;
 
 	GameObjectSkyBox* createGameObject(Mesh* mesh, TextureSkyBox* texture, SamplerVK* sampler);
 

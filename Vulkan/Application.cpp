@@ -14,7 +14,9 @@
 #include "RES.h"
 #include "ThreadManager.h"
 
+
 #include <chrono>
+#include <iostream>
 
 #include "Profiler.h"
 
@@ -50,10 +52,13 @@ void Application::run()
 	Profiler::printResults();
 
 	float debugTimer = 0;
+	int frames = 0;
 	auto lastTime = std::chrono::high_resolution_clock::now();
 	while (!m_Window->shouldClose())
 	{
+		Profiler::begin("EVENTS");
 		m_Window->pollEvents();
+		Profiler::end();
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float delta = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
@@ -81,9 +86,12 @@ void Application::run()
 		drawFrame(imageIndex);
 		Profiler::end();
 
+		frames++;
 		if (debugTimer >= 1.0F)
 		{
 			debugTimer -= 1.0F;
+			std::cout << "FPS: " << frames << std::endl;
+			frames = 0;
 			Profiler::printResults();
 		}
 	}
