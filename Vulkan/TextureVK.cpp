@@ -32,13 +32,9 @@ VkDeviceMemory TextureVK::getDeviceMemory() const
 	return m_ImageMemory;
 }
 
-void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount)
+void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t src, uint32_t dst, bool transfer, VkPipelineStageFlags sourceStage, VkPipelineStageFlags destinationStage, VkAccessFlags accessMaskSrc, VkAccessFlags accessMaskDst, uint32_t layerCount)
 {
-	QueueFamilyIndices indices = device->findQueueFamilies();
-	uint32_t src = indices.m_GraphicsFamily.value();
-	uint32_t dst = indices.m_TransferFamily.value();
-
-	CommandBufferVK commandBuffer(device);
+	CommandBufferVK commandBuffer(device, transfer);
 	commandBuffer.begin();
 
 	VkImageMemoryBarrier barrier = {};
@@ -47,8 +43,9 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	barrier.newLayout = newLayout;
 
 
-	barrier.srcQueueFamilyIndex = src; // behövs fixas
-	barrier.dstQueueFamilyIndex = dst; // behövs fixas
+	barrier.srcQueueFamilyIndex = src;
+	barrier.dstQueueFamilyIndex = dst;
+
 
 	barrier.image = m_Image;
 	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -57,29 +54,8 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	barrier.subresourceRange.baseArrayLayer = 0;
 	barrier.subresourceRange.layerCount = layerCount;
 
-	VkPipelineStageFlags sourceStage;
-	VkPipelineStageFlags destinationStage;
-
-	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-	{
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	}
-	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-	{
-		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	}
-	else
-	{
-		throw std::invalid_argument("unsupported layout transition!");
-	}
+	barrier.srcAccessMask = accessMaskSrc;
+	barrier.dstAccessMask = accessMaskDst;
 
 	vkCmdPipelineBarrier(
 		commandBuffer.getCommandBuffer(),
@@ -91,16 +67,16 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	);
 
 	commandBuffer.end();
-	commandBuffer.submit(true);
+	commandBuffer.submit();
 }
 
 void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions)
 {
-	CommandBufferVK commandBuffer(device);
+	CommandBufferVK commandBuffer(device, true);
 	commandBuffer.begin();
 
 	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
 
 	commandBuffer.end();
-	commandBuffer.submit(true);
+	commandBuffer.submit();
 }

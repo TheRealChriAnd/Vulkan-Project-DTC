@@ -70,5 +70,4 @@ private:
 	CommandBufferVK* m_CommandBufferSimple;
 
 	CommandPoolVK* m_GraphicsCommandPool2;
-	CommandPoolVK* m_TransferCommandPool2;
 };

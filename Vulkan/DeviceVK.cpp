@@ -174,9 +174,6 @@ void DeviceVK::createImage(
 	VkImage& image,
 	VkDeviceMemory& imageMemory)
 {
-	//QueueFamilyIndices indices = findQueueFamilies();
-	//uint32_t queueFamilyIndices[] = { indices.m_GraphicsFamily.value(), indices.m_TransferFamily.value() };
-
 	VkImageCreateInfo imageInfo = {};
 	imageInfo.sType					= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.imageType				= VK_IMAGE_TYPE_2D;
@@ -192,8 +189,6 @@ void DeviceVK::createImage(
 	imageInfo.usage					= usage;
 	imageInfo.samples				= VK_SAMPLE_COUNT_1_BIT;
 	imageInfo.sharingMode			= VK_SHARING_MODE_EXCLUSIVE;
-	//imageInfo.queueFamilyIndexCount = 2;
-	//imageInfo.pQueueFamilyIndices	= queueFamilyIndices;
 
 	if (vkCreateImage(m_Device, &imageInfo, nullptr, &image) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to create image!");
@@ -378,7 +373,8 @@ QueueFamilyIndices DeviceVK::findQueueFamilies(VkPhysicalDevice device)
 	for (int i = 0; i < queueFamilies.size() && !indices.isComplete(); i++)
 	{
 		const auto& queueFamily = queueFamilies[i];
-		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
 			indices.m_GraphicsFamily = i;
 
 			VkBool32 presentSupport = false;
