@@ -11,10 +11,11 @@ struct QueueFamilyIndices
 {
 	std::optional<uint32_t> m_GraphicsFamily;
 	std::optional<uint32_t> m_PresentFamily;
+	std::optional<uint32_t> m_TransferFamily;
 
 	bool isComplete()
 	{
-		return m_GraphicsFamily.has_value() && m_PresentFamily.has_value();
+		return m_GraphicsFamily.has_value() && m_PresentFamily.has_value() && m_TransferFamily.has_value();
 	}
 };
 
@@ -40,9 +41,11 @@ public:
 	VkDevice getDevice() const;
 	VkPhysicalDevice getPhysicalDevice() const;
 	VkSurfaceKHR getSurface() const;
-	CommandPoolVK* getCommandPool() const;
+	CommandPoolVK* getGraphicsCommandPool() const;
+	CommandPoolVK* getTransferCommandPool() const;
 	VkDescriptorPool getDescriptorPool() const;
 	VkQueue getGraphicsQueue() const;
+	VkQueue getTransferQueue() const;
 	VkQueue getPresentQueue() const;
 
 	VkPhysicalDeviceProperties getProperties() const;
@@ -51,6 +54,7 @@ public:
 	void waitForFence(const VkFence fence) const;
 	void resetFence(const VkFence fence) const;
 	void submitToGraphicsQueue(const VkSubmitInfo& submitInfo, const VkFence fence) const;
+	void submitToTransferQueue(const VkSubmitInfo& submitInfo, const VkFence fence) const;
 
 	SwapChainSupportDetails querySwapChainSupport();
 	QueueFamilyIndices findQueueFamilies();
@@ -90,8 +94,10 @@ private:
 	VkDevice m_Device;
 	VkQueue m_GraphicsQueue;
 	VkQueue m_PresentQueue;
+	VkQueue m_TransferQueue;
 	VkDescriptorPool m_DescriptorPool;
-	CommandPoolVK* m_CommandPool;
+	CommandPoolVK* m_GraphicsCommandPool;
+	CommandPoolVK* m_TransferCommandPool;
 
 	VkPhysicalDeviceProperties m_Properties;
 

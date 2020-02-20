@@ -69,5 +69,6 @@ private:
 	CommandBufferVK* m_CommandBufferSkyBox;
 	CommandBufferVK* m_CommandBufferSimple;
 
-	CommandPoolVK* m_CommandPool2;
+	CommandPoolVK* m_GraphicsCommandPool2;
+	CommandPoolVK* m_TransferCommandPool2;
 };

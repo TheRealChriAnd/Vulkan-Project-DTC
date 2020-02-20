@@ -30,11 +30,16 @@ VkBuffer BufferVK::getBuffer() const
 
 void BufferVK::createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDeviceMemory& bufferMemory)
 {
+	QueueFamilyIndices indices = device->findQueueFamilies();
+	uint32_t queueFamilyIndices[] = { indices.m_GraphicsFamily.value(), indices.m_TransferFamily.value() };
+
 	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType		= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size			= size;
-	bufferInfo.usage		= usage;
-	bufferInfo.sharingMode	= VK_SHARING_MODE_EXCLUSIVE;
+	bufferInfo.sType					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bufferInfo.size						= size;
+	bufferInfo.usage					= usage;
+	bufferInfo.sharingMode				= VK_SHARING_MODE_CONCURRENT;
+	bufferInfo.queueFamilyIndexCount	= 2;
+	bufferInfo.pQueueFamilyIndices		= queueFamilyIndices;
 
 	if (vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &m_Buffer) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to create buffer!");
@@ -63,5 +68,5 @@ void BufferVK::copyToBuffer(BufferVK* dstBuffer, VkDeviceSize size)
 	vkCmdCopyBuffer(commandBuffer.getCommandBuffer(), m_Buffer, dstBuffer->getBuffer(), 1, &copyRegion);
 
 	commandBuffer.end();
-	commandBuffer.submit();
+	commandBuffer.submit(false);
 }

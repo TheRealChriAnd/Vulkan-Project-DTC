@@ -11,7 +11,7 @@
 #include <iostream>
 #include <array>
 
-CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, device->getCommandPool(), 1, true)
+CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, device->getTransferCommandPool(), 1, true)
 {
 	
 }
@@ -71,15 +71,17 @@ void CommandBufferVK::end(int index) const
 		throw std::runtime_error("Error: Failed to record command buffer!");
 }
 
-void CommandBufferVK::submit() const
+void CommandBufferVK::submit(bool isTransfer) const
 {
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType				= VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount	= m_CommandBuffers.size();
 	submitInfo.pCommandBuffers		= m_CommandBuffers.data();
 
-	vkQueueSubmit(m_Device->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(m_Device->getGraphicsQueue());
+	VkQueue queueFamily = isTransfer ? m_Device->getTransferQueue() : m_Device->getGraphicsQueue();
+
+	vkQueueSubmit(queueFamily, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(queueFamily);
 }
 
 VkCommandBuffer CommandBufferVK::getCommandBuffer(int index) const

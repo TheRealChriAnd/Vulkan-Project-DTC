@@ -21,7 +21,7 @@ public:
 
 	void begin(int index = 0, VkCommandBufferUsageFlagBits bufferUsage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, RenderPassVK* renderPass = nullptr) const;
 	void end(int index = 0) const;
-	void submit() const;
+	void submit(bool isTransfer) const;
 
 	VkCommandBuffer getCommandBuffer(int index = 0) const;
 	const std::vector<VkCommandBuffer>& getCommandBuffers() const;

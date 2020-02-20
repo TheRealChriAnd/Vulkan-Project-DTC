@@ -8,7 +8,7 @@ class CommandPoolVK
 	friend class CommandBufferVK;
 
 public: 
-	CommandPoolVK(DeviceVK* device);
+	CommandPoolVK(DeviceVK* device, bool isTransfer);
 	~CommandPoolVK();
 
 private:

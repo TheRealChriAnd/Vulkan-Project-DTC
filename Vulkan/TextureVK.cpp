@@ -34,6 +34,10 @@ VkDeviceMemory TextureVK::getDeviceMemory() const
 
 void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount)
 {
+	QueueFamilyIndices indices = device->findQueueFamilies();
+	uint32_t src = indices.m_GraphicsFamily.value();
+	uint32_t dst = indices.m_TransferFamily.value();
+
 	CommandBufferVK commandBuffer(device);
 	commandBuffer.begin();
 
@@ -41,8 +45,11 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 	barrier.oldLayout = oldLayout;
 	barrier.newLayout = newLayout;
-	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+
+	barrier.srcQueueFamilyIndex = src; // behövs fixas
+	barrier.dstQueueFamilyIndex = dst; // behövs fixas
+
 	barrier.image = m_Image;
 	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	barrier.subresourceRange.baseMipLevel = 0;
@@ -84,7 +91,7 @@ void TextureVK::transitionImageLayout(DeviceVK* device, VkFormat format, VkImage
 	);
 
 	commandBuffer.end();
-	commandBuffer.submit();
+	commandBuffer.submit(true);
 }
 
 void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions)
@@ -95,5 +102,5 @@ void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint
 	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
 
 	commandBuffer.end();
-	commandBuffer.submit();
+	commandBuffer.submit(true);
 }
