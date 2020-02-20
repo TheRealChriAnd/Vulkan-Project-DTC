@@ -34,10 +34,10 @@ void VulkanDemo::preInit()
 	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 0.7f, 3.45f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
 	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
 	
-	m_PointLight.push_back(new LightPoint(glm::vec3(-0.75f, 2.1f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(0.75f, 2.1f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(-0.75f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
-	m_PointLight.push_back(new LightPoint(glm::vec3(0.75f, 0.7f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-0.35f, 2.1f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(0.35f, 2.1f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(-0.35f, 0.7f, 3.45f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
+	m_PointLight.push_back(new LightPoint(glm::vec3(0.35f, 0.7f, 3.45f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
 	
 	m_PointLight.push_back(new LightPoint(glm::vec3(1.5f, 1.4f, 3.45f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
 	m_PointLight.push_back(new LightPoint(glm::vec3(-1.5f, 1.4f, 3.45f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.9f, 5.8f)));
@@ -46,6 +46,14 @@ void VulkanDemo::preInit()
 	m_PointLight.push_back(new LightPoint(glm::vec3(0.0f, 1.4f, 3.45f), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.25f, 0.09f, 0.032f)));
 
 	m_Camera = new CameraVK();
+
+	m_Camera->addNode(glm::vec3(0.0f, 1.7f, -2.0f), glm::vec3(0.0f, 1.5f, 3.3f));
+	m_Camera->addNode(glm::vec3(0.0f, 1.7f, 2.0f), glm::vec3(0.0f, 1.5f, 3.3f));
+	m_Camera->addNode(glm::vec3(3.0f, 1.7f, 0.0f), glm::vec3(0.0f, 1.5f, 3.3f));
+	m_Camera->addNode(glm::vec3(0.0f, 3.5f, -3.0f), glm::vec3(0.0f, 1.5f, 3.3f));
+	m_Camera->addNode(glm::vec3(-3.0f, 1.7f, 0.0f), glm::vec3(0.0f, 1.5f, 3.3f));
+
+	m_Camera->startFollowPath();
 
 	m_CommandPool2 = new CommandPoolVK(m_Device);
 }
@@ -121,7 +129,7 @@ void VulkanDemo::onSwapChainCreated()
 	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, false);
 	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, true);
 
-#ifdef SINGLE_THREADED
+#ifndef MULTI_THREADED
 	for(int i = 0; i < m_SwapChain->getCount(); i++)
 		createCommandBuffers(i);
 #endif

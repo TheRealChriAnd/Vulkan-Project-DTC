@@ -2,6 +2,9 @@
 #include "Defines.h"
 #include "IMouseListener.h"
 #include "IKeyListener.h"
+#include <unordered_map>
+#include <vector>
+#include <utility>
 #include "glm/glm.hpp"
 
 #define KEY_W 87
@@ -24,6 +27,8 @@ public:
 	const glm::vec3& getPosition() const;
 	const glm::mat4& getView() const;
 
+	void addNode(const glm::vec3& pos, const glm::vec3& target);
+
 	virtual void onMouseButtonPressed(int button) override;
 	virtual void onMouseButtonRelease(int button) override;
 	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
@@ -32,6 +37,8 @@ public:
 	virtual void onKeyReleased(int key) override;
 
 	void update(float delta);
+	void startFollowPath();
+	void stopFollowPath();
 
 private:
 	glm::vec3 m_Position;
@@ -40,15 +47,25 @@ private:
 	glm::vec3 m_Front;
 	glm::vec3 m_Up;
 
+	std::vector<std::pair<glm::vec3, glm::vec3>> m_PosTargetTable;
+
 	glm::mat4 m_ViewMatrix;
 
 	float m_Sensitivity;
 	float m_CameraSpeed;
 	float m_Yaw;
 	float m_Pitch;
+	float m_Timer;
+	int m_CurrentNode;
+	float m_TotalTime;
+	bool m_FollowPath;
 
 private:
 
-	void createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 direction); // maybe not yes?'
-	void updateCamera();
+	void moveCamera(std::pair<glm::vec3, glm::vec3> node0, std::pair<glm::vec3, glm::vec3> node1, float percentage);
+	glm::vec3 lerp(const glm::vec3& a, const glm::vec3& b, float percentage);
+	void followPath(float delta);
+	void calcTotalTime();
+	const std::pair<glm::vec3, glm::vec3>& getCurrentNode() const;
+	const std::pair<glm::vec3, glm::vec3>& getNextNode() const;
 };

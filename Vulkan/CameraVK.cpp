@@ -14,7 +14,10 @@ CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 
 	m_Sensitivity = sensitivity;
 	m_CameraSpeed = speed;
-
+	m_CurrentNode = 0;
+	m_Timer = 0;
+	m_TotalTime = 0;
+	m_FollowPath = false;
 
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
@@ -29,9 +32,12 @@ CameraVK::CameraVK()
 	m_Yaw = -glm::pi<float>() / 2.0f;
 	m_Pitch = 0;
 
-
 	m_Sensitivity = 0.005f;
-	m_CameraSpeed = 0.01f;
+	m_CameraSpeed = 0.75f;
+	m_CurrentNode = 0;
+	m_Timer = 0;
+	m_TotalTime = 0;
+	m_FollowPath = false;
 
 	onMouseMove(glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f));
 
@@ -54,6 +60,11 @@ const glm::vec3& CameraVK::getPosition() const
 const glm::mat4& CameraVK::getView() const
 {
 	return m_ViewMatrix;
+}
+
+void CameraVK::addNode(const glm::vec3& pos, const glm::vec3& target)
+{
+	m_PosTargetTable.push_back({ pos, target });
 }
 
 void CameraVK::onMouseButtonPressed(int button)
@@ -82,8 +93,6 @@ void CameraVK::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 	m_Direction.z = glm::sin(m_Yaw) * glm::cos(m_Pitch);
 
 	m_Front = glm::normalize(m_Direction);
-
-	updateCamera();
 }
 
 void CameraVK::onKeyPressed(int key)
@@ -95,9 +104,15 @@ void CameraVK::onKeyReleased(int key)
 {
 }
 
-void CameraVK::createCamera(glm::vec3 position, glm::vec3 target, glm::vec3 direction)//ta bort
+void CameraVK::moveCamera(std::pair<glm::vec3, glm::vec3> node0, std::pair<glm::vec3, glm::vec3> node1, float percentage)
 {
+	m_Position = lerp(node0.first, node1.first, percentage);
+	m_Front = lerp(node0.second, node1.second, percentage) - m_Position;
+}
 
+glm::vec3 CameraVK::lerp(const glm::vec3& a, const glm::vec3& b, float percentage)
+{
+	return  a + (b - a) * percentage;
 }
 
 void CameraVK::update(float delta)
@@ -119,10 +134,63 @@ void CameraVK::update(float delta)
 		m_Position -= glm::normalize(glm::cross(m_Front, m_Up)) * delta;
 	}
 
-	updateCamera();
+	if (m_FollowPath)
+	{
+		followPath(delta);
+	}
+
+	m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 }
 
-void CameraVK::updateCamera()
+void CameraVK::startFollowPath()
 {
-	m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
+	m_FollowPath = true;
+	calcTotalTime();
+}
+
+void CameraVK::stopFollowPath()
+{
+	m_FollowPath = false;
+}
+
+void CameraVK::followPath(float delta)
+{
+	m_Timer += delta;
+
+	moveCamera(getCurrentNode(), getNextNode(), m_Timer / m_TotalTime);
+	if (m_Timer >= m_TotalTime)
+	{
+		m_Timer -= m_TotalTime;
+		m_CurrentNode++;
+		if (m_CurrentNode == m_PosTargetTable.size())
+		{
+			m_CurrentNode = 0;
+			//m_FollowPath = false;
+		}
+		calcTotalTime();
+	}
+}
+
+void CameraVK::calcTotalTime()
+{
+	std::pair<glm::vec3, glm::vec3> node0 = getCurrentNode();
+	std::pair<glm::vec3, glm::vec3> node1 = getNextNode();
+	glm::vec3 diff = node1.first - node0.first;
+	float length = glm::sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+	m_TotalTime = length / m_CameraSpeed;
+}
+
+const std::pair<glm::vec3, glm::vec3>& CameraVK::getCurrentNode() const
+{
+	return m_PosTargetTable[m_CurrentNode];
+}
+
+const std::pair<glm::vec3, glm::vec3>& CameraVK::getNextNode() const
+{
+	if (m_CurrentNode == m_PosTargetTable.size() - 1)
+	{
+		return m_PosTargetTable[0];
+	}
+
+	return m_PosTargetTable[m_CurrentNode + 1];
 }
