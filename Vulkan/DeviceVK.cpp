@@ -137,9 +137,9 @@ SwapChainSupportDetails DeviceVK::querySwapChainSupport()
 	return querySwapChainSupport(m_PhysicalDevice);
 }
 
-QueueFamilyIndices DeviceVK::findQueueFamilies()
+QueueFamilyIndices DeviceVK::getQueueFamilies()
 {
-	return findQueueFamilies(m_PhysicalDevice);
+	return m_Indices;
 }
 
 VkImageView DeviceVK::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layers)
@@ -279,10 +279,10 @@ void DeviceVK::createLogicalDevice(const std::vector<const char*>& validationLay
 {
 	vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_Properties);
 
-	QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
+	m_Indices = findQueueFamilies(m_PhysicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indices.m_GraphicsFamily.value(), indices.m_PresentFamily.value(), indices.m_TransferFamily.value() };
+	std::set<uint32_t> uniqueQueueFamilies = { m_Indices.m_GraphicsFamily.value(), m_Indices.m_PresentFamily.value(), m_Indices.m_TransferFamily.value() };
 
 	float queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -318,9 +318,9 @@ void DeviceVK::createLogicalDevice(const std::vector<const char*>& validationLay
 	if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS)
 		throw std::runtime_error("failed to create logical device!");
 
-	vkGetDeviceQueue(m_Device, indices.m_GraphicsFamily.value(), 0, &m_GraphicsQueue);
-	vkGetDeviceQueue(m_Device, indices.m_PresentFamily.value(), 0, &m_PresentQueue);
-	vkGetDeviceQueue(m_Device, indices.m_TransferFamily.value(), 0, &m_TransferQueue);
+	vkGetDeviceQueue(m_Device, m_Indices.m_GraphicsFamily.value(), 0, &m_GraphicsQueue);
+	vkGetDeviceQueue(m_Device, m_Indices.m_PresentFamily.value(), 0, &m_PresentQueue);
+	vkGetDeviceQueue(m_Device, m_Indices.m_TransferFamily.value(), 0, &m_TransferQueue);
 }
 
 void DeviceVK::createDescriptorPool()

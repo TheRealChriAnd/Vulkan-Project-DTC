@@ -4,7 +4,7 @@
 CommandPoolVK::CommandPoolVK(DeviceVK* device, bool isTransfer)
 {
 	m_Device = device;
-	QueueFamilyIndices queueFamilyIndices = device->findQueueFamilies();
+	QueueFamilyIndices queueFamilyIndices = device->getQueueFamilies();
 
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType				= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

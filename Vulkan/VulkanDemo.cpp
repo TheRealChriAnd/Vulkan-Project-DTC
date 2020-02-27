@@ -52,7 +52,7 @@ void VulkanDemo::onSwapChainCreated()
 	}
 
 	m_GameObjectGround		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_GROUND,	RES::SAMPLER_DEFAULT);
-	//m_GameObjectScreen		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_ANIMATED,	RES::SAMPLER_DEFAULT);
+	m_GameObjectScreen		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_ANIMATED,	RES::SAMPLER_DEFAULT);
 	m_GameObjectFloor		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_FLOOR,		RES::SAMPLER_DEFAULT);
 	m_GameObjectSofa		= m_RendererSimple->createGameObject(RES::MESH_SOFA,	RES::TEXTURE_SOFA,		RES::SAMPLER_DEFAULT);
 	m_GameObjectRightWall	= m_RendererSimple->createGameObject(RES::MESH_WALL2,	RES::TEXTURE_THIN,		RES::SAMPLER_DEFAULT);
@@ -62,11 +62,11 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTable		= m_RendererSimple->createGameObject(RES::MESH_TABLE,	RES::TEXTURE_TABLE,		RES::SAMPLER_DEFAULT);
 	m_GameObjectSkyBox		= m_RendererSkyBox->createGameObject(RES::MESH_CUBE,	RES::TEXTURE_SKYBOX,	RES::SAMPLER_DEFAULT);
 
-	/*m_GameObjectScreen->scale(glm::vec3(3.0f, 1.555f, 1.0f));
+	m_GameObjectScreen->scale(glm::vec3(3.0f, 1.555f, 1.0f));
 	m_GameObjectScreen->translate(glm::vec3(0.0f, 0.895f, 3.3f));
 	m_GameObjectScreen->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
 	m_GameObjectScreen->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
-	m_GameObjectScreen->applyTransform();*/
+	m_GameObjectScreen->applyTransform();
 
 	m_GameObjectFloor->scale(7);
 	m_GameObjectFloor->applyTransform();
@@ -95,7 +95,7 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTable->translate(glm::vec3(0.0f, 0.0f, 1.0f));
 	m_GameObjectTable->applyTransform();
 
-	//m_SimpleGameObjects.push_back(m_GameObjectScreen);
+	m_SimpleGameObjects.push_back(m_GameObjectScreen);
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
 	m_SimpleGameObjects.push_back(m_GameObjectRightWall);
 	m_SimpleGameObjects.push_back(m_GameObjectFrontWall);
@@ -116,7 +116,7 @@ void VulkanDemo::init()
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
 
-	//RES::TEXTURE_ANIMATED->play();
+	RES::TEXTURE_ANIMATED->play();
 }
 
 void VulkanDemo::createCommandBuffers()
@@ -124,7 +124,7 @@ void VulkanDemo::createCommandBuffers()
 	std::vector<CommandBufferVK*> buffers;
 
 	size_t i = m_SwapChain->getCurrentImageIndex();
-	//buffers.push_back(m_CommandBufferSkyBox);
+	buffers.push_back(m_CommandBufferSkyBox);
 	buffers.push_back(m_CommandBufferSimple);
 
 	bool done = false;
@@ -137,9 +137,9 @@ void VulkanDemo::createCommandBuffers()
 		done = true;
 	});
 
-	/*m_CommandBufferSkyBox->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
+	m_CommandBufferSkyBox->begin(i, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
 	m_RendererSkyBox->render(m_CommandBufferSkyBox, { m_GameObjectSkyBox });
-	m_CommandBufferSkyBox->end(i);*/
+	m_CommandBufferSkyBox->end(i);
 
 	while (!done) {};
 
@@ -157,14 +157,14 @@ void VulkanDemo::update(float deltaSeconds)
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
 
-	/*glm::mat4 sampleColor = RES::TEXTURE_ANIMATED->getSampledCornerColors();
+	glm::mat4 sampleColor = RES::TEXTURE_ANIMATED->getSampledCornerColors();
 
 	for (int i = 0; i < 4; i++)
 	{
 		m_PointLight[i]->setAmbientColor(sampleColor[i]);
 	}
 
-	RES::TEXTURE_ANIMATED->submit();*/
+	RES::TEXTURE_ANIMATED->submit();
 
 	createCommandBuffers();
 }

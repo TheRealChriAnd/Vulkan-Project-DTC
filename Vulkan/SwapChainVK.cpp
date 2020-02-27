@@ -101,7 +101,7 @@ void SwapChainVK::createSwapChain(WindowVK* window, DeviceVK* device)
 	createInfo.imageArrayLayers = 1;
 	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	QueueFamilyIndices indices = device->findQueueFamilies();
+	QueueFamilyIndices indices = device->getQueueFamilies();
 	uint32_t queueFamilyIndices[] = { indices.m_GraphicsFamily.value(), indices.m_PresentFamily.value() };
 
 	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;

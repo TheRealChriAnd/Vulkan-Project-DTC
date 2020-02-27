@@ -16,7 +16,7 @@ public:
 	VkDeviceMemory getDeviceMemory() const;
 
 protected:
-	void transitionImageLayout(DeviceVK* device, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t src, uint32_t dst, bool transfer, VkPipelineStageFlags sourceStage, VkPipelineStageFlags destinationStage, VkAccessFlags accessMaskSrc, VkAccessFlags accessMaskDst, uint32_t layerCount = 1);
+	void transitionImageLayout(DeviceVK* device, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t src, uint32_t dst, bool transfer, uint32_t layerCount = 1);
 	void copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions);
 
 protected:
