@@ -114,7 +114,7 @@ glm::u8vec3 TextureAnimated::getColor(int x, int y) const
 glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, int offsetY) const
 {
 	float samples = width * height;
-	glm::vec3 sampleColor;
+	glm::vec3 sampleColor(0);
 	for (int x = 0; x < width; x++)
 	{
 		for (int y = 0; y < height; y++)
