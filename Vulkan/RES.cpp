@@ -40,8 +40,7 @@ void RES::init(DeviceVK* device)
 
 	TEXTURE_SKYBOX->loadFromFile(texLayers);
 
-	//TEXTURE_ANIMATED = new TextureAnimated(device, "videos/video.mp4");
-	//TEXTURE_ANIMATED = new TextureAnimated(device, "videos/test.mp4");
+	TEXTURE_ANIMATED = new TextureAnimated(device, "videos/video.mp4");
 	TEXTURE_ANIMATED = new TextureAnimated(device, "https://anderssoncloud.ddns.net/nextcloud/s/dSm4kRnjxkpPNG2/download");
 	
 	SAMPLER_DEFAULT = new SamplerVK(device);

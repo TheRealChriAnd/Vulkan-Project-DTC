@@ -11,9 +11,10 @@
 #include <iostream>
 #include <array>
 
-CommandBufferVK::CommandBufferVK(DeviceVK* device) : CommandBufferVK(device, device->getCommandPool(), 1, true)
+CommandBufferVK::CommandBufferVK(DeviceVK* device, bool transfer)
+	: CommandBufferVK(device, transfer ? device->getTransferCommandPool() : device->getGraphicsCommandPool(), 1, true)
 {
-	
+	m_Transfer = transfer;
 }
 
 CommandBufferVK::CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, SwapChainVK* swapChain, bool primary) : CommandBufferVK(device, commandPool, swapChain->getCount(), primary)
@@ -71,6 +72,13 @@ void CommandBufferVK::end(int index) const
 		throw std::runtime_error("Error: Failed to record command buffer!");
 }
 
+void CommandBufferVK::copyBuffer(BufferVK* src, BufferVK* dst, size_t size) const
+{
+	VkBufferCopy copyRegion = {};
+	copyRegion.size = size;
+	vkCmdCopyBuffer(m_CommandBuffers[0], src->getBuffer(), dst->getBuffer(), 1, &copyRegion);
+}
+
 void CommandBufferVK::submit() const
 {
 	VkSubmitInfo submitInfo = {};
@@ -78,8 +86,10 @@ void CommandBufferVK::submit() const
 	submitInfo.commandBufferCount	= m_CommandBuffers.size();
 	submitInfo.pCommandBuffers		= m_CommandBuffers.data();
 
-	vkQueueSubmit(m_Device->getGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-	vkQueueWaitIdle(m_Device->getGraphicsQueue());
+	VkQueue queueFamily = m_Transfer ? m_Device->getTransferQueue() : m_Device->getGraphicsQueue();
+
+	vkQueueSubmit(queueFamily, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(queueFamily);
 }
 
 VkCommandBuffer CommandBufferVK::getCommandBuffer(int index) const

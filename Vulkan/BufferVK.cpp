@@ -31,10 +31,10 @@ VkBuffer BufferVK::getBuffer() const
 void BufferVK::createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDeviceMemory& bufferMemory)
 {
 	VkBufferCreateInfo bufferInfo = {};
-	bufferInfo.sType		= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	bufferInfo.size			= size;
-	bufferInfo.usage		= usage;
-	bufferInfo.sharingMode	= VK_SHARING_MODE_EXCLUSIVE;
+	bufferInfo.sType					= VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bufferInfo.size						= size;
+	bufferInfo.usage					= usage;
+	bufferInfo.sharingMode				= VK_SHARING_MODE_EXCLUSIVE;
 
 	if (vkCreateBuffer(device->getDevice(), &bufferInfo, nullptr, &m_Buffer) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to create buffer!");
@@ -55,13 +55,9 @@ void BufferVK::createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize s
 
 void BufferVK::copyToBuffer(BufferVK* dstBuffer, VkDeviceSize size)
 {
-	CommandBufferVK commandBuffer(m_Device);
+	CommandBufferVK commandBuffer(m_Device, true);
 	commandBuffer.begin();
-
-	VkBufferCopy copyRegion = {};
-	copyRegion.size = size;
-	vkCmdCopyBuffer(commandBuffer.getCommandBuffer(), m_Buffer, dstBuffer->getBuffer(), 1, &copyRegion);
-
+	commandBuffer.copyBuffer(this, dstBuffer, size);
 	commandBuffer.end();
 	commandBuffer.submit();
 }

@@ -11,16 +11,19 @@ class StorageBufferVK;
 class IndexBufferVK;
 class DescriptorSetVK;
 class CommandPoolVK;
+class BufferVK;
 
 class CommandBufferVK
 {
 public:
-	CommandBufferVK(DeviceVK* device);
+	CommandBufferVK(DeviceVK* device, bool transfer);
 	CommandBufferVK(DeviceVK* device, CommandPoolVK* commandPool, SwapChainVK* swapChain, bool primary);
 	~CommandBufferVK();
 
 	void begin(int index = 0, VkCommandBufferUsageFlagBits bufferUsage = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT, RenderPassVK* renderPass = nullptr) const;
 	void end(int index = 0) const;
+
+	void copyBuffer(BufferVK* src, BufferVK* dst, size_t size) const;
 	void submit() const;
 
 	VkCommandBuffer getCommandBuffer(int index = 0) const;
@@ -43,6 +46,7 @@ private:
 private:
 	std::vector<VkCommandBuffer> m_CommandBuffers;
 	bool m_Primary;
+	bool m_Transfer;
 	DeviceVK* m_Device;
 	CommandPoolVK* m_CommandPool;
 };

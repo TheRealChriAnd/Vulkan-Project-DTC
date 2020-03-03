@@ -50,9 +50,11 @@ TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) :
 		1
 	};
 
-	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, true);
 	copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), { m_Region });
-	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), true);
+	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), false);
 }
 
 TextureAnimated::~TextureAnimated()
@@ -83,9 +85,11 @@ void TextureAnimated::submit()
 		m_StagingBuffer->writeData(m_PixelData, static_cast<size_t>(m_TotalSize));
 		m_HasUpdate = false;
 
-		transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, true);
 		copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), { m_Region });
-		transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), true);
+		transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), false);
 	}
 }
 

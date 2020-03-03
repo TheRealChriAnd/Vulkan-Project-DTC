@@ -37,7 +37,8 @@ DeviceVK::DeviceVK(WindowVK* window, bool enableValidationLayers) :
 	window->createSurface(this);
 	pickPhysicalDevice(deviceExtentions);
 	createLogicalDevice(validationLayers, deviceExtentions);
-	m_CommandPool = new CommandPoolVK(this);
+	m_GraphicsCommandPool = new CommandPoolVK(this, false);
+	m_TransferCommandPool = new CommandPoolVK(this, true);
 	createDescriptorPool();
 }
 
@@ -47,7 +48,8 @@ DeviceVK::~DeviceVK()
 		destroyDebugUtilsMessengerEXT();
 
 	vkDestroyDescriptorPool(m_Device, m_DescriptorPool, nullptr);
-	delete m_CommandPool;
+	delete m_GraphicsCommandPool;
+	delete m_TransferCommandPool;
 	vkDestroyDevice(m_Device, nullptr);
 	vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
 	vkDestroyInstance(m_Instance, nullptr);
@@ -68,9 +70,14 @@ VkSurfaceKHR DeviceVK::getSurface() const
 	return m_Surface;
 }
 
-CommandPoolVK* DeviceVK::getCommandPool() const
+CommandPoolVK* DeviceVK::getGraphicsCommandPool() const
 {
-	return m_CommandPool;
+	return m_GraphicsCommandPool;
+}
+
+CommandPoolVK* DeviceVK::getTransferCommandPool() const
+{
+	return m_TransferCommandPool;
 }
 
 VkDescriptorPool DeviceVK::getDescriptorPool() const
@@ -81,6 +88,11 @@ VkDescriptorPool DeviceVK::getDescriptorPool() const
 VkQueue DeviceVK::getGraphicsQueue() const
 {
 	return m_GraphicsQueue;
+}
+
+VkQueue DeviceVK::getTransferQueue() const
+{
+	return m_TransferQueue;
 }
 
 VkQueue DeviceVK::getPresentQueue() const
@@ -114,28 +126,34 @@ void DeviceVK::submitToGraphicsQueue(const VkSubmitInfo& submitInfo, const VkFen
 		throw std::runtime_error("Error: Failed to submit draw command buffer!");
 }
 
+void DeviceVK::submitToTransferQueue(const VkSubmitInfo& submitInfo, const VkFence fence) const
+{
+	if (vkQueueSubmit(m_TransferQueue, 1, &submitInfo, fence) != VK_SUCCESS)
+		throw std::runtime_error("Error: Failed to submit command buffer!");
+}
+
 SwapChainSupportDetails DeviceVK::querySwapChainSupport()
 {
 	return querySwapChainSupport(m_PhysicalDevice);
 }
 
-QueueFamilyIndices DeviceVK::findQueueFamilies()
+QueueFamilyIndices DeviceVK::getQueueFamilies()
 {
-	return findQueueFamilies(m_PhysicalDevice);
+	return m_Indices;
 }
 
 VkImageView DeviceVK::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageViewType viewType, uint32_t layers)
 {
 	VkImageViewCreateInfo viewInfo = {};
-	viewInfo.sType							= VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	viewInfo.image							= image;
-	viewInfo.viewType						= viewType;
-	viewInfo.format							= format;
-	viewInfo.subresourceRange.aspectMask	= aspectFlags;
-	viewInfo.subresourceRange.baseMipLevel	= 0;
-	viewInfo.subresourceRange.levelCount	= 1;
-	viewInfo.subresourceRange.baseArrayLayer = 0;
-	viewInfo.subresourceRange.layerCount	= layers;
+	viewInfo.sType								= VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	viewInfo.image								= image;
+	viewInfo.viewType							= viewType;
+	viewInfo.format								= format;
+	viewInfo.subresourceRange.aspectMask		= aspectFlags;
+	viewInfo.subresourceRange.baseMipLevel		= 0;
+	viewInfo.subresourceRange.levelCount		= 1;
+	viewInfo.subresourceRange.baseArrayLayer	= 0;
+	viewInfo.subresourceRange.layerCount		= layers;
 
 	VkImageView imageView;
 	if (vkCreateImageView(m_Device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
@@ -157,20 +175,20 @@ void DeviceVK::createImage(
 	VkDeviceMemory& imageMemory)
 {
 	VkImageCreateInfo imageInfo = {};
-	imageInfo.sType				= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	imageInfo.imageType			= VK_IMAGE_TYPE_2D;
-	imageInfo.flags				= flags;
-	imageInfo.extent.width		= width;
-	imageInfo.extent.height		= height;
-	imageInfo.extent.depth		= 1;
-	imageInfo.mipLevels			= 1;
-	imageInfo.arrayLayers		= layers;
-	imageInfo.format			= format;
-	imageInfo.tiling			= tiling;
-	imageInfo.initialLayout		= VK_IMAGE_LAYOUT_UNDEFINED;
-	imageInfo.usage				= usage;
-	imageInfo.samples			= VK_SAMPLE_COUNT_1_BIT;
-	imageInfo.sharingMode		= VK_SHARING_MODE_EXCLUSIVE;
+	imageInfo.sType					= VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	imageInfo.imageType				= VK_IMAGE_TYPE_2D;
+	imageInfo.flags					= flags;
+	imageInfo.extent.width			= width;
+	imageInfo.extent.height			= height;
+	imageInfo.extent.depth			= 1;
+	imageInfo.mipLevels				= 1;
+	imageInfo.arrayLayers			= layers;
+	imageInfo.format				= format;
+	imageInfo.tiling				= tiling;
+	imageInfo.initialLayout			= VK_IMAGE_LAYOUT_UNDEFINED;
+	imageInfo.usage					= usage;
+	imageInfo.samples				= VK_SAMPLE_COUNT_1_BIT;
+	imageInfo.sharingMode			= VK_SHARING_MODE_EXCLUSIVE;
 
 	if (vkCreateImage(m_Device, &imageInfo, nullptr, &image) != VK_SUCCESS)
 		throw std::runtime_error("Error: Failed to create image!");
@@ -261,10 +279,10 @@ void DeviceVK::createLogicalDevice(const std::vector<const char*>& validationLay
 {
 	vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_Properties);
 
-	QueueFamilyIndices indices = findQueueFamilies(m_PhysicalDevice);
+	m_Indices = findQueueFamilies(m_PhysicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indices.m_GraphicsFamily.value(), indices.m_PresentFamily.value() };
+	std::set<uint32_t> uniqueQueueFamilies = { m_Indices.m_GraphicsFamily.value(), m_Indices.m_PresentFamily.value(), m_Indices.m_TransferFamily.value() };
 
 	float queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -300,8 +318,9 @@ void DeviceVK::createLogicalDevice(const std::vector<const char*>& validationLay
 	if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS)
 		throw std::runtime_error("failed to create logical device!");
 
-	vkGetDeviceQueue(m_Device, indices.m_GraphicsFamily.value(), 0, &m_GraphicsQueue);
-	vkGetDeviceQueue(m_Device, indices.m_PresentFamily.value(), 0, &m_PresentQueue);
+	vkGetDeviceQueue(m_Device, m_Indices.m_GraphicsFamily.value(), 0, &m_GraphicsQueue);
+	vkGetDeviceQueue(m_Device, m_Indices.m_PresentFamily.value(), 0, &m_PresentQueue);
+	vkGetDeviceQueue(m_Device, m_Indices.m_TransferFamily.value(), 0, &m_TransferQueue);
 }
 
 void DeviceVK::createDescriptorPool()
@@ -354,14 +373,20 @@ QueueFamilyIndices DeviceVK::findQueueFamilies(VkPhysicalDevice device)
 	for (int i = 0; i < queueFamilies.size() && !indices.isComplete(); i++)
 	{
 		const auto& queueFamily = queueFamilies[i];
-		if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
 			indices.m_GraphicsFamily = i;
 
-		VkBool32 presentSupport = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_Surface, &presentSupport);
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_Surface, &presentSupport);
 
-		if (presentSupport)
-			indices.m_PresentFamily = i;
+			if (presentSupport)
+				indices.m_PresentFamily = i;
+		}
+		else if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT)
+		{
+			indices.m_TransferFamily = i;
+		}
 	}
 
 	return indices;

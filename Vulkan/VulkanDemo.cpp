@@ -55,7 +55,7 @@ void VulkanDemo::preInit()
 
 	m_Camera->startFollowPath();
 
-	m_CommandPool2 = new CommandPoolVK(m_Device);
+	m_GraphicsCommandPool2 = new CommandPoolVK(m_Device, false);
 }
 
 void VulkanDemo::onSwapChainCreated()
@@ -125,9 +125,9 @@ void VulkanDemo::onSwapChainCreated()
 	m_SimpleGameObjects.push_back(m_GameObjectGround);
 
 
-	m_CommandBufferSimple = new CommandBufferVK(m_Device, m_CommandPool2, m_SwapChain, false);
-	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, false);
-	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_Device->getCommandPool(), m_SwapChain, true);
+	m_CommandBufferSimple = new CommandBufferVK(m_Device, m_GraphicsCommandPool2, m_SwapChain, false);
+	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_Device->getGraphicsCommandPool(), m_SwapChain, false);
+	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_Device->getGraphicsCommandPool(), m_SwapChain, true);
 
 #ifndef MULTI_THREADED
 	for(int i = 0; i < m_SwapChain->getCount(); i++)
@@ -267,7 +267,7 @@ void VulkanDemo::shutdown()
 		delete light;
 	}
 	
-	delete m_CommandPool2;
+	delete m_GraphicsCommandPool2;
 }
 
 void VulkanDemo::onKeyPressed(int key)

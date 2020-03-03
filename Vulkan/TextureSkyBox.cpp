@@ -52,9 +52,14 @@ void TextureSkyBox::loadFromFile(const TextureLayers& layers)
 		bufferCopyRegions.push_back(region);
 	}
 
-	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, IMAGE_LAYERS);
-	copyBufferToImage(m_Device, buffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), bufferCopyRegions);
-	transitionImageLayout(m_Device, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, IMAGE_LAYERS);
+	QueueFamilyIndices indices = m_Device->getQueueFamilies();
+	uint32_t src = indices.m_TransferFamily.value();
+	uint32_t dst = indices.m_GraphicsFamily.value();
 
+	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, true, IMAGE_LAYERS);
+	copyBufferToImage(m_Device, buffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), bufferCopyRegions);
+
+	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, src, dst, true, IMAGE_LAYERS);
+	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, src, dst, false, IMAGE_LAYERS);
 	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, IMAGE_LAYERS);
 }
