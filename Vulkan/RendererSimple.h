@@ -23,7 +23,7 @@ public:
 	virtual ~RendererSimple();
 
 	virtual void init() override;
-	virtual void render(CommandBufferVK* m_CommandBuffer, const std::vector<GameObject*>& gameObjects) override;
+	virtual void render(CommandBufferVK* m_CommandBuffer, int index, const std::vector<GameObject*>& gameObjects) override;
 
 	GameObjectSimple* createGameObject(Mesh* mesh, TextureVK* texture, SamplerVK* smapler);
 
@@ -43,7 +43,7 @@ private:
 	{
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 proj;
-		Light lights[5];
+		Light lights[11];
 		glm::vec4 camPos;
 	};
 

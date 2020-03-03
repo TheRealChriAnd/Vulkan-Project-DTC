@@ -5,7 +5,7 @@
 #define BINDING_UVS 2
 #define BINDING_TEX 4
 #define BINDING_UCL 0
-#define NR_POINT_LIIGHTS 5
+#define NR_POINT_LIIGHTS 11
 
 struct PLight {
     vec4 position;
@@ -42,11 +42,12 @@ vec3 CalcPointLight(PLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     // attenuation
     float distance    = length(light.position.xyz - fragPos);
-    float attenuation = 1.0 / (light.CQL.x + light.CQL.z * distance + 
-    		    light.CQL.y * (distance * distance));         
+    float attenuation = 1.0 / (light.CQL.x + light.CQL.y * distance + 
+    		    light.CQL.z * (distance * distance));
+    //float attenuation = 1.0 / (distance * distance);
     // combine results
     vec3 ambient  = light.ambient.xyz * vec3(1.0, 1.0, 1.0);
     vec3 diffuse  = light.diffuse.xyz * (diff * vec3(1.0, 1.0, 1.0));
@@ -83,5 +84,6 @@ void main()
         result += CalcPointLight(ucl.lights[i], norm, worldPos, viewDir);
     }
     outColor = texture(texSampler, fragTexCoord) * vec4(result, 1.0);
+    outColor = outColor / (outColor + 1.0);
     //outColor = texture(texSampler, fragTexCoord) * vec4(diffuse, 1.0); // * fragColor;
 }

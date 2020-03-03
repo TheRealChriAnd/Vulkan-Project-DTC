@@ -24,8 +24,12 @@ public:
 	void stop();
 	void submit();
 
+	int getHeight() const;
+	int getWidth() const;
+
 	bool isPlaying() const;
-	const glm::mat4& getSampledCornerColors() const;
+	glm::u8vec3 getColor(int x, int y) const;
+	glm::vec3 getSampleColor(int width, int height, int x, int y) const;
 
 	virtual void updateAsynchronous(float deltaSeconds) override;
 

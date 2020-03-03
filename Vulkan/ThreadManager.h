@@ -4,6 +4,7 @@
 #include <mutex>
 #include <atomic>
 #include <functional>
+#include "SpinLock.h"
 
 namespace std
 {
@@ -30,11 +31,10 @@ private:
 private:
 	static std::vector<std::function<void()>> m_Queue;
 	static std::set<IAsynchronous*> m_Set;
-	static std::mutex m_MutexQueue;
-	static std::mutex m_MutexSetAdd;
-	static std::mutex m_MutexSetRemove;
 	static std::atomic_bool m_Running;
 	static std::thread* m_ThreadQueue;
 	static std::thread* m_ThreadSet;
+	static SpinLock m_SetLock;
+	static SpinLock m_QueueLock;
 };
 
