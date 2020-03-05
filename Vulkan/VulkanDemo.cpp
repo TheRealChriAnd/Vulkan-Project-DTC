@@ -1,6 +1,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
+#include <functional>
 
 #include "VulkanDemo.h"
 
@@ -139,7 +140,8 @@ void VulkanDemo::init()
 {
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
-
+	
+	RES::TEXTURE_ANIMATED->setOnFrameReadyCallback(std::bind(&VulkanDemo::onTVFrameReady, this, std::placeholders::_1));
 	RES::TEXTURE_ANIMATED->play();
 }
 
@@ -179,53 +181,6 @@ void VulkanDemo::update(float deltaSeconds)
 
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
-
-
-	TextureAnimated* t = RES::TEXTURE_ANIMATED;
-	int width = t->getWidth();
-	int height = t->getHeight();
-	int squareSize = height * 0.05F;
-
-	glm::vec4 sampleColor[10];
-	sampleColor[0] = glm::vec4(t->getSampleColor(squareSize, squareSize, 0, 0), 255.0F) / 255.0F;
-	sampleColor[1] = glm::vec4(t->getSampleColor(squareSize, squareSize, width - squareSize - 1, 0), 255.0F) / 255.0F;
-	sampleColor[2] = glm::vec4(t->getSampleColor(squareSize, squareSize, 0, height - squareSize - 1), 255.0F) / 255.0F;
-	sampleColor[3] = glm::vec4(t->getSampleColor(squareSize, squareSize, width - squareSize - 1, height - squareSize - 1), 255.0F) / 255.0F;
-	
-	sampleColor[4] = glm::vec4(t->getSampleColor(squareSize, squareSize, 2 * width/ 3 - squareSize / 2, 0), 255.0F) / 255.0F;
-	sampleColor[5] = glm::vec4(t->getSampleColor(squareSize, squareSize, width/3 - squareSize/2, 0), 255.0F) / 255.0F;
-	
-	sampleColor[6] = glm::vec4(t->getSampleColor(squareSize, squareSize, 2 * width / 3 - squareSize / 2, height - squareSize - 1), 255.0F) / 255.0F;
-	sampleColor[7] = glm::vec4(t->getSampleColor(squareSize, squareSize, width / 3 - squareSize / 2, height - squareSize - 1), 255.0F) / 255.0F;
-	
-	sampleColor[8] = glm::vec4(t->getSampleColor(squareSize, squareSize, 0, height/2 - squareSize/2), 255.0F) / 255.0F;
-	sampleColor[9] = glm::vec4(t->getSampleColor(squareSize, squareSize, width - squareSize - 1, height / 2 - squareSize / 2), 255.0F) / 255.0F;
-
-	for (int i = 0; i < 10; i++)
-	{
-		m_PointLight[i]->setAmbientColor(sampleColor[i]);
-		m_PointLight[i]->setDiffuseColor(sampleColor[i]);
-		m_PointLight[i]->setSpecColor(sampleColor[i]);
-	}
-	glm::vec3 color = RES::TEXTURE_ANIMATED->getSampleColor(width, height, 0, 0) / 255.0F;
-	color *= 5.0f;
-	float length = glm::sqrt(color.x * color.x + color.y * color.y + color.z * color.z);
-	float maxValue = glm::sqrt(3);
-	if (length > maxValue)
-	{
-		color.x /= length;
-		color.y /= length;
-		color.z /= length;
-
-		color *= maxValue;
-	}
-
-	glm::vec4 finalColor(color, 1.0F);
-
-	int index = m_PointLight.size() - 1;
-	m_PointLight[index]->setAmbientColor(finalColor);
-	m_PointLight[index]->setDiffuseColor(finalColor);
-	m_PointLight[index]->setSpecColor(finalColor);
 
 	RES::TEXTURE_ANIMATED->submit();
 
@@ -297,4 +252,52 @@ void VulkanDemo::onMouseButtonRelease(int button)
 
 void VulkanDemo::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 {
+}
+
+void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
+{
+	int width = texture->getWidth();
+	int height = texture->getHeight();
+	int squareSize = height * 0.05F;
+
+	glm::vec4 sampleColor[10];
+	sampleColor[0] = glm::vec4(texture->getSampleColor(squareSize, squareSize, 0, 0), 255.0F) / 255.0F;
+	sampleColor[1] = glm::vec4(texture->getSampleColor(squareSize, squareSize, width - squareSize - 1, 0), 255.0F) / 255.0F;
+	sampleColor[2] = glm::vec4(texture->getSampleColor(squareSize, squareSize, 0, height - squareSize - 1), 255.0F) / 255.0F;
+	sampleColor[3] = glm::vec4(texture->getSampleColor(squareSize, squareSize, width - squareSize - 1, height - squareSize - 1), 255.0F) / 255.0F;
+
+	sampleColor[4] = glm::vec4(texture->getSampleColor(squareSize, squareSize, 2 * width / 3 - squareSize / 2, 0), 255.0F) / 255.0F;
+	sampleColor[5] = glm::vec4(texture->getSampleColor(squareSize, squareSize, width / 3 - squareSize / 2, 0), 255.0F) / 255.0F;
+
+	sampleColor[6] = glm::vec4(texture->getSampleColor(squareSize, squareSize, 2 * width / 3 - squareSize / 2, height - squareSize - 1), 255.0F) / 255.0F;
+	sampleColor[7] = glm::vec4(texture->getSampleColor(squareSize, squareSize, width / 3 - squareSize / 2, height - squareSize - 1), 255.0F) / 255.0F;
+
+	sampleColor[8] = glm::vec4(texture->getSampleColor(squareSize, squareSize, 0, height / 2 - squareSize / 2), 255.0F) / 255.0F;
+	sampleColor[9] = glm::vec4(texture->getSampleColor(squareSize, squareSize, width - squareSize - 1, height / 2 - squareSize / 2), 255.0F) / 255.0F;
+
+	for (int i = 0; i < 10; i++)
+	{
+		m_PointLight[i]->setAmbientColor(sampleColor[i]);
+		m_PointLight[i]->setDiffuseColor(sampleColor[i]);
+		m_PointLight[i]->setSpecColor(sampleColor[i]);
+	}
+	glm::vec3 color = RES::TEXTURE_ANIMATED->getSampleColor(width, height, 0, 0) / 255.0F;
+	color *= 5.0f;
+	float length = glm::sqrt(color.x * color.x + color.y * color.y + color.z * color.z);
+	float maxValue = glm::sqrt(3);
+	if (length > maxValue)
+	{
+		color.x /= length;
+		color.y /= length;
+		color.z /= length;
+
+		color *= maxValue;
+	}
+
+	glm::vec4 finalColor(color, 1.0F);
+
+	int index = m_PointLight.size() - 1;
+	m_PointLight[index]->setAmbientColor(finalColor);
+	m_PointLight[index]->setDiffuseColor(finalColor);
+	m_PointLight[index]->setSpecColor(finalColor);
 }

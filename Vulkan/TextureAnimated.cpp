@@ -50,11 +50,7 @@ TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) :
 		1
 	};
 
-	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, true);
-	copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), { m_Region });
-
-	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), true);
-	transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), false);
+	transfer(m_StagingBuffer, m_Width, m_Height, { m_Region });
 }
 
 TextureAnimated::~TextureAnimated()
@@ -85,11 +81,7 @@ void TextureAnimated::submit()
 		m_StagingBuffer->writeData(m_PixelData, static_cast<size_t>(m_TotalSize));
 		m_HasUpdate = false;
 
-		transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, true);
-		copyBufferToImage(m_Device, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), { m_Region });
-
-		transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), true);
-		transitionImageLayout(m_Device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, m_Device->getQueueFamilies().m_TransferFamily.value(), m_Device->getQueueFamilies().m_GraphicsFamily.value(), false);
+		transfer(m_StagingBuffer, m_Width, m_Height, { m_Region });
 	}
 }
 
@@ -106,6 +98,11 @@ int TextureAnimated::getWidth() const
 bool TextureAnimated::isPlaying() const
 {
 	return m_Playing;
+}
+
+void TextureAnimated::setOnFrameReadyCallback(const std::function<void(TextureAnimated*)>& function)
+{
+	m_OnFrameReadyCallback = function;
 }
 
 glm::u8vec3 TextureAnimated::getColor(int x, int y) const
@@ -179,5 +176,9 @@ void TextureAnimated::update(float deltaSeconds)
 		m_PixelData[i + offset + 2] = frame.data[i];
 		offset += 1;
 	}
+
+	if(m_OnFrameReadyCallback)
+		m_OnFrameReadyCallback(this);
+
 	m_HasUpdate = true;
 }

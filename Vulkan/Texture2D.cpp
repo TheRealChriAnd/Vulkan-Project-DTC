@@ -48,13 +48,5 @@ void Texture2D::createTextureImage(DeviceVK * device, const std::string & file)
 		1
 	};
 
-	QueueFamilyIndices indices = device->getQueueFamilies();
-	uint32_t src = indices.m_TransferFamily.value();
-	uint32_t dst = indices.m_GraphicsFamily.value();
-
-	transitionImageLayout(device, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, true);
-	copyBufferToImage(device, stagingBuffer, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), { region });
-
-	transitionImageLayout(device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, src, dst, true);
-	transitionImageLayout(device, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, src, dst, false);
+	transfer(&stagingBuffer, texWidth, texHeight, { region });
 }

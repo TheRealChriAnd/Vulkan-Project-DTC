@@ -7,6 +7,7 @@
 class DeviceVK;
 
 class TextureVK;
+class TextureAnimated;
 class SamplerVK;
 class CommandBufferVK;
 class CameraVK;
@@ -42,6 +43,8 @@ public:
 	virtual void onMouseButtonPressed(int button) override;
 	virtual void onMouseButtonRelease(int button) override;
 	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
+
+	void onTVFrameReady(TextureAnimated* texture);
 
 private:
 	CameraVK* m_Camera;
