@@ -15,7 +15,7 @@ class TextureSkyBox : public TextureVK
 {
 public:
 	TextureSkyBox(DeviceVK* device);
-	~TextureSkyBox();
+	virtual ~TextureSkyBox();
 
 	void loadFromFile(const TextureLayers& layers);
 

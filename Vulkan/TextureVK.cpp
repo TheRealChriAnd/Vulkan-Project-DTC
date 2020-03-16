@@ -152,9 +152,9 @@ void TextureVK::releaseFromQueue(uint32_t src, uint32_t dst, uint32_t layerCount
 	commandBuffer.submit();
 }
 
-void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions)
+void TextureVK::copyBufferToImage(DeviceVK* device, bool transferQueue, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions)
 {
-	CommandBufferVK commandBuffer(device, true);
+	CommandBufferVK commandBuffer(device, transferQueue);
 	commandBuffer.begin();
 
 	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
@@ -165,13 +165,20 @@ void TextureVK::copyBufferToImage(DeviceVK* device, const BufferVK& buffer, uint
 
 void TextureVK::transfer(BufferVK* stagingBuffer, int height, int width, const std::vector<VkBufferImageCopy>& region, uint32_t layerCount)
 {
+#ifdef MULTI_THREADED
 	QueueFamilyIndices indices = m_Device->getQueueFamilies();
 	uint32_t src = indices.m_TransferFamily.value();
 	uint32_t dst = indices.m_GraphicsFamily.value();
 
-	transitionImageLayout(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED);
-	copyBufferToImage(m_Device, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
+	transitionImageLayout(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
+	copyBufferToImage(m_Device, true, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
 
-	acquireFromQueue(src, dst);
-	releaseFromQueue(src, dst);
+	acquireFromQueue(src, dst, layerCount);
+	releaseFromQueue(src, dst, layerCount);
+#else
+	transitionImageLayout(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
+	copyBufferToImage(m_Device, false, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
+	acquireFromQueue(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
+#endif
 }
+

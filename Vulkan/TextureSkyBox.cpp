@@ -52,6 +52,6 @@ void TextureSkyBox::loadFromFile(const TextureLayers& layers)
 		bufferCopyRegions.push_back(region);
 	}
 
-	transfer(&stagingBuffer, m_Width, m_Height, bufferCopyRegions);
+	transfer(&stagingBuffer, m_Width, m_Height, bufferCopyRegions, IMAGE_LAYERS);
 	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, IMAGE_LAYERS);
 }
