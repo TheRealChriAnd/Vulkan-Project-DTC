@@ -14,7 +14,7 @@ class PipelineVK;
 class Mesh;
 class ShaderVK;
 class LightVK;
-
+class TextureAnimated;
 
 class RendererSimple : public IRenderer
 {
@@ -26,6 +26,7 @@ public:
 	virtual void render(CommandBufferVK* m_CommandBuffer, int index, const std::vector<GameObject*>& gameObjects) override;
 
 	GameObjectSimple* createGameObject(Mesh* mesh, TextureVK* texture, SamplerVK* smapler);
+	GameObjectSimple* createGameObjectAnimatedTexture(Mesh* mesh, TextureAnimated* texture, SamplerVK* smapler);
 
 	virtual void update(float deltaSeconds, CameraVK* camera) override;
 

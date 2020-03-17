@@ -55,7 +55,7 @@ void BufferVK::createBuffer(DeviceVK* device, VkBuffer& m_Buffer, VkDeviceSize s
 
 void BufferVK::copyToBuffer(BufferVK* dstBuffer, VkDeviceSize size)
 {
-	CommandBufferVK commandBuffer(m_Device, true);
+	CommandBufferVK commandBuffer(m_Device, false);
 	commandBuffer.begin();
 	commandBuffer.copyBuffer(this, dstBuffer, size);
 	commandBuffer.end();

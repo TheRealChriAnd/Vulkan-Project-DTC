@@ -60,22 +60,27 @@ void DescriptorSetVK::addUniformBuffer(uint32_t binding, UniformBufferVK* unifor
 
 void DescriptorSetVK::addTexture(uint32_t binding, TextureVK* texture, SamplerVK* sampler)
 {
+	addTexture(binding, texture->getImageView(), sampler);
+}
+
+void DescriptorSetVK::addTexture(uint32_t binding, VkImageView texture, SamplerVK * sampler)
+{
 	for (size_t i = 0; i < m_SwapChain->getCount(); i++)
 	{
 		VkDescriptorImageInfo* imageInfo = new VkDescriptorImageInfo();
-		imageInfo->imageLayout	= VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo->imageView	= texture->getImageView();
-		imageInfo->sampler		= sampler->getSampler();
+		imageInfo->imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo->imageView = texture;
+		imageInfo->sampler = sampler->getSampler();
 
 		VkWriteDescriptorSet descriptorWriter = {};
-		descriptorWriter.sType				= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWriter.dstSet				= m_DescriptorSets[i];
-		descriptorWriter.dstBinding			= binding;
-		descriptorWriter.dstArrayElement	= 0;
-		descriptorWriter.descriptorType		= VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWriter.descriptorCount	= 1;
-		descriptorWriter.pImageInfo			= imageInfo;
-		descriptorWriter.pBufferInfo		= nullptr;
+		descriptorWriter.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWriter.dstSet = m_DescriptorSets[i];
+		descriptorWriter.dstBinding = binding;
+		descriptorWriter.dstArrayElement = 0;
+		descriptorWriter.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWriter.descriptorCount = 1;
+		descriptorWriter.pImageInfo = imageInfo;
+		descriptorWriter.pBufferInfo = nullptr;
 
 		m_PendingWrites.push_back(descriptorWriter);
 	}

@@ -3,6 +3,7 @@
 #include "Defines.h"
 #include "IKeyListener.h"
 #include "IMouseListener.h"
+#include <atomic>
 
 class DeviceVK;
 
@@ -45,6 +46,7 @@ public:
 	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
 
 	void onTVFrameReady(TextureAnimated* texture);
+	void drawSimpleGameObjects(int index, std::atomic_bool& done);
 
 private:
 	CameraVK* m_Camera;

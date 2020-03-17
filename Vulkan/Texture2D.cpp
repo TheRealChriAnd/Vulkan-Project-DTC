@@ -48,5 +48,5 @@ void Texture2D::createTextureImage(DeviceVK * device, const std::string & file)
 		1
 	};
 
-	transfer(&stagingBuffer, texWidth, texHeight, { region });
+	transfer(m_Image, &stagingBuffer, texWidth, texHeight, { region });
 }

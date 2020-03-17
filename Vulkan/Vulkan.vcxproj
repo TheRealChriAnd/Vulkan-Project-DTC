@@ -320,6 +320,7 @@
     <ClCompile Include="DescriptorSetVK.cpp" />
     <ClCompile Include="DeviceVK.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectAnimated.cpp" />
     <ClCompile Include="GameObjectSimple.cpp" />
     <ClCompile Include="GameObjectSkyBox.cpp" />
     <ClCompile Include="IndexBufferVK.cpp" />
@@ -359,6 +360,7 @@
     <ClInclude Include="DescriptorSetVK.h" />
     <ClInclude Include="DeviceVK.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameObjectAnimated.h" />
     <ClInclude Include="GameObjectSimple.h" />
     <ClInclude Include="GameObjectSkyBox.h" />
     <ClInclude Include="IKeyListener.h" />

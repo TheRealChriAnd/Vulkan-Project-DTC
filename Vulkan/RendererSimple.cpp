@@ -13,6 +13,8 @@
 #include "CameraVK.h"
 #include "LightPoint.h"
 #include "LightVK.h"
+#include "GameObjectAnimated.h"
+#include "TextureAnimated.h"
 
 #define BINDING_POS 0
 #define BINDING_NOR 1
@@ -97,6 +99,32 @@ GameObjectSimple* RendererSimple::createGameObject(Mesh* mesh, TextureVK* textur
 	descriptorSet->submit();
 
 	GameObjectSimple* gameObject = new GameObjectSimple(descriptorSet, mesh, uniformBuffer, texture, sampler);
+	gameObject->applyTransform();
+
+	return gameObject;
+}
+
+GameObjectSimple* RendererSimple::createGameObjectAnimatedTexture(Mesh* mesh, TextureAnimated* texture, SamplerVK* sampler)
+{
+	UniformBufferVK* uniformBuffer = new UniformBufferVK(m_Device, m_SwapChain, sizeof(glm::mat4));
+
+	DescriptorSetVK* descriptorSet = new DescriptorSetVK(m_Device, m_SwapChain, m_LayoutObject);
+	descriptorSet->addStorageBuffer(BINDING_POS, mesh->getStorageBufferPos(), VK_WHOLE_SIZE, 0);
+	descriptorSet->addStorageBuffer(BINDING_NOR, mesh->getStorageBufferNor(), VK_WHOLE_SIZE, 0);
+	descriptorSet->addStorageBuffer(BINDING_UVS, mesh->getStorageBufferUV(), VK_WHOLE_SIZE, 0);
+	descriptorSet->addUniformBuffer(BINDING_UBO, uniformBuffer);
+	descriptorSet->addTexture(BINDING_TEX, texture->getImageView(), sampler);
+	descriptorSet->submit();
+
+	DescriptorSetVK* descriptorSet2 = new DescriptorSetVK(m_Device, m_SwapChain, m_LayoutObject);
+	descriptorSet2->addStorageBuffer(BINDING_POS, mesh->getStorageBufferPos(), VK_WHOLE_SIZE, 0);
+	descriptorSet2->addStorageBuffer(BINDING_NOR, mesh->getStorageBufferNor(), VK_WHOLE_SIZE, 0);
+	descriptorSet2->addStorageBuffer(BINDING_UVS, mesh->getStorageBufferUV(), VK_WHOLE_SIZE, 0);
+	descriptorSet2->addUniformBuffer(BINDING_UBO, uniformBuffer);
+	descriptorSet2->addTexture(BINDING_TEX, texture->getImageView2(), sampler);
+	descriptorSet2->submit();
+
+	GameObjectAnimated* gameObject = new GameObjectAnimated(descriptorSet, descriptorSet2, mesh, uniformBuffer, texture, sampler);
 	gameObject->applyTransform();
 
 	return gameObject;

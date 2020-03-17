@@ -37,6 +37,7 @@
     <ClCompile Include="LightPoint.cpp" />
     <ClCompile Include="Profiler.cpp" />
     <ClCompile Include="CommandPoolVK.cpp" />
+    <ClCompile Include="GameObjectAnimated.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -79,6 +80,7 @@
     <ClInclude Include="Profiler.h" />
     <ClInclude Include="CommandPoolVK.h" />
     <ClInclude Include="SpinLock.h" />
+    <ClInclude Include="GameObjectAnimated.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\fatboy.png" />

@@ -13,7 +13,7 @@ public:
 	virtual ~GameObject();
 
 	Mesh* getMesh() const;
-	DescriptorSetVK* getDescriptorSet() const;
+	virtual DescriptorSetVK* getDescriptorSet() const;
 
 protected:
 	Mesh* m_Mesh;

@@ -489,6 +489,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DeviceVK::debugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 	void* pUserData)
 {
+	if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+		std::cerr << "WARNING HALLÅ" << std::endl;
+
 	std::cerr << "Validation layer: " << pCallbackData->pMessage << std::endl;
 	return VK_FALSE;
 }

@@ -20,6 +20,7 @@
 #include "RendererSkyBox.h"
 #include "GameObjectSimple.h"
 #include "GameObjectSkyBox.h"
+#include "GameObjectAnimated.h"
 #include "RES.h"
 #include "InputVK.h"
 #include "LightPoint.h"
@@ -72,7 +73,7 @@ void VulkanDemo::onSwapChainCreated()
 	}
 
 	m_GameObjectGround		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_GROUND,	RES::SAMPLER_DEFAULT);
-	m_GameObjectScreen		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_ANIMATED,	RES::SAMPLER_DEFAULT);
+	m_GameObjectScreen		= m_RendererSimple->createGameObjectAnimatedTexture(RES::MESH_PLANE,	RES::TEXTURE_ANIMATED,	RES::SAMPLER_DEFAULT);
 	m_GameObjectFloor		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_FLOOR,		RES::SAMPLER_DEFAULT);
 	m_GameObjectSofa		= m_RendererSimple->createGameObject(RES::MESH_SOFA,	RES::TEXTURE_SOFA,		RES::SAMPLER_DEFAULT);
 	m_GameObjectRightWall	= m_RendererSimple->createGameObject(RES::MESH_WALL2,	RES::TEXTURE_THIN,		RES::SAMPLER_DEFAULT);
@@ -129,11 +130,6 @@ void VulkanDemo::onSwapChainCreated()
 	m_CommandBufferSimple = new CommandBufferVK(m_Device, m_GraphicsCommandPool2, m_SwapChain, false);
 	m_CommandBufferSkyBox = new CommandBufferVK(m_Device, m_Device->getGraphicsCommandPool(), m_SwapChain, false);
 	m_CommandBufferPrimary = new CommandBufferVK(m_Device, m_Device->getGraphicsCommandPool(), m_SwapChain, true);
-
-#ifndef MULTI_THREADED
-	for(int i = 0; i < m_SwapChain->getCount(); i++)
-		createCommandBuffers(i);
-#endif
 }
 
 void VulkanDemo::init()
@@ -184,9 +180,7 @@ void VulkanDemo::update(float deltaSeconds)
 
 	RES::TEXTURE_ANIMATED->submit();
 
-#ifdef MULTI_THREADED
 	createCommandBuffers(m_SwapChain->getCurrentImageIndex());
-#endif
 }
 
 CommandBufferVK* VulkanDemo::frame()
@@ -300,4 +294,12 @@ void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
 	m_PointLight[index]->setAmbientColor(finalColor);
 	m_PointLight[index]->setDiffuseColor(finalColor);
 	m_PointLight[index]->setSpecColor(finalColor);
+}
+
+void VulkanDemo::drawSimpleGameObjects(int index, std::atomic_bool& done)
+{
+	m_CommandBufferSimple->begin(index, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
+	m_RendererSimple->render(m_CommandBufferSimple, index, m_SimpleGameObjects);
+	m_CommandBufferSimple->end(index);
+	done = true;
 }

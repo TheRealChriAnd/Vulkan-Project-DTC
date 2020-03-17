@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "IAsynchronous.h"
-
+#include "SpinLock.h"
 
 class BufferVK;
 
@@ -20,6 +20,12 @@ class TextureAnimated : public TextureVK, public IAsynchronous
 public:
 	TextureAnimated(DeviceVK* device, const std::string& file);
 	virtual ~TextureAnimated();
+
+	VkImageView getImageView2() const;
+	VkImage getImage2() const;
+	VkDeviceMemory getDeviceMemory2() const;
+
+	bool useFirstImage() const;
 
 	void play();
 	void stop();
@@ -37,6 +43,7 @@ public:
 
 private:
 	void update(float deltaSeconds);
+	void onFrameReady();
 
 private:
 	BufferVK* m_StagingBuffer;
@@ -53,4 +60,10 @@ private:
 	std::atomic_bool m_HasUpdate;
 	std::atomic_bool m_Playing;
 	std::function<void(TextureAnimated*)> m_OnFrameReadyCallback;
+
+	VkImage m_Image2;
+	VkImageView m_ImageView2;
+	VkDeviceMemory m_ImageMemory2;
+	std::atomic_bool m_UseFirstImage;
+	SpinLock m_Lock;
 };

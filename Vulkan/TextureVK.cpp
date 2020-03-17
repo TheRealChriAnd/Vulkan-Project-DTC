@@ -32,7 +32,7 @@ VkDeviceMemory TextureVK::getDeviceMemory() const
 	return m_ImageMemory;
 }
 
-void TextureVK::transitionImageLayout(uint32_t src, uint32_t dst, uint32_t layerCount)
+void TextureVK::transitionImageLayout(VkImage image, uint32_t src, uint32_t dst, uint32_t layerCount)
 {
 	CommandBufferVK commandBuffer(m_Device, true);
 	commandBuffer.begin();
@@ -43,7 +43,7 @@ void TextureVK::transitionImageLayout(uint32_t src, uint32_t dst, uint32_t layer
 	barrier.newLayout						= VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	barrier.srcQueueFamilyIndex				= src;
 	barrier.dstQueueFamilyIndex				= dst;
-	barrier.image							= m_Image;
+	barrier.image							= image;
 	barrier.subresourceRange.aspectMask		= VK_IMAGE_ASPECT_COLOR_BIT;
 	barrier.subresourceRange.baseMipLevel	= 0;
 	barrier.subresourceRange.levelCount		= 1;
@@ -72,113 +72,145 @@ void TextureVK::transitionImageLayout(uint32_t src, uint32_t dst, uint32_t layer
 	commandBuffer.submit();
 }
 
-void TextureVK::acquireFromQueue(uint32_t src, uint32_t dst, uint32_t layerCount)
+void TextureVK::acquireFromQueue(bool transfer, VkImage image, uint32_t layerCount)
 {
-	CommandBufferVK commandBuffer(m_Device, true);
+	CommandBufferVK commandBuffer(m_Device, transfer);
 	commandBuffer.begin();
 
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	barrier.srcQueueFamilyIndex = src;
-	barrier.dstQueueFamilyIndex = dst;
-	barrier.image = m_Image;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrier.subresourceRange.baseMipLevel = 0;
-	barrier.subresourceRange.levelCount = 1;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = layerCount;
-
-	VkPipelineStageFlags sourceStage;
-	VkPipelineStageFlags destinationStage;
-
-	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-	barrier.dstAccessMask = 0;
-
-	sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-
-	vkCmdPipelineBarrier(
-		commandBuffer.getCommandBuffer(),
-		sourceStage, destinationStage,
-		0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
-	);
-
-	commandBuffer.end();
-	commandBuffer.submit();
-}
-
-void TextureVK::releaseFromQueue(uint32_t src, uint32_t dst, uint32_t layerCount)
-{
-	CommandBufferVK commandBuffer(m_Device, false);
-	commandBuffer.begin();
-
-	VkImageMemoryBarrier barrier = {};
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	barrier.srcQueueFamilyIndex = src;
-	barrier.dstQueueFamilyIndex = dst;
-	barrier.image = m_Image;
-	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-	barrier.subresourceRange.baseMipLevel = 0;
-	barrier.subresourceRange.levelCount = 1;
-	barrier.subresourceRange.baseArrayLayer = 0;
-	barrier.subresourceRange.layerCount = layerCount;
-
-	VkPipelineStageFlags sourceStage;
-	VkPipelineStageFlags destinationStage;
-
-	barrier.srcAccessMask = 0;
-	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-	sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-	destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-
-	vkCmdPipelineBarrier(
-		commandBuffer.getCommandBuffer(),
-		sourceStage, destinationStage,
-		0,
-		0, nullptr,
-		0, nullptr,
-		1, &barrier
-	);
-
-	commandBuffer.end();
-	commandBuffer.submit();
-}
-
-void TextureVK::copyBufferToImage(DeviceVK* device, bool transferQueue, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions)
-{
-	CommandBufferVK commandBuffer(device, transferQueue);
-	commandBuffer.begin();
-
-	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), m_Image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
-
-	commandBuffer.end();
-	commandBuffer.submit();
-}
-
-void TextureVK::transfer(BufferVK* stagingBuffer, int height, int width, const std::vector<VkBufferImageCopy>& region, uint32_t layerCount)
-{
-#ifdef MULTI_THREADED
 	QueueFamilyIndices indices = m_Device->getQueueFamilies();
 	uint32_t src = indices.m_TransferFamily.value();
 	uint32_t dst = indices.m_GraphicsFamily.value();
 
-	transitionImageLayout(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
-	copyBufferToImage(m_Device, true, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
+	VkImageMemoryBarrier barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	barrier.srcQueueFamilyIndex = src;
+	barrier.dstQueueFamilyIndex = dst;
+	barrier.image = image;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.levelCount = 1;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = layerCount;
 
-	acquireFromQueue(src, dst, layerCount);
-	releaseFromQueue(src, dst, layerCount);
-#else
-	transitionImageLayout(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
-	copyBufferToImage(m_Device, false, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
-	acquireFromQueue(VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
-#endif
+	VkPipelineStageFlags sourceStage;
+	VkPipelineStageFlags destinationStage;
+
+	if (transfer)
+	{
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = 0;
+
+		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	}
+	else
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	}
+
+	vkCmdPipelineBarrier(
+		commandBuffer.getCommandBuffer(),
+		sourceStage, destinationStage,
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier
+	);
+
+	commandBuffer.end();
+	commandBuffer.submit();
+}
+
+void TextureVK::releaseFromQueue(bool transfer, VkImage image, uint32_t layerCount)
+{
+	CommandBufferVK commandBuffer(m_Device, transfer);
+	commandBuffer.begin();
+
+	QueueFamilyIndices indices = m_Device->getQueueFamilies();
+	uint32_t dst = indices.m_TransferFamily.value();
+	uint32_t src = indices.m_GraphicsFamily.value();
+
+	VkImageMemoryBarrier barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.oldLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+	barrier.srcQueueFamilyIndex = src;
+	barrier.dstQueueFamilyIndex = dst;
+	barrier.image = image;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.levelCount = 1;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = layerCount;
+
+	VkPipelineStageFlags sourceStage;
+	VkPipelineStageFlags destinationStage;
+
+	if (!transfer)
+	{
+		barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		barrier.dstAccessMask = 0;
+
+		sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		destinationStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+	}
+	else
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	}
+
+
+	vkCmdPipelineBarrier(
+		commandBuffer.getCommandBuffer(),
+		sourceStage, destinationStage,
+		0,
+		0, nullptr,
+		0, nullptr,
+		1, &barrier
+	);
+
+	commandBuffer.end();
+	commandBuffer.submit();
+}
+
+void TextureVK::copyBufferToImage(DeviceVK* device, VkImage image, bool transferQueue, const BufferVK& buffer, uint32_t width, uint32_t height, const std::vector<VkBufferImageCopy>& regions)
+{
+	CommandBufferVK commandBuffer(device, transferQueue);
+	commandBuffer.begin();
+
+	vkCmdCopyBufferToImage(commandBuffer.getCommandBuffer(), buffer.getBuffer(), image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
+
+	commandBuffer.end();
+	commandBuffer.submit();
+}
+
+void TextureVK::transfer(VkImage image, BufferVK* stagingBuffer, int height, int width, const std::vector<VkBufferImageCopy>& region, uint32_t layerCount)
+{
+/*#ifdef MULTI_THREADED
+	QueueFamilyIndices indices = m_Device->getQueueFamilies();
+	uint32_t src = indices.m_TransferFamily.value();
+	uint32_t dst = indices.m_GraphicsFamily.value();
+
+	transitionImageLayout(image, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
+	copyBufferToImage(m_Device, image, true, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
+
+	acquireFromQueue(image, layerCount);
+	releaseFromQueue(image, layerCount);
+#else*/
+	transitionImageLayout(image, VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, layerCount);
+	copyBufferToImage(m_Device, image, false, *stagingBuffer, static_cast<uint32_t>(width), static_cast<uint32_t>(height), region);
+	acquireFromQueue(true, image, layerCount);
+	acquireFromQueue(false, image, layerCount);
+//#endif
 }
 

@@ -20,7 +20,7 @@ public:
 
 	void applyTransform();
 
-private:
+protected:
 	TextureVK* m_Texture;
 	SamplerVK* m_Sampler;
 
