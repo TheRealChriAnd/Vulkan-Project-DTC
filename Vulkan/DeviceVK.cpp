@@ -325,7 +325,7 @@ void DeviceVK::createLogicalDevice(const std::vector<const char*>& validationLay
 
 void DeviceVK::createDescriptorPool()
 {
-	int descriptorCount = 1024;
+	int descriptorCount = 1024 * 16;
 
 	std::array<VkDescriptorPoolSize, 3> poolSizes = {};
 	poolSizes[0].type				= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

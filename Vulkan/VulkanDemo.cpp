@@ -72,8 +72,11 @@ void VulkanDemo::onSwapChainCreated()
 		m_RendererSimple->addLight(m_PointLight[i]);
 	}
 
+	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+	//for (int i = 0; i < 1; i++)
+		m_ScreenGameObjects.push_back(m_RendererSimple->createGameObjectAnimatedTexture(RES::MESH_PLANE, RES::getAnimatedTexture(i), RES::SAMPLER_DEFAULT));
+
 	m_GameObjectGround		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_GROUND,	RES::SAMPLER_DEFAULT);
-	m_GameObjectScreen		= m_RendererSimple->createGameObjectAnimatedTexture(RES::MESH_PLANE,	RES::TEXTURE_ANIMATED,	RES::SAMPLER_DEFAULT);
 	m_GameObjectFloor		= m_RendererSimple->createGameObject(RES::MESH_PLANE,	RES::TEXTURE_FLOOR,		RES::SAMPLER_DEFAULT);
 	m_GameObjectSofa		= m_RendererSimple->createGameObject(RES::MESH_SOFA,	RES::TEXTURE_SOFA,		RES::SAMPLER_DEFAULT);
 	m_GameObjectRightWall	= m_RendererSimple->createGameObject(RES::MESH_WALL2,	RES::TEXTURE_THIN,		RES::SAMPLER_DEFAULT);
@@ -83,11 +86,21 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTable		= m_RendererSimple->createGameObject(RES::MESH_TABLE,	RES::TEXTURE_TABLE,		RES::SAMPLER_DEFAULT);
 	m_GameObjectSkyBox		= m_RendererSkyBox->createGameObject(RES::MESH_CUBE,	RES::TEXTURE_SKYBOX,	RES::SAMPLER_DEFAULT);
 
-	m_GameObjectScreen->scale(glm::vec3(3.0f, 1.555f, 1.0f));
-	m_GameObjectScreen->translate(glm::vec3(0.0f, 0.895f, 3.3f));
-	m_GameObjectScreen->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
-	m_GameObjectScreen->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
-	m_GameObjectScreen->applyTransform();
+	m_ScreenGameObjects[0]->scale(glm::vec3(3.0f, 1.555f, 1.0f));
+	m_ScreenGameObjects[0]->translate(glm::vec3(0.0f, 0.895f, 3.3f));
+	m_ScreenGameObjects[0]->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
+	m_ScreenGameObjects[0]->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_ScreenGameObjects[0]->applyTransform();
+
+	for (int i = 1; i < m_ScreenGameObjects.size(); i++)
+	{
+		GameObjectSimple* gameObject = m_ScreenGameObjects[i];
+		gameObject->scale(glm::vec3(3.0f, 1.555f, 1.0f));
+		gameObject->translate(glm::vec3(1.1f * i, 0.895f, 3.3f));
+		gameObject->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
+		gameObject->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
+		gameObject->applyTransform();
+	}
 
 	m_GameObjectFloor->scale(7);
 	m_GameObjectFloor->applyTransform();
@@ -116,7 +129,10 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTable->translate(glm::vec3(0.0f, 0.0f, 1.0f));
 	m_GameObjectTable->applyTransform();
 
-	m_SimpleGameObjects.push_back(m_GameObjectScreen);
+
+	for (int i = 0; i < m_ScreenGameObjects.size(); i++)
+		m_SimpleGameObjects.push_back(m_ScreenGameObjects[i]);
+
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
 	m_SimpleGameObjects.push_back(m_GameObjectRightWall);
 	m_SimpleGameObjects.push_back(m_GameObjectFrontWall);
@@ -137,8 +153,8 @@ void VulkanDemo::init()
 	InputVK::addKeyListener(this);
 	InputVK::addMouseListener(this);
 	
-	RES::TEXTURE_ANIMATED->setOnFrameReadyCallback(std::bind(&VulkanDemo::onTVFrameReady, this, std::placeholders::_1));
-	RES::TEXTURE_ANIMATED->play();
+	RES::getAnimatedTexture(0)->setOnFrameReadyCallback(std::bind(&VulkanDemo::onTVFrameReady, this, std::placeholders::_1));
+	RES::VIDEO_TV->play();
 }
 
 void VulkanDemo::createCommandBuffers(size_t index)
@@ -149,20 +165,23 @@ void VulkanDemo::createCommandBuffers(size_t index)
 	buffers.push_back(m_CommandBufferSimple);
 
 	std::atomic_bool done = false;
-
-	ThreadManager::scheduleExecution([this, index, &done]()
+	
+#ifdef VULKAN
+	ThreadManager::scheduleExecution([&, this]()
 	{
-		m_CommandBufferSimple->begin(index, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
-		m_RendererSimple->render(m_CommandBufferSimple, index, m_SimpleGameObjects);
-		m_CommandBufferSimple->end(index);
-		done = true;
+		this->drawSimpleGameObjects(index, done);
 	});
+#else
+	VulkanDemo::drawSimpleGameObjects(index, done);
+#endif
 
 	m_CommandBufferSkyBox->begin(index, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
 	m_RendererSkyBox->render(m_CommandBufferSkyBox, index, { m_GameObjectSkyBox });
 	m_CommandBufferSkyBox->end(index);
 
+#ifdef VULKAN
 	while (!done) {};
+#endif
 
 	m_CommandBufferPrimary->begin(index, (VkCommandBufferUsageFlagBits)0);
 	m_CommandBufferPrimary->beginRenderPass(index, m_RenderPass, m_SwapChain, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0F, 0);
@@ -178,7 +197,8 @@ void VulkanDemo::update(float deltaSeconds)
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
 
-	RES::TEXTURE_ANIMATED->submit();
+	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+		RES::getAnimatedTexture(i)->update(deltaSeconds);
 
 	createCommandBuffers(m_SwapChain->getCurrentImageIndex());
 }
@@ -224,10 +244,10 @@ void VulkanDemo::onKeyPressed(int key)
 	if (key == GLFW_KEY_ESCAPE)
 		InputVK::setCursorEnabled(true);
 	else if (key == GLFW_KEY_SPACE)
-		if (RES::TEXTURE_ANIMATED->isPlaying())
-			RES::TEXTURE_ANIMATED->stop();
+		if (RES::VIDEO_TV->isPlaying())
+			RES::VIDEO_TV->stop();
 		else
-			RES::TEXTURE_ANIMATED->play();
+			RES::VIDEO_TV->play();
 }
 
 void VulkanDemo::onKeyReleased(int key)
@@ -275,7 +295,7 @@ void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
 		m_PointLight[i]->setDiffuseColor(sampleColor[i]);
 		m_PointLight[i]->setSpecColor(sampleColor[i]);
 	}
-	glm::vec3 color = RES::TEXTURE_ANIMATED->getSampleColor(width, height, 0, 0) / 255.0F;
+	glm::vec3 color = RES::getAnimatedTexture(0)->getSampleColor(width, height, 0, 0) / 255.0F;
 	color *= 5.0f;
 	float length = glm::sqrt(color.x * color.x + color.y * color.y + color.z * color.z);
 	float maxValue = glm::sqrt(3);
@@ -296,7 +316,7 @@ void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
 	m_PointLight[index]->setSpecColor(finalColor);
 }
 
-void VulkanDemo::drawSimpleGameObjects(int index, std::atomic_bool& done)
+void VulkanDemo::drawSimpleGameObjects(size_t index, std::atomic_bool& done)
 {
 	m_CommandBufferSimple->begin(index, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, m_RenderPass);
 	m_RendererSimple->render(m_CommandBufferSimple, index, m_SimpleGameObjects);

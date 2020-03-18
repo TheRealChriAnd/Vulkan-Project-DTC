@@ -5,6 +5,9 @@
 #include "TextureAnimated.h"
 #include "SamplerVK.h"
 #include "Mesh.h"
+#include "VideoSource.h"
+
+#define ANIMATED_TEXTURES 50
 
 class DeviceVK;
 
@@ -21,8 +24,6 @@ public:
 
 	static TextureSkyBox* TEXTURE_SKYBOX;
 
-	static TextureAnimated* TEXTURE_ANIMATED;
-
 	static SamplerVK* SAMPLER_DEFAULT;
 	
 	static Mesh* MESH_PLANE;
@@ -33,7 +34,13 @@ public:
 	static Mesh* MESH_CUBE;
 	static Mesh* MESH_TABLE;
 
+	static VideoSource* VIDEO_TV;
+
+	static TextureAnimated* getAnimatedTexture(int index);
+
 private:
 	static void init(DeviceVK* device);
 	static void shutdown();
+
+	static std::vector<TextureAnimated*> s_AnimatedTextures;
 };

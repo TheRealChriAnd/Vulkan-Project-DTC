@@ -46,13 +46,13 @@ public:
 	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
 
 	void onTVFrameReady(TextureAnimated* texture);
-	void drawSimpleGameObjects(int index, std::atomic_bool& done);
+	void drawSimpleGameObjects(size_t index, std::atomic_bool& done);
 
 private:
 	CameraVK* m_Camera;
 	std::vector<LightPoint*> m_PointLight;
 	
-	GameObjectSimple* m_GameObjectScreen;
+	std::vector<GameObjectSimple*> m_ScreenGameObjects;
 
 	GameObjectSimple* m_GameObjectSofa;
 	GameObjectSimple* m_GameObjectRightWall;

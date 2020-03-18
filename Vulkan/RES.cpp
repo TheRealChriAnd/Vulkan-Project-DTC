@@ -9,7 +9,7 @@ Texture2D* RES::TEXTURE_TABLE	= nullptr;
 
 TextureSkyBox* RES::TEXTURE_SKYBOX = nullptr;
 
-TextureAnimated* RES::TEXTURE_ANIMATED = nullptr;
+std::vector<TextureAnimated*> RES::s_AnimatedTextures;
 
 SamplerVK* RES::SAMPLER_DEFAULT = nullptr;
 
@@ -22,6 +22,13 @@ Mesh* RES::MESH_TV				= nullptr;
 Mesh* RES::MESH_TABLE			= nullptr;
 
 Mesh* RES::MESH_CUBE			= nullptr;
+
+VideoSource* RES::VIDEO_TV		= nullptr;
+
+TextureAnimated* RES::getAnimatedTexture(int index)
+{
+	return s_AnimatedTextures[index];
+}
 
 void RES::init(DeviceVK* device)
 {
@@ -40,8 +47,11 @@ void RES::init(DeviceVK* device)
 
 	TEXTURE_SKYBOX->loadFromFile(texLayers);
 
-	//TEXTURE_ANIMATED = new TextureAnimated(device, "videos/video.mp4");
-	TEXTURE_ANIMATED = new TextureAnimated(device, "https://anderssoncloud.ddns.net/nextcloud/s/dSm4kRnjxkpPNG2/download");
+	//VIDEO_TV = new VideoSource("https://anderssoncloud.ddns.net/nextcloud/s/dSm4kRnjxkpPNG2/download");
+	VIDEO_TV = new VideoSource("videos/test.mp4");
+
+	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+		s_AnimatedTextures.push_back(new TextureAnimated(device, VIDEO_TV));
 	
 	SAMPLER_DEFAULT = new SamplerVK(device);
 
@@ -74,7 +84,10 @@ void RES::shutdown()
 
 	delete TEXTURE_SKYBOX;
 
-	delete TEXTURE_ANIMATED;
+	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+		delete s_AnimatedTextures[i];
+
+	delete VIDEO_TV;
 
 	delete SAMPLER_DEFAULT;
 

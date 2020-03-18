@@ -4,39 +4,26 @@
 #include "CommandBufferVK.h"
 #include "opencv2/opencv.hpp"
 #include "ThreadManager.h"
+#include "VideoSource.h"
 
-TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) :
+TextureAnimated::TextureAnimated(DeviceVK* device, VideoSource* source) :
 	TextureVK(device),
-	m_Timer(0),
+	m_Source(nullptr),
 	m_HasUpdate(false),
-	m_Playing(false),
-	m_FrameCount(0),
-	m_CurrentFrame(0),
 	m_UseFirstImage(false)
 {
-	m_VideoCapture = new cv::VideoCapture(file);
-	double fps = m_VideoCapture->get(cv::CAP_PROP_FPS);
-	m_FrameCount = m_VideoCapture->get(cv::CAP_PROP_FRAME_COUNT);
-	m_SleepTime = 1.0F / fps;
+	m_Source = source;
+	int frameSize = source->getFrameSize();
+	int width = source->getWidth();
+	int height = source->getHeight();
 
-	if (!m_VideoCapture->isOpened())
-		throw std::runtime_error("Error opening video stream or file!");
+	m_StagingBuffer = new BufferVK(device, frameSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-	m_Width = m_VideoCapture->get(cv::CAP_PROP_FRAME_WIDTH);
-	m_Height = m_VideoCapture->get(cv::CAP_PROP_FRAME_HEIGHT);
-	m_TotalSize = m_Width * m_Height * 4;
-
-	m_StagingBuffer = new BufferVK(device, m_TotalSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-	device->createImage(m_Width, m_Height, 1, 0, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
+	device->createImage(width, height, 1, 0, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image, m_ImageMemory);
 	m_ImageView = m_Device->createImageView(m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, 1);
 
-	device->createImage(m_Width, m_Height, 1, 0, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image2, m_ImageMemory2);
+	device->createImage(width, height, 1, 0, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_Image2, m_ImageMemory2);
 	m_ImageView2 = m_Device->createImageView(m_Image2, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, 1);
-
-	m_PixelData = new unsigned char[m_TotalSize];
-	memset(m_PixelData, 255, m_TotalSize);
-
 
 	m_Region = {};
 	m_Region.bufferOffset = 0;
@@ -48,24 +35,22 @@ TextureAnimated::TextureAnimated(DeviceVK* device, const std::string& file) :
 	m_Region.imageSubresource.layerCount = 1;
 	m_Region.imageOffset = { 0, 0, 0 };
 	m_Region.imageExtent = {
-		(uint32_t)m_Width,
-		(uint32_t)m_Height,
+		(uint32_t)width,
+		(uint32_t)height,
 		1
 	};
 
-	transfer(m_Image, m_StagingBuffer, m_Width, m_Height, { m_Region });
-	transfer(m_Image2, m_StagingBuffer, m_Width, m_Height, { m_Region });
+	transfer(m_Image, m_StagingBuffer, width, height, { m_Region });
+	transfer(m_Image2, m_StagingBuffer, width, height, { m_Region });
 	releaseFromQueue(false, m_Image);
+
+	m_Source->addListener(this);
 }
 
 TextureAnimated::~TextureAnimated()
 {
-	this->stop();
-	m_VideoCapture->release();
-	delete m_VideoCapture;
-	delete[] m_PixelData;
+	m_Source->removeListener(this);
 	delete m_StagingBuffer;
-
 	VkDevice device = m_Device->getDevice();
 	vkDestroyImage(device, m_Image2, nullptr);
 	vkDestroyImageView(device, m_ImageView2, nullptr);
@@ -92,47 +77,33 @@ bool TextureAnimated::useFirstImage() const
 	return m_UseFirstImage;
 }
 
-void TextureAnimated::play()
-{
-	m_Playing = true;
-	ThreadManager::addAsynchronousService(this);
-}
-
-void TextureAnimated::stop()
-{
-	m_Playing = false;
-	ThreadManager::removeAsynchronousService(this);
-}
-
-void TextureAnimated::submit()
+void TextureAnimated::update(float deltaSeconds)
 {
 	if (m_HasUpdate)
 	{
+#ifdef VULKAN
 		QueueFamilyIndices indices = m_Device->getQueueFamilies();
 		uint32_t src = indices.m_TransferFamily.value();
 		uint32_t dst = indices.m_GraphicsFamily.value();
-
 		std::lock_guard<SpinLock> lock(m_Lock);
 		acquireFromQueue(false, m_UseFirstImage ? m_Image2 : m_Image);
+		releaseFromQueue(false, m_UseFirstImage ? m_Image : m_Image2);
+#else
+		transfer(m_UseFirstImage ? m_Image2 : m_Image, m_StagingBuffer, getWidth(), getHeight(), { m_Region });
+#endif
 		m_HasUpdate = false;
 		m_UseFirstImage = !m_UseFirstImage;
-		releaseFromQueue(false, m_UseFirstImage ? m_Image2 : m_Image);
 	}
-}
-
-int TextureAnimated::getHeight() const
-{
-	return m_Height;
 }
 
 int TextureAnimated::getWidth() const
 {
-	return m_Width;
+	return m_Source->getWidth();
 }
 
-bool TextureAnimated::isPlaying() const
+int TextureAnimated::getHeight() const
 {
-	return m_Playing;
+	return m_Source->getHeight();
 }
 
 void TextureAnimated::setOnFrameReadyCallback(const std::function<void(TextureAnimated*)>& function)
@@ -142,9 +113,9 @@ void TextureAnimated::setOnFrameReadyCallback(const std::function<void(TextureAn
 
 glm::u8vec3 TextureAnimated::getColor(int x, int y) const
 {
-	int index = (y * m_Width + x) * 4;
-
-	return glm::u8vec3(m_PixelData[index], m_PixelData[index + 1], m_PixelData[index + 2]);
+	int index = (y * getWidth() + x) * 4;
+	unsigned const char* data = m_Source->getFrameData();
+	return glm::u8vec3(data[index], data[index + 1], data[index + 2]);
 }
 
 glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, int offsetY) const
@@ -161,66 +132,12 @@ glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, in
 	return sampleColor / samples;
 }
 
-double timer = 0;
-int ups = 0;
-
-void TextureAnimated::updateAsynchronous(float deltaSeconds)
-{
-	update(deltaSeconds);
-
-	ups++;
-	timer += deltaSeconds;
-	if (timer >= 1.0F)
-	{
-		timer -= 1.0F;
-		//std::cout << "UPS: " << ups << std::endl;
-		ups = 0;
-	}
-}
-
-void TextureAnimated::update(float deltaSeconds)
-{
-	m_Timer += deltaSeconds;
-	if (m_Timer < m_SleepTime)
-		return;
-
-	m_Timer -= m_SleepTime;
-	m_CurrentFrame++;
-
-	if (m_CurrentFrame == m_FrameCount)
-		m_VideoCapture->set(cv::CAP_PROP_POS_FRAMES, 0);
-
-	if (deltaSeconds > m_SleepTime)
-	{
-		m_VideoCapture->grab();
-		return;
-	}
-		
-	static cv::Mat frame;
-	(*m_VideoCapture) >> frame;
-
-	if (frame.empty())
-		return;
-
-	static int count = m_Width * m_Height * 3;
-	int offset = 0;
-	for (int i = 0; i < count; i += 3)
-	{
-		m_PixelData[i + offset] = frame.data[i + 2];
-		m_PixelData[i + offset + 1] = frame.data[i + 1];
-		m_PixelData[i + offset + 2] = frame.data[i];
-		offset += 1;
-	}
-
-	onFrameReady();
-}
-
-void TextureAnimated::onFrameReady()
+void TextureAnimated::onFrameReady(VideoSource* source)
 {
 	if (m_OnFrameReadyCallback)
 		m_OnFrameReadyCallback(this);
 
-	m_StagingBuffer->writeData(m_PixelData, static_cast<size_t>(m_TotalSize));
+	m_StagingBuffer->writeData(source->getFrameData(), static_cast<size_t>(source->getFrameSize()));
 
 	QueueFamilyIndices indices = m_Device->getQueueFamilies();
 	uint32_t src = indices.m_TransferFamily.value();
@@ -229,9 +146,14 @@ void TextureAnimated::onFrameReady()
 	std::lock_guard<SpinLock> lock(m_Lock);
 	VkImage image = m_UseFirstImage ? m_Image2 : m_Image;
 
+#ifdef VULKAN
 	releaseFromQueue(true, image);
-	copyBufferToImage(m_Device, image, true, *m_StagingBuffer, static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height), { m_Region });
+	copyBufferToImage(m_Device, image, true, *m_StagingBuffer, static_cast<uint32_t>(source->getWidth()), static_cast<uint32_t>(source->getHeight()), { m_Region });
 	acquireFromQueue(true, image);
+#endif
+
+	if (m_OnFrameReadyCallback)
+		m_OnFrameReadyCallback(this);
 
 	m_HasUpdate = true;
 }
