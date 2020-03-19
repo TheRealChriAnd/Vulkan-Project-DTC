@@ -60,6 +60,11 @@ private:
 	GameObjectSimple* m_GameObjectWindow;
 	GameObjectSimple* m_GameObjectGround;
 	GameObjectSimple* m_GameObjectFloor;
+	GameObjectSimple* m_GameObjectFloor2;
+	GameObjectSimple* m_GameObjectWallRoom2Front;
+	GameObjectSimple* m_GameObjectWallRoom2Left;
+
+
 
 	GameObjectSimple* m_GameObjectTv;
 	GameObjectSimple* m_GameObjectTable;

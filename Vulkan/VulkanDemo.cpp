@@ -47,6 +47,8 @@ void VulkanDemo::preInit()
 	
 	m_PointLight.push_back(new LightPoint(glm::vec3(0.0f, 1.4f, 3.45f), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.25f, 0.09f, 0.032f)));
 
+	m_PointLight.push_back(new LightPoint(glm::vec3(10.0f, 1.4f, -5.45f), glm::vec3(0.9f, 0.9f, 0.9f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.25f, 0.09f, 0.032f)));
+
 	m_Camera = new CameraVK();
 
 	m_Camera->addNode(glm::vec3(0.0f, 1.7f, -2.0f), glm::vec3(0.0f, 1.5f, 3.3f));
@@ -54,6 +56,13 @@ void VulkanDemo::preInit()
 	m_Camera->addNode(glm::vec3(3.0f, 1.7f, 0.0f), glm::vec3(0.0f, 1.5f, 3.3f));
 	m_Camera->addNode(glm::vec3(0.0f, 3.5f, -3.0f), glm::vec3(0.0f, 1.5f, 3.3f));
 	m_Camera->addNode(glm::vec3(-3.0f, 1.7f, 0.0f), glm::vec3(0.0f, 1.5f, 3.3f));
+
+	m_Camera->addNode(glm::vec3(0.0f, 1.7f, 2.0f), glm::vec3(3.0f, 1.5f, 3.3f));
+	m_Camera->addNode(glm::vec3(3.0f, 1.7f, 2.0f), glm::vec3(10.0f, 1.5f, 3.3f));
+
+	m_Camera->addNode(glm::vec3(20.0f, 1.7f, 2.0f), glm::vec3(20.0f, 1.5f, 3.3f));
+
+	m_Camera->addNode(glm::vec3(20.0f, 1.7f, -5.0f), glm::vec3(200.0f, 1.5f, 3.3f));
 
 	m_Camera->startFollowPath();
 
@@ -85,6 +94,8 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectTv			= m_RendererSimple->createGameObject(RES::MESH_TV,		RES::TEXTURE_TV,		RES::SAMPLER_DEFAULT);
 	m_GameObjectTable		= m_RendererSimple->createGameObject(RES::MESH_TABLE,	RES::TEXTURE_TABLE,		RES::SAMPLER_DEFAULT);
 	m_GameObjectSkyBox		= m_RendererSkyBox->createGameObject(RES::MESH_CUBE,	RES::TEXTURE_SKYBOX,	RES::SAMPLER_DEFAULT);
+	m_GameObjectWallRoom2Front	= m_RendererSimple->createGameObject(RES::MESH_WALL2, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
+	m_GameObjectWallRoom2Left	= m_RendererSimple->createGameObject(RES::MESH_WALL2, RES::TEXTURE_THIN, RES::SAMPLER_DEFAULT);
 
 	m_ScreenGameObjects[0]->scale(glm::vec3(3.0f, 1.555f, 1.0f));
 	m_ScreenGameObjects[0]->translate(glm::vec3(0.0f, 0.895f, 3.3f));
@@ -92,15 +103,32 @@ void VulkanDemo::onSwapChainCreated()
 	m_ScreenGameObjects[0]->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
 	m_ScreenGameObjects[0]->applyTransform();
 
+
+	float pos;
 	for (int i = 1; i < m_ScreenGameObjects.size(); i++)
 	{
-		GameObjectSimple* gameObject = m_ScreenGameObjects[i];
-		gameObject->scale(glm::vec3(3.0f, 1.555f, 1.0f));
-		gameObject->translate(glm::vec3(1.1f * i, 0.895f, 3.3f));
-		gameObject->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
-		gameObject->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
-		gameObject->applyTransform();
+		if (i < 12)
+		{
+			pos = 2.42f + 1.1f * i;
+
+			GameObjectSimple* gameObject = m_ScreenGameObjects[i];
+			gameObject->scale(glm::vec3(1.5f, 0.75f, 1.0f));
+			gameObject->translate(glm::vec3(2.42f + 1.1f * i, 1.895f, 3.4f));
+			gameObject->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
+			gameObject->rotate(3.14, glm::vec3(0.0f, 1.0f, 0.0f));
+			gameObject->applyTransform();
+		}
+		else
+		{
+			GameObjectSimple* gameObject = m_ScreenGameObjects[i];
+			gameObject->translate(glm::vec3(pos + 8.65f, 1.395f, 3.4f - 2.1f * (i-11)));
+			gameObject->rotate(-3.14 / 2.0, glm::vec3(1.0f, 0.0f, 0.0f));
+			gameObject->rotate(3.14, glm::vec3(-1.0f, 1.0f, 0.0f));
+			gameObject->scale(glm::vec3(2.0f, 0.75f, 1.0f));
+			gameObject->applyTransform();
+		}
 	}
+
 
 	m_GameObjectFloor->scale(7);
 	m_GameObjectFloor->applyTransform();
@@ -114,6 +142,15 @@ void VulkanDemo::onSwapChainCreated()
 	m_GameObjectRightWall->rotate(-3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
 	m_GameObjectRightWall->translate(glm::vec3(0.0f, 0.0f, 3.0f));
 	m_GameObjectRightWall->applyTransform();
+
+	m_GameObjectWallRoom2Front->translate(glm::vec3(14.0f, 0.0f, 3.0f));
+	m_GameObjectWallRoom2Front->scale(glm::vec3(3.0f, 1.0f, 1.0f));
+	m_GameObjectWallRoom2Front->applyTransform();
+
+	m_GameObjectWallRoom2Left->rotate(-3.14 / 2, glm::vec3(0.0f, 1.0f, 0.0f));
+	m_GameObjectWallRoom2Left->translate(glm::vec3(-11.0f, 0.0f, -24.0f));
+	m_GameObjectWallRoom2Left->scale(glm::vec3(4.2f, 1.0f, 1.0f));
+	m_GameObjectWallRoom2Left->applyTransform();
 
 	m_GameObjectFrontWall->translate(glm::vec3(0.0f, 0.0f, 3.0f));
 	m_GameObjectFrontWall->applyTransform();
@@ -135,6 +172,8 @@ void VulkanDemo::onSwapChainCreated()
 
 	m_SimpleGameObjects.push_back(m_GameObjectSofa);
 	m_SimpleGameObjects.push_back(m_GameObjectRightWall);
+	m_SimpleGameObjects.push_back(m_GameObjectWallRoom2Front);
+	m_SimpleGameObjects.push_back(m_GameObjectWallRoom2Left);
 	m_SimpleGameObjects.push_back(m_GameObjectFrontWall);
 	m_SimpleGameObjects.push_back(m_GameObjectWindow);
 	m_SimpleGameObjects.push_back(m_GameObjectTv);
@@ -242,7 +281,10 @@ void VulkanDemo::shutdown()
 void VulkanDemo::onKeyPressed(int key)
 {
 	if (key == GLFW_KEY_ESCAPE)
+	{
 		InputVK::setCursorEnabled(true);
+		m_Camera->stopFollowPath();
+	}
 	else if (key == GLFW_KEY_SPACE)
 		if (RES::VIDEO_TV->isPlaying())
 			RES::VIDEO_TV->stop();
@@ -310,7 +352,7 @@ void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
 
 	glm::vec4 finalColor(color, 1.0F);
 
-	int index = m_PointLight.size() - 1;
+	int index = m_PointLight.size() - 2;
 	m_PointLight[index]->setAmbientColor(finalColor);
 	m_PointLight[index]->setDiffuseColor(finalColor);
 	m_PointLight[index]->setSpecColor(finalColor);

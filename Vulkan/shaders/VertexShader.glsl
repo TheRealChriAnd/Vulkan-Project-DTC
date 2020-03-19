@@ -7,7 +7,7 @@
 #define BINDING_UBO 3
 #define BINDING_TEX 4
 #define BINDING_UCL 0
-#define NR_POINT_LIIGHTS 11
+#define NR_POINT_LIIGHTS 12
 
 layout(set=1, binding = BINDING_POS) buffer pos 
 {

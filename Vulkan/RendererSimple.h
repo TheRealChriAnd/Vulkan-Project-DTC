@@ -44,7 +44,7 @@ private:
 	{
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 proj;
-		Light lights[11];
+		Light lights[12];
 		glm::vec4 camPos;
 	};
 

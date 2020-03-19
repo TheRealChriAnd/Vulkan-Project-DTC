@@ -5,7 +5,7 @@
 #define BINDING_UVS 2
 #define BINDING_TEX 4
 #define BINDING_UCL 0
-#define NR_POINT_LIIGHTS 11
+#define NR_POINT_LIIGHTS 12
 
 struct PLight {
     vec4 position;

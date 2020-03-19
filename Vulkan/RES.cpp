@@ -47,8 +47,8 @@ void RES::init(DeviceVK* device)
 
 	TEXTURE_SKYBOX->loadFromFile(texLayers);
 
-	//VIDEO_TV = new VideoSource("https://anderssoncloud.ddns.net/nextcloud/s/dSm4kRnjxkpPNG2/download");
-	VIDEO_TV = new VideoSource("videos/test.mp4");
+	VIDEO_TV = new VideoSource("https://anderssoncloud.ddns.net/nextcloud/s/dSm4kRnjxkpPNG2/download");
+	//VIDEO_TV = new VideoSource("videos/test.mp4");
 
 	for (int i = 0; i < ANIMATED_TEXTURES; i++)
 		s_AnimatedTextures.push_back(new TextureAnimated(device, VIDEO_TV));
