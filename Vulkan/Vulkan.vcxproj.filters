@@ -84,6 +84,7 @@
     <ClInclude Include="GameObjectAnimated.h" />
     <ClInclude Include="VideoSource.h" />
     <ClInclude Include="IVideoSourceListener.h" />
+    <ClInclude Include="ICameraListener.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\fatboy.png" />

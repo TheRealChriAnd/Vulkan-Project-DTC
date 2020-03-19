@@ -85,6 +85,7 @@ void Application::run()
 		Profiler::begin("FRAME");
 		drawFrame(imageIndex);
 		Profiler::end();
+		Profiler::count("FRAMES");
 
 		frames++;
 		if (debugTimer >= 1.0F)
@@ -92,7 +93,6 @@ void Application::run()
 			debugTimer -= 1.0F;
 			std::cout << "FPS: " << frames << std::endl;
 			frames = 0;
-			Profiler::printResults();
 		}
 	}
 	Profiler::printResults();
