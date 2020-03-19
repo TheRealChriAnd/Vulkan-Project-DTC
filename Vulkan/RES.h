@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "VideoSource.h"
 
-#define ANIMATED_TEXTURES 50
+#define ANIMATED_TEXTURES 10
 
 class DeviceVK;
 

@@ -72,6 +72,8 @@ void VulkanDemo::onSwapChainCreated()
 		m_RendererSimple->addLight(m_PointLight[i]);
 	}
 
+	std::vector<GameObjectSimple*> m_ScreenGameObjects;
+
 	for (int i = 0; i < ANIMATED_TEXTURES; i++)
 	//for (int i = 0; i < 1; i++)
 		m_ScreenGameObjects.push_back(m_RendererSimple->createGameObjectAnimatedTexture(RES::MESH_PLANE, RES::getAnimatedTexture(i), RES::SAMPLER_DEFAULT));

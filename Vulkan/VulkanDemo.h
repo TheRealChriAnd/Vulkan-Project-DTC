@@ -51,8 +51,6 @@ public:
 private:
 	CameraVK* m_Camera;
 	std::vector<LightPoint*> m_PointLight;
-	
-	std::vector<GameObjectSimple*> m_ScreenGameObjects;
 
 	GameObjectSimple* m_GameObjectSofa;
 	GameObjectSimple* m_GameObjectRightWall;
