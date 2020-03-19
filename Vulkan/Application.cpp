@@ -95,8 +95,7 @@ void Application::run()
 			frames = 0;
 		}
 	}
-	Profiler::printResults();
-
+	Profiler::reset();
 	Profiler::begin("SHUTDOWN");
 	shutdownInternal();
 	Profiler::end();

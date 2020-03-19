@@ -38,13 +38,13 @@ VideoSource::~VideoSource()
 void VideoSource::play()
 {
 	m_Playing = true;
-	ThreadManager::addAsynchronousService(this);
+	ThreadManager::addAsynchronousService(this, 0);
 }
 
 void VideoSource::stop()
 {
 	m_Playing = false;
-	ThreadManager::removeAsynchronousService(this);
+	ThreadManager::removeAsynchronousService(this, 0);
 }
 
 int VideoSource::getHeight() const

@@ -7,10 +7,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "SpinLock.h"
 #include "IVideoSourceListener.h"
+#include "IAsynchronous.h"
 
 class BufferVK;
 
-class TextureAnimated : public TextureVK, public IVideoSourceListener
+class TextureAnimated : public TextureVK, public IVideoSourceListener, public IAsynchronous
 {
 public:
 	TextureAnimated(DeviceVK* device, VideoSource* source);
@@ -31,6 +32,7 @@ public:
 	glm::vec3 getSampleColor(int width, int height, int x, int y) const;
 
 	virtual void onFrameReady(VideoSource* source) override;
+	virtual void updateAsynchronous(float deltaSeconds) override;
 
 private:
 	BufferVK* m_StagingBuffer;
@@ -38,6 +40,7 @@ private:
 	VkBufferImageCopy m_Region;
 
 	std::atomic_bool m_HasUpdate;
+	std::atomic_bool m_HasUnWritenData;
 	std::function<void(TextureAnimated*)> m_OnFrameReadyCallback;
 
 	VkImage m_Image2;

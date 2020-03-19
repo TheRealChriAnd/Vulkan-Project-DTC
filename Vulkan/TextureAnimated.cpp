@@ -10,7 +10,8 @@ TextureAnimated::TextureAnimated(DeviceVK* device, VideoSource* source) :
 	TextureVK(device),
 	m_Source(nullptr),
 	m_HasUpdate(false),
-	m_UseFirstImage(false)
+	m_UseFirstImage(false),
+	m_HasUnWritenData(false)
 {
 	m_Source = source;
 	int frameSize = source->getFrameSize();
@@ -45,10 +46,18 @@ TextureAnimated::TextureAnimated(DeviceVK* device, VideoSource* source) :
 	releaseFromQueue(false, m_Image);
 
 	m_Source->addListener(this);
+
+#ifdef VULKAN
+	ThreadManager::addAsynchronousService(this, 1);
+#endif
 }
 
 TextureAnimated::~TextureAnimated()
 {
+#ifdef VULKAN
+	ThreadManager::removeAsynchronousService(this, 1);
+#endif
+
 	m_Source->removeListener(this);
 	delete m_StagingBuffer;
 	VkDevice device = m_Device->getDevice();
@@ -89,6 +98,7 @@ void TextureAnimated::update(float deltaSeconds)
 		acquireFromQueue(false, m_UseFirstImage ? m_Image2 : m_Image);
 		releaseFromQueue(false, m_UseFirstImage ? m_Image : m_Image2);
 #else
+		m_StagingBuffer->writeData(m_Source->getFrameData(), static_cast<size_t>(m_Source->getFrameSize()));
 		transfer(m_UseFirstImage ? m_Image2 : m_Image, m_StagingBuffer, getWidth(), getHeight(), { m_Region });
 #endif
 		m_HasUpdate = false;
@@ -134,26 +144,33 @@ glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, in
 
 void TextureAnimated::onFrameReady(VideoSource* source)
 {
-	if (m_OnFrameReadyCallback)
-		m_OnFrameReadyCallback(this);
-
-	m_StagingBuffer->writeData(source->getFrameData(), static_cast<size_t>(source->getFrameSize()));
-
-	QueueFamilyIndices indices = m_Device->getQueueFamilies();
-	uint32_t src = indices.m_TransferFamily.value();
-	uint32_t dst = indices.m_GraphicsFamily.value();
-
-	std::lock_guard<SpinLock> lock(m_Lock);
-	VkImage image = m_UseFirstImage ? m_Image2 : m_Image;
-
 #ifdef VULKAN
-	releaseFromQueue(true, image);
-	copyBufferToImage(m_Device, image, true, *m_StagingBuffer, static_cast<uint32_t>(source->getWidth()), static_cast<uint32_t>(source->getHeight()), { m_Region });
-	acquireFromQueue(true, image);
+	m_HasUnWritenData = true;
+#else
+	m_HasUpdate = true;
 #endif
 
 	if (m_OnFrameReadyCallback)
 		m_OnFrameReadyCallback(this);
+}
 
-	m_HasUpdate = true;
+void TextureAnimated::updateAsynchronous(float deltaSeconds)
+{
+	if (m_HasUnWritenData)
+	{
+		m_HasUnWritenData = false;
+		QueueFamilyIndices indices = m_Device->getQueueFamilies();
+		uint32_t src = indices.m_TransferFamily.value();
+		uint32_t dst = indices.m_GraphicsFamily.value();
+
+		std::lock_guard<SpinLock> lock(m_Lock);
+		VkImage image = m_UseFirstImage ? m_Image2 : m_Image;
+
+		m_StagingBuffer->writeData(m_Source->getFrameData(), static_cast<size_t>(m_Source->getFrameSize()));
+		releaseFromQueue(true, image);
+		copyBufferToImage(m_Device, image, true, *m_StagingBuffer, static_cast<uint32_t>(getWidth()), static_cast<uint32_t>(getHeight()), { m_Region });
+		acquireFromQueue(true, image);
+
+		m_HasUpdate = true;
+	}
 }
