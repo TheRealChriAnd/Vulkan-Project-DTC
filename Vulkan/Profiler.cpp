@@ -4,6 +4,8 @@
 
 std::stack<std::pair<std::string, TIME_POINT>> Profiler::m_Stack;
 std::unordered_map<std::string, std::vector<double>> Profiler::m_Data;
+std::unordered_map<std::string, int> Profiler::m_DataCountable;
+TIME_POINT Profiler::m_StartTime;
 
 void Profiler::begin(const std::string& name)
 {
@@ -24,8 +26,25 @@ void Profiler::end()
 	m_Stack.pop();
 }
 
+void Profiler::count(const std::string& name)
+{
+	auto iterator = m_DataCountable.find(name);
+	if (iterator != m_DataCountable.end())
+		iterator->second++;
+	else
+		m_DataCountable.insert({ name, 0 });
+}
+
+void Profiler::reset()
+{
+	m_Data.clear();
+	m_DataCountable.clear();
+	m_StartTime = std::chrono::high_resolution_clock::now();
+}
+
 void Profiler::printResults()
 {
+	double delta = std::chrono::duration<double, std::chrono::seconds::period>(std::chrono::high_resolution_clock::now() - m_StartTime).count();
 	for (auto data : m_Data)
 	{
 		const std::vector<double>& deltas = data.second;
@@ -37,7 +56,12 @@ void Profiler::printResults()
 		average /= deltas.size();
 		std::cout << "[" << std::setw(15) << std::left << data.first << "] " << average << std::endl;
 	}
-	m_Data.clear();
-	m_Stack = std::stack<std::pair<std::string, TIME_POINT>>();
+	for (auto data : m_DataCountable)
+	{
+		std::cout << "[" << std::setw(15) << std::left << data.first << "] " << data.second << std::endl;
+	}
+	std::cout << "[" << std::setw(15) << std::left << "Duration" << "] " << delta << std::endl;
+	reset();
+	//m_Stack = std::stack<std::pair<std::string, TIME_POINT>>();
 	std::cout << std::endl;
 }

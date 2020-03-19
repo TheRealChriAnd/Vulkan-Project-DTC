@@ -2,9 +2,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 #include <functional>
+#include <iostream>
+#include <atomic>
 
 #include "VulkanDemo.h"
-
 #include "WindowVK.h"
 #include "DeviceVK.h"
 #include "SwapChainVK.h"
@@ -27,7 +28,8 @@
 #include "TextureSkyBox.h"
 #include "ThreadManager.h"
 #include "CommandPoolVK.h"
-#include <atomic>
+#include "Profiler.h"
+
 
 void VulkanDemo::preInit()
 {
@@ -55,7 +57,9 @@ void VulkanDemo::preInit()
 	m_Camera->addNode(glm::vec3(0.0f, 3.5f, -3.0f), glm::vec3(0.0f, 1.5f, 3.3f));
 	m_Camera->addNode(glm::vec3(-3.0f, 1.7f, 0.0f), glm::vec3(0.0f, 1.5f, 3.3f));
 
-	m_Camera->startFollowPath();
+	m_Camera->startFollowPath(true);
+	m_Camera->addListener(this);
+	m_BenchmarkRunning = false;
 
 	m_GraphicsCommandPool2 = new CommandPoolVK(m_Device, false);
 }
@@ -250,6 +254,22 @@ void VulkanDemo::onKeyPressed(int key)
 			RES::VIDEO_TV->stop();
 		else
 			RES::VIDEO_TV->play();
+	else if (key == GLFW_KEY_ENTER)
+	{
+		if (!m_BenchmarkRunning)
+		{
+			std::cout << "Benchmark started!" << std::endl;
+			Profiler::reset();
+			m_Camera->startFollowPath(true);
+			m_BenchmarkRunning = true;
+		}
+		else
+		{
+			std::cout << "Benchmark cancelled!" << std::endl;
+			m_BenchmarkRunning = false;
+			Profiler::reset();
+		}
+	}
 }
 
 void VulkanDemo::onKeyReleased(int key)
@@ -268,6 +288,15 @@ void VulkanDemo::onMouseButtonRelease(int button)
 
 void VulkanDemo::onMouseMove(const glm::vec2& pos, const glm::vec2& offset)
 {
+}
+
+void VulkanDemo::onCameraPathEnded(CameraVK* camera)
+{
+	if (m_BenchmarkRunning)
+	{
+		Profiler::printResults();
+		m_BenchmarkRunning = false;
+	}
 }
 
 void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
@@ -316,6 +345,8 @@ void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
 	m_PointLight[index]->setAmbientColor(finalColor);
 	m_PointLight[index]->setDiffuseColor(finalColor);
 	m_PointLight[index]->setSpecColor(finalColor);
+
+	Profiler::count("TV_FRAMES");
 }
 
 void VulkanDemo::drawSimpleGameObjects(size_t index, std::atomic_bool& done)

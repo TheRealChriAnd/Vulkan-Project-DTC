@@ -364,6 +364,7 @@
     <ClInclude Include="GameObjectAnimated.h" />
     <ClInclude Include="GameObjectSimple.h" />
     <ClInclude Include="GameObjectSkyBox.h" />
+    <ClInclude Include="ICameraListener.h" />
     <ClInclude Include="IKeyListener.h" />
     <ClInclude Include="IMouseListener.h" />
     <ClInclude Include="IndexBufferVK.h" />

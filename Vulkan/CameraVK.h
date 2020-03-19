@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <utility>
+#include <set>
 #include "glm/glm.hpp"
 
 #define KEY_W 87
@@ -16,6 +17,8 @@
 #define KEY_DOWN 264
 #define KEY_RIGHT 262
 #define KEY_LEFT 263
+
+class ICameraListener;
 
 class CameraVK : public IMouseListener, IKeyListener
 {
@@ -37,8 +40,11 @@ public:
 	virtual void onKeyReleased(int key) override;
 
 	void update(float delta);
-	void startFollowPath();
+	void startFollowPath(bool begining);
 	void stopFollowPath();
+
+	void addListener(ICameraListener* listener);
+	void removeListener(ICameraListener* listener);
 
 private:
 	glm::vec3 m_Position;
@@ -60,6 +66,8 @@ private:
 	float m_TotalTime;
 	bool m_FollowPath;
 
+	std::set<ICameraListener*> m_Listeners;
+
 private:
 
 	void moveCamera(std::pair<glm::vec3, glm::vec3> node0, std::pair<glm::vec3, glm::vec3> node1, float percentage);
@@ -68,4 +76,6 @@ private:
 	void calcTotalTime();
 	const std::pair<glm::vec3, glm::vec3>& getCurrentNode() const;
 	const std::pair<glm::vec3, glm::vec3>& getNextNode() const;
+
+	void onCameraPathEnded();
 };

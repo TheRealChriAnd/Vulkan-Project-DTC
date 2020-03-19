@@ -1,9 +1,10 @@
 #pragma once
+#include <atomic>
 #include "Application.h"
 #include "Defines.h"
 #include "IKeyListener.h"
 #include "IMouseListener.h"
-#include <atomic>
+#include "ICameraListener.h"
 
 class DeviceVK;
 
@@ -22,7 +23,7 @@ class RendererSimple;
 class RendererSkyBox;
 class CommandPoolVK;
 
-class VulkanDemo : public Application, public IKeyListener, public IMouseListener
+class VulkanDemo : public Application, public IKeyListener, public IMouseListener, public ICameraListener
 {
 public:
 	VulkanDemo() {};
@@ -44,6 +45,8 @@ public:
 	virtual void onMouseButtonPressed(int button) override;
 	virtual void onMouseButtonRelease(int button) override;
 	virtual void onMouseMove(const glm::vec2& pos, const glm::vec2& offset) override;
+
+	virtual void onCameraPathEnded(CameraVK* camera) override;
 
 	void onTVFrameReady(TextureAnimated* texture);
 	void drawSimpleGameObjects(size_t index, std::atomic_bool& done);
@@ -73,4 +76,6 @@ private:
 	CommandBufferVK* m_CommandBufferSimple;
 
 	CommandPoolVK* m_GraphicsCommandPool2;
+
+	bool m_BenchmarkRunning;
 };

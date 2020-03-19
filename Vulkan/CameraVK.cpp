@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "InputVK.h"
 #include <iostream>
+#include "ICameraListener.h"
 
 CameraVK::CameraVK(glm::vec3 pos, float sensitivity, float speed)
 {
@@ -142,8 +143,14 @@ void CameraVK::update(float delta)
 	m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_Front, m_Up);
 }
 
-void CameraVK::startFollowPath()
+void CameraVK::startFollowPath(bool begining)
 {
+	if (begining)
+	{
+		m_Timer = 0;
+		m_CurrentNode = 0;
+	}
+		
 	m_FollowPath = true;
 	calcTotalTime();
 }
@@ -151,6 +158,16 @@ void CameraVK::startFollowPath()
 void CameraVK::stopFollowPath()
 {
 	m_FollowPath = false;
+}
+
+void CameraVK::addListener(ICameraListener* listener)
+{
+	m_Listeners.insert(listener);
+}
+
+void CameraVK::removeListener(ICameraListener* listener)
+{
+	m_Listeners.erase(listener);
 }
 
 void CameraVK::followPath(float delta)
@@ -165,7 +182,7 @@ void CameraVK::followPath(float delta)
 		if (m_CurrentNode == m_PosTargetTable.size())
 		{
 			m_CurrentNode = 0;
-			//m_FollowPath = false;
+			onCameraPathEnded();
 		}
 		calcTotalTime();
 	}
@@ -193,4 +210,11 @@ const std::pair<glm::vec3, glm::vec3>& CameraVK::getNextNode() const
 	}
 
 	return m_PosTargetTable[m_CurrentNode + 1];
+}
+
+void CameraVK::onCameraPathEnded()
+{
+	//m_FollowPath = false;
+	for (ICameraListener* listener : m_Listeners)
+		listener->onCameraPathEnded(this);
 }
