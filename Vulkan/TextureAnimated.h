@@ -34,6 +34,8 @@ public:
 	virtual void onFrameReady(VideoSource* source) override;
 	virtual void updateAsynchronous(float deltaSeconds) override;
 
+	static int getLostFrames();
+
 private:
 	BufferVK* m_StagingBuffer;
 	VideoSource* m_Source;
@@ -48,4 +50,8 @@ private:
 	VkDeviceMemory m_ImageMemory2;
 	std::atomic_bool m_UseFirstImage;
 	SpinLock m_Lock;
+	int m_Id;
+
+	static int m_Counter;
+	static std::atomic_int m_LostFrames;
 };

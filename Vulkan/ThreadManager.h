@@ -38,6 +38,8 @@ private:
 	static void runQueue(int index);
 	static void runSet(int index);
 
+	static int getUPS(int threadIndex);
+
 private:
 	static std::vector<std::function<void()>> m_Queue[TASK_THREADS_PLACEHOLDER];
 	static std::set<IAsynchronous*> m_Set[SERVICE_THREADS];
@@ -46,5 +48,6 @@ private:
 	static std::thread* m_ThreadSets[SERVICE_THREADS];
 	static SpinLock m_SetLock[SERVICE_THREADS];
 	static SpinLock m_QueueLock[TASK_THREADS_PLACEHOLDER];
+	static int m_UPS[SERVICE_THREADS];
 };
 

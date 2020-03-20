@@ -388,7 +388,7 @@ void VulkanDemo::onTVFrameReady(TextureAnimated* texture)
 	m_PointLight[index]->setDiffuseColor(finalColor);
 	m_PointLight[index]->setSpecColor(finalColor);
 
-	Profiler::count("TV_FRAMES");
+	Profiler::count("TV_FRAMES_READY");
 }
 
 void VulkanDemo::drawSimpleGameObjects(size_t index, std::atomic_bool& done)

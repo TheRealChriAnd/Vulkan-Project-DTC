@@ -29,7 +29,7 @@ Application::Application()
 void Application::run()
 {
 	m_Window = new WindowVK("Vulkan Project", 1080, 720);
-	m_Device = new DeviceVK(m_Window, enableValidationLayers);
+	m_Device = new DeviceVK(m_Window, /*true*/ enableValidationLayers);
 
 	Profiler::begin("RESOURCES");
 	RES::init(m_Device);
@@ -91,8 +91,13 @@ void Application::run()
 		if (debugTimer >= 1.0F)
 		{
 			debugTimer -= 1.0F;
-			std::cout << "FPS: " << frames << std::endl;
+			std::cout << std::endl << "FPS: " << frames << std::endl;
 			frames = 0;
+
+			for(int i = 0; i < SERVICE_THREADS; i++)
+				std::cout << "T" << i << " UPS: " << ThreadManager::getUPS(i) << std::endl;
+
+			std::cout << "Lost Frames: " << TextureAnimated::getLostFrames() << std::endl;
 		}
 	}
 	Profiler::reset();

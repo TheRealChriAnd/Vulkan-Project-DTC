@@ -8,9 +8,9 @@ std::set<IAsynchronous*> ThreadManager::m_Set[];
 std::atomic_bool ThreadManager::m_Running = true;
 std::thread* ThreadManager::m_ThreadQueue[];
 std::thread* ThreadManager::m_ThreadSets[];
-
 SpinLock ThreadManager::m_SetLock[];
 SpinLock ThreadManager::m_QueueLock[];
+int ThreadManager::m_UPS[];
 
 void ThreadManager::init()
 {
@@ -70,12 +70,23 @@ void ThreadManager::runQueue(int index)
 
 void ThreadManager::runSet(int index)
 {
+	float timer = 0;
+	int counter = 0;
 	auto lastTime = std::chrono::high_resolution_clock::now();
 	while (m_Running)
 	{
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float delta = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
 		lastTime = currentTime;
+
+		timer += delta;
+		if (timer >= 1.0F)
+		{
+			m_UPS[index] = counter;
+			counter = 0;
+			timer -= 1.0F;
+		}
+		counter++;
 
 		if (m_Set[index].empty())
 			continue;
@@ -86,6 +97,11 @@ void ThreadManager::runSet(int index)
 			target->updateAsynchronous(delta);
 		}
 	}
+}
+
+int ThreadManager::getUPS(int threadIndex)
+{
+	return m_UPS[threadIndex];
 }
 
 void ThreadManager::scheduleExecution(const std::function<void()>& target)

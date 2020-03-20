@@ -5,6 +5,10 @@
 #include "opencv2/opencv.hpp"
 #include "ThreadManager.h"
 #include "VideoSource.h"
+#include "Profiler.h"
+
+std::atomic_int TextureAnimated::m_LostFrames = 0;
+int TextureAnimated::m_Counter = 0;
 
 TextureAnimated::TextureAnimated(DeviceVK* device, VideoSource* source) :
 	TextureVK(device),
@@ -47,7 +51,9 @@ TextureAnimated::TextureAnimated(DeviceVK* device, VideoSource* source) :
 
 	m_Source->addListener(this);
 
-#ifdef VULKAN
+	m_Id = m_Counter++ % 3;
+
+#ifdef VULKAN 
 	ThreadManager::addAsynchronousService(this, 1);
 #endif
 }
@@ -95,14 +101,17 @@ void TextureAnimated::update(float deltaSeconds)
 		uint32_t src = indices.m_TransferFamily.value();
 		uint32_t dst = indices.m_GraphicsFamily.value();
 		std::lock_guard<SpinLock> lock(m_Lock);
-		acquireFromQueue(false, m_UseFirstImage ? m_Image2 : m_Image);
+		VkImage image = m_UseFirstImage ? m_Image2 : m_Image;
+		acquireFromQueue(false, image);
 		releaseFromQueue(false, m_UseFirstImage ? m_Image : m_Image2);
 #else
 		m_StagingBuffer->writeData(m_Source->getFrameData(), static_cast<size_t>(m_Source->getFrameSize()));
 		transfer(m_UseFirstImage ? m_Image2 : m_Image, m_StagingBuffer, getWidth(), getHeight(), { m_Region });
 #endif
+		Profiler::count("TV_FRAMES_TRANSFERRED");
 		m_HasUpdate = false;
 		m_UseFirstImage = !m_UseFirstImage;
+		m_LostFrames--;
 	}
 }
 
@@ -144,14 +153,20 @@ glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, in
 
 void TextureAnimated::onFrameReady(VideoSource* source)
 {
+	if (m_OnFrameReadyCallback)
+		ThreadManager::scheduleExecution(std::bind(m_OnFrameReadyCallback, this));
+
 #ifdef VULKAN
+	if (m_Id <= 1)
+	{
+		m_StagingBuffer->writeData(m_Source->getFrameData(), static_cast<size_t>(m_Source->getFrameSize()));
+	}
 	m_HasUnWritenData = true;
 #else
 	m_HasUpdate = true;
 #endif
 
-	if (m_OnFrameReadyCallback)
-		m_OnFrameReadyCallback(this);
+	m_LostFrames++;
 }
 
 void TextureAnimated::updateAsynchronous(float deltaSeconds)
@@ -166,11 +181,20 @@ void TextureAnimated::updateAsynchronous(float deltaSeconds)
 		std::lock_guard<SpinLock> lock(m_Lock);
 		VkImage image = m_UseFirstImage ? m_Image2 : m_Image;
 
-		m_StagingBuffer->writeData(m_Source->getFrameData(), static_cast<size_t>(m_Source->getFrameSize()));
+		if (m_Id >= 2)
+		{
+			m_StagingBuffer->writeData(m_Source->getFrameData(), static_cast<size_t>(m_Source->getFrameSize()));
+		}
+
 		releaseFromQueue(true, image);
 		copyBufferToImage(m_Device, image, true, *m_StagingBuffer, static_cast<uint32_t>(getWidth()), static_cast<uint32_t>(getHeight()), { m_Region });
 		acquireFromQueue(true, image);
 
 		m_HasUpdate = true;
 	}
+}
+
+int TextureAnimated::getLostFrames()
+{
+	return m_LostFrames;
 }
