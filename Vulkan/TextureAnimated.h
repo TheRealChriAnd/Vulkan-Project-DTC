@@ -29,7 +29,7 @@ public:
 
 	void setOnFrameReadyCallback(const std::function<void(TextureAnimated*)>& function);
 	glm::u8vec3 getColor(int x, int y) const;
-	glm::vec3 getSampleColor(int width, int height, int x, int y) const;
+	glm::vec3 getSampleColor(int width, int height, int x, int y, int sampleEvery) const;
 
 	virtual void onFrameReady(VideoSource* source) override;
 	virtual void updateAsynchronous(float deltaSeconds) override;

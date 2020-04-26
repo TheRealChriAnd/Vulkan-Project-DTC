@@ -1,5 +1,6 @@
 #include "CommandPoolVK.h"
 #include "DeviceVK.h"
+#include <iostream>
 
 CommandPoolVK::CommandPoolVK(DeviceVK* device, bool isTransfer)
 {

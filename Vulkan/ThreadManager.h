@@ -11,7 +11,7 @@
 #define TASK_THREADS 1
 #else
 #define SERVICE_THREADS 1
-#define TASK_THREADS 0
+#define TASK_THREADS 1
 #endif
 
 #define TASK_THREADS_PLACEHOLDER (TASK_THREADS + 1)
