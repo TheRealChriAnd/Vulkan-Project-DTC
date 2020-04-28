@@ -87,7 +87,7 @@ void VulkanDemo::onSwapChainCreated()
 
 	std::vector<GameObjectSimple*> m_ScreenGameObjects;
 
-	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+	for (int i = 0; i < m_NrOfTVs; i++)
 	//for (int i = 0; i < 1; i++)
 		m_ScreenGameObjects.push_back(m_RendererSimple->createGameObjectAnimatedTexture(RES::MESH_PLANE, RES::getAnimatedTexture(i), RES::SAMPLER_DEFAULT));
 
@@ -242,7 +242,7 @@ void VulkanDemo::update(float deltaSeconds)
 	m_RendererSimple->update(deltaSeconds, m_Camera);
 	m_RendererSkyBox->update(deltaSeconds, m_Camera);
 
-	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+	for (int i = 0; i < m_NrOfTVs; i++)
 		RES::getAnimatedTexture(i)->update(deltaSeconds);
 
 	createCommandBuffers(m_SwapChain->getCurrentImageIndex());
@@ -301,6 +301,7 @@ void VulkanDemo::onKeyPressed(int key)
 		if (!m_BenchmarkRunning)
 		{
 			std::cout << "Benchmark started!" << std::endl;
+			TextureAnimated::resetLostFrames();
 			Profiler::reset();
 			m_Camera->startFollowPath(true);
 			m_BenchmarkRunning = true;

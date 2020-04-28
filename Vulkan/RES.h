@@ -7,8 +7,6 @@
 #include "Mesh.h"
 #include "VideoSource.h"
 
-#define ANIMATED_TEXTURES 25
-
 class DeviceVK;
 
 class RES
@@ -39,7 +37,10 @@ public:
 	static TextureAnimated* getAnimatedTexture(int index);
 
 private:
-	static void init(DeviceVK* device);
+	static int s_TVs;
+
+private:
+	static void init(DeviceVK* device, int tvs);
 	static void shutdown();
 
 	static std::vector<TextureAnimated*> s_AnimatedTextures;

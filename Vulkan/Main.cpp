@@ -6,12 +6,28 @@
 #include <crtdbg.h>
 #include "VulkanDemo.h"
 
+#include <chrono>
+#include <thread>
+
+void run(int tvs)
+{
+	using namespace std::chrono_literals;
+
+	Application* application = new VulkanDemo(tvs);
+	application->run();
+	delete application;
+}
+
 int main()
 {
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	Application* application = new VulkanDemo();
-	application->run();
-	delete application;
+	/*run(1);
+	run(5);
+	run(10);
+	run(20);
+	run(30);*/
+	run(40);
+
 	return 0;
 };

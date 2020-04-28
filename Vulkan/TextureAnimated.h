@@ -34,6 +34,7 @@ public:
 	virtual void onFrameReady(VideoSource* source) override;
 	virtual void updateAsynchronous(float deltaSeconds) override;
 
+	static void resetLostFrames();
 	static int getLostFrames();
 
 private:

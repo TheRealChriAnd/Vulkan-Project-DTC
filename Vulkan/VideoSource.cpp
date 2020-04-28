@@ -97,6 +97,8 @@ void VideoSource::updateAsynchronous(float deltaSeconds)
 	if (deltaSeconds > m_SleepTime)
 	{
 		m_VideoCapture->grab();
+		for (IVideoSourceListener* listener : m_Listeners)
+			listener->onFrameReady(nullptr);
 		return;
 	}
 

@@ -14,14 +14,14 @@
 #include "RES.h"
 #include "ThreadManager.h"
 
-
 #include <chrono>
 #include <iostream>
 
 #include "Profiler.h"
 
-Application::Application()
+Application::Application(int tvs)
 {
+	m_NrOfTVs = tvs;
 	Profiler::begin("INIT");
 	ThreadManager::init();
 }
@@ -32,7 +32,7 @@ void Application::run()
 	m_Device = new DeviceVK(m_Window, /*true*/ enableValidationLayers);
 
 	Profiler::begin("RESOURCES");
-	RES::init(m_Device);
+	RES::init(m_Device, m_NrOfTVs);
 	Profiler::end();
 
 	Profiler::begin("PRE_INIT");

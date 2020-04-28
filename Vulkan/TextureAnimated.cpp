@@ -17,6 +17,9 @@ TextureAnimated::TextureAnimated(DeviceVK* device, VideoSource* source) :
 	m_UseFirstImage(false),
 	m_HasUnWritenData(false)
 {
+	m_Counter = 0;
+	m_LostFrames = 0;
+
 	m_Source = source;
 	int frameSize = source->getFrameSize();
 	int width = source->getWidth();
@@ -153,6 +156,11 @@ glm::vec3 TextureAnimated::getSampleColor(int width, int height, int offsetX, in
 
 void TextureAnimated::onFrameReady(VideoSource* source)
 {
+	m_LostFrames++;
+
+	if (!source)
+		return;
+
 	if (m_OnFrameReadyCallback)
 		ThreadManager::scheduleExecution(std::bind(m_OnFrameReadyCallback, this));
 
@@ -165,8 +173,6 @@ void TextureAnimated::onFrameReady(VideoSource* source)
 #else
 	m_HasUpdate = true;
 #endif
-
-	m_LostFrames++;
 }
 
 void TextureAnimated::updateAsynchronous(float deltaSeconds)
@@ -192,6 +198,11 @@ void TextureAnimated::updateAsynchronous(float deltaSeconds)
 
 		m_HasUpdate = true;
 	}
+}
+
+void TextureAnimated::resetLostFrames()
+{
+	m_LostFrames = 0;
 }
 
 int TextureAnimated::getLostFrames()

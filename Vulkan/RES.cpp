@@ -1,5 +1,7 @@
 #include "RES.h"
 
+int RES::s_TVs = 0;
+
 Texture2D* RES::TEXTURE_FLOOR	= nullptr;
 Texture2D* RES::TEXTURE_THIN	= nullptr;
 Texture2D* RES::TEXTURE_SOFA	= nullptr;
@@ -30,8 +32,10 @@ TextureAnimated* RES::getAnimatedTexture(int index)
 	return s_AnimatedTextures[index];
 }
 
-void RES::init(DeviceVK* device)
+void RES::init(DeviceVK* device, int tvs)
 {
+	s_TVs = tvs;
+
 	TEXTURE_FLOOR = new Texture2D(device, "textures/floor.jfif");
 	TEXTURE_GROUND = new Texture2D(device, "textures/ground.png");
 
@@ -50,7 +54,7 @@ void RES::init(DeviceVK* device)
 	VIDEO_TV = new VideoSource("https://anderssoncloud.ddns.net/nextcloud/s/dSm4kRnjxkpPNG2/download");
 	//VIDEO_TV = new VideoSource("videos/test.mp4");
 
-	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+	for (int i = 0; i < tvs; i++)
 		s_AnimatedTextures.push_back(new TextureAnimated(device, VIDEO_TV));
 	
 	SAMPLER_DEFAULT = new SamplerVK(device);
@@ -84,8 +88,10 @@ void RES::shutdown()
 
 	delete TEXTURE_SKYBOX;
 
-	for (int i = 0; i < ANIMATED_TEXTURES; i++)
+	for (int i = 0; i < s_TVs; i++)
 		delete s_AnimatedTextures[i];
+
+	s_AnimatedTextures.clear();
 
 	delete VIDEO_TV;
 

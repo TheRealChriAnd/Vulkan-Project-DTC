@@ -14,6 +14,10 @@ int ThreadManager::m_UPS[];
 
 void ThreadManager::init()
 {
+	std::cout << "Starting Threads" << std::endl;
+
+	m_Running = true;
+
 	for (int i = 0; i < TASK_THREADS; i++)
 		m_ThreadQueue[i] = new std::thread(&ThreadManager::runQueue, i);
 
@@ -45,6 +49,7 @@ void ThreadManager::shutdown()
 		m_ThreadSets[i]->join();
 		delete m_ThreadSets[i];
 	}
+	std::cout << "Stopping Threads" << std::endl;
 }
 
 void ThreadManager::runQueue(int index)
@@ -63,7 +68,8 @@ void ThreadManager::runQueue(int index)
 
 		for (const std::function<void()>& target : queue)
 		{
-			target();
+			if(m_Running)
+				target();
 		}
 	}
 }
@@ -94,7 +100,8 @@ void ThreadManager::runSet(int index)
 		std::lock_guard<SpinLock> lock(m_SetLock[index]);
 		for (IAsynchronous* target : m_Set[index])
 		{
-			target->updateAsynchronous(delta);
+			if (m_Running)
+				target->updateAsynchronous(delta);
 		}
 	}
 }

@@ -26,7 +26,7 @@ class CommandPoolVK;
 class VulkanDemo : public Application, public IKeyListener, public IMouseListener, public ICameraListener
 {
 public:
-	VulkanDemo() {};
+	VulkanDemo(int tvs) : Application(tvs) {};
 	virtual ~VulkanDemo() {};
 
 	virtual void preInit() override;

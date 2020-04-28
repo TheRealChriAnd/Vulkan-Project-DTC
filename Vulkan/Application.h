@@ -11,7 +11,7 @@ class CommandBufferVK;
 class Application
 {
 public:
-	Application();
+	Application(int tvs);
 	virtual ~Application() {};
 	
 	void run();
@@ -47,6 +47,7 @@ protected:
 
 	const int MAX_FRAMES_IN_FLIGHT = 2;
 	size_t currentFrame = 0;
+	int m_NrOfTVs;
 
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;
